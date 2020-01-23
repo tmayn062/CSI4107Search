@@ -1,38 +1,44 @@
+"""Course HTML file pre-processing."""
 import os
 import bs4
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as xml
 
+
 class Course:
+    """Course holds the information for courses."""
+
     def __init__(self, id, title, description, language):
+        """Course init."""
         self.id = id
         self.title = title
-        self.description=description
-        self.language=language
+        self.description = description
+        self.language = language
 
-    def sanatizeCourseInfo(self):
-
+    def sanitizeCourseInfo(self):
+        """Clean up the course information from the file."""
         # filtering out french courses
-        languageSpeficier=self.id[5]
+        languageSpecifier = self.id[5]
 
-        if languageSpeficier == '5' or languageSpeficier == '7' or languageSpeficier == '6':
-            self.language="French"
+        if languageSpecifier in ['5', '7', '6']:
+            self.language = "French"
         else:
             # Stripping french title from billingual course
             if self.title.find('/') > 0:
-                self.title = self.title.replace('(3 crÃ©dits / 3 units)', "(3 units)")
+                self.title = self.title.replace(
+                    '(3 crÃ©dits / 3 units)', "(3 units)")
                 self.title = self.title[self.title.find('/') + 2:]
 
-            if self.description.find('. / ') > 0:
-                self.description = self.description[self.description.find('. / ') + 4:]
+        if self.description.find('. / ') > 0:
+            self.description = (self.description[self.description.find('. / ')
+                                + 4:])
 
 
-
-
-def main():
+def parse():
+    """Parse HTML course list file."""
     filename = "uOttawaCourseList.xml"
-    if os.path.exists(filename)==True:
-        if os.path.getsize(filename)<=0:
+    if os.path.exists(filename) is True:
+        if os.path.getsize(filename) <= 0:
             pass
         else:
             print("File already exist")
@@ -40,17 +46,17 @@ def main():
 
     root = xml.Element("Courses")
     with open("UofO_Courses.html", "r") as f:
-        data=f.read()
+        data = f.read()
         soup = BeautifulSoup(data, 'html.parser')
         courseDivBlock = soup.findAll("div", {"class": "courseblock"})
         for courseDiv in courseDivBlock:
-            course=getValues(courseDiv)
-            if course.language=="English":
+            course = getValues(courseDiv)
+            if course.language == "English":
                 xmlWriter(root, course, filename)
 
 
-
 def xmlWriter(root, course, filename):
+    """Write XML."""
     userelement = xml.Element("Course")
     root.append(userelement)
     courseID = xml.SubElement(userelement, "courseID")
@@ -63,8 +69,11 @@ def xmlWriter(root, course, filename):
     with open(filename, "wb") as fh:
         tree.write(fh)
 
+
 def getValues(course):
-    currentCourse=Course("xxx","Nil","No description available for this course", "English")
+    """Get course values."""
+    currentCourse = Course(
+        "xxx", "Nil", "No description available for this course", "English")
 
     for element in course:
         ty = type(element)
@@ -79,16 +88,5 @@ def getValues(course):
                 descript = element.get_text()
                 currentCourse.description = descript
 
-
-
-    currentCourse.sanatizeCourseInfo()
+    currentCourse.sanitizeCourseInfo()
     return currentCourse
-
-
-
-
-
-
-if __name__ == '__main__':
-    main()
-
