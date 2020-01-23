@@ -41,7 +41,7 @@ def parse():
         if os.path.getsize(filename) <= 0:
             pass
         else:
-            print("File already exist")
+            print("Parsed file already exists")
             return
 
     root = xml.Element("Courses")

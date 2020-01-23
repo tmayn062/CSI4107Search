@@ -7,3 +7,6 @@ def main():
     """Run search engine and related functions."""
     corpusPreProcessing.parse()
     gui.SearchEngine()
+
+
+main()
