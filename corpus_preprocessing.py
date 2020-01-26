@@ -34,9 +34,8 @@ class Course:
                                 + 4:])
 
 
-def parse():
+def parse(filename):
     """Parse HTML course list file."""
-    filename = "uOttawaCourseList.xml"
     if os.path.exists(filename) is True:
         if os.path.getsize(filename) <= 0:
             pass

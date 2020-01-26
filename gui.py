@@ -20,6 +20,7 @@ class SearchEngineGUI:
         # One frame for the top of the window
         # Another frame for bottom of the window
         self.top_frame = tkinter.Frame(self.root)
+        self.spelling_frame = tkinter.Frame(self.root)
         self.search_frame = tkinter.Frame(self.root)
         self.collection_frame = tkinter.Frame(self.root)
         self.button_frame = tkinter.Frame(self.root)
@@ -32,9 +33,14 @@ class SearchEngineGUI:
         self.prompt_label.config(font=(font_to_use, 24))
         self.entry = tkinter.Entry(self.top_frame, textvariable="Type here",
                                    font=(font_to_use, 24))
+        self.spelling_label = tkinter.Label(
+            self.spelling_frame,
+            text="Did you mean X?", font=(font_to_use, 18))
+        self.spelling_label.pack(side='left')
         # Pack top frame widgets
         self.prompt_label.pack(side='left')
         self.entry.pack(side='left')
+
         # Create the button widgets
         self.search_button = tkinter.Button(
             self.button_frame,
@@ -55,9 +61,9 @@ class SearchEngineGUI:
                                 text='Search results')
         self.results_label.config(font=(font_to_use, 18))
         self.results_label.pack()
-        search_model = tkinter.IntVar()
+        self.search_model = tkinter.IntVar()
         # Initialize search model to 1 - Boolean
-        search_model.set(1)
+        self.search_model.set(1)
         tkinter.Label(self.search_frame,
                       text="Choose a search model:",
                       justify=tkinter.LEFT,
@@ -65,16 +71,16 @@ class SearchEngineGUI:
         tkinter.Radiobutton(self.search_frame,
                             text="Boolean",
                             font=(font_to_use, 18),
-                            variable=search_model,
+                            variable=self.search_model,
                             value=1).pack(side='left')
         tkinter.Radiobutton(self.search_frame,
                             text="VSM",
                             font=(font_to_use, 18),
-                            variable=search_model,
+                            variable=self.search_model,
                             value=2).pack(side='left')
         # Initialize collection to 1 - uO course catalogue
-        search_collection = tkinter.IntVar()
-        search_collection.set(1)
+        self.search_collection = tkinter.IntVar()
+        self.search_collection.set(1)
         tkinter.Label(self.collection_frame,
                       text="Choose a collection:",
                       justify=tkinter.LEFT,
@@ -82,12 +88,12 @@ class SearchEngineGUI:
         tkinter.Radiobutton(self.collection_frame,
                             text="uO Course Catalogue",
                             font=(font_to_use, 18),
-                            variable=search_collection,
+                            variable=self.search_collection,
                             value=1).pack(side='left')
         tkinter.Radiobutton(self.collection_frame,
                             text="Reuters",
                             font=(font_to_use, 18),
-                            variable=search_collection,
+                            variable=self.search_collection,
                             value=2).pack(side='left')
         self.search_results = tkinter.Text(self.results_frame,
                                            state="normal",
@@ -95,6 +101,7 @@ class SearchEngineGUI:
         self.search_results.pack(side='bottom')
         # Now pack the frames also
         self.top_frame.pack()
+        self.spelling_frame.pack()
         self.search_frame.pack()
         self.collection_frame.pack()
         self.button_frame.pack()
@@ -104,23 +111,39 @@ class SearchEngineGUI:
 
     def run_search(self):
         """Start search (callback function for search button)."""
+        # Set corpus to be used for search
+        if self.search_collection.get() == 1:
+            corpus = 'uOttawaCourseList.xml'
+        else:
+            corpus = 'reuters.xml'
+            print("not yet available")
+        # Set search type
+        if self.search_model.get() == 1:
+            search = 'Boolean'
+        else:
+            search = 'VSM'
         messagebox.showinfo(
             'Response',
-            'You clicked the search button and typed ' + self.entry.get())
+            'You clicked the search button and typed '
+            + self.entry.get() + ' ' + search + ' ' + corpus)
+        # Clear previous search results
         self.search_results.delete('1.0', "end")
-        docs = corpus_access.get_documents([2, 5, 7])
+
+        docs = corpus_access.get_documents(corpus, [2, 5, 7])
         hyperlink = HyperlinkManager(self.search_results)
         for doc in docs:
             self.search_results.insert("insert",
                                        doc.title + '\n',
-                                       hyperlink.add(click_link, doc.id))
+                                       hyperlink.add
+                                       (click_link, doc.id, corpus))
 
 
-def click_link(id):
+def click_link(id, corpus):
     """Click link function."""
+    doc = corpus_access.get_documents(corpus, [id])[0]
     messagebox.showinfo(
-        'Full text',
-        corpus_access.get_documents([id])[0].doctext)
+        doc.title,
+        doc.doctext)
 
 
 # Code for hyperlink manager modified from
@@ -142,11 +165,11 @@ class HyperlinkManager:
         """Reset HyperlinkManager links."""
         self.links = {}
 
-    def add(self, action, doc_id):
+    def add(self, action, doc_id, corpus):
         """Add an action to the manager."""
         # returns tags to use in associated text widget
         tag = "hyper-%d" % len(self.links)
-        self.links[tag] = [action, doc_id]
+        self.links[tag] = [action, doc_id, corpus]
         return "hyper", tag
 
     def _enter(self, event):
@@ -158,5 +181,5 @@ class HyperlinkManager:
     def _click(self, event):
         for tag in self.text.tag_names("current"):
             if tag[:6] == "hyper-":
-                self.links[tag][0](self.links[tag][1])
+                self.links[tag][0](self.links[tag][1], self.links[tag][2])
                 return

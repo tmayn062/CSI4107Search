@@ -16,12 +16,12 @@ class Document:
         return self.title
 
 
-def get_documents(list_doc_ids):
-    """Get a list of documents using a given list of doc ids."""
+def get_documents(corpus_filename, list_doc_ids):
+    """Return a list of documents using a given list of doc ids."""
     """order of doc ids is preserved"""
     # XML parse code adapted from
     # https://stackabuse.com/reading-and-writing-xml-files-in-python/
-    tree = xml.parse('uOttawaCourseList.xml')
+    tree = xml.parse(corpus_filename)
     root = tree.getroot()
     doc_list = []
     for i in list_doc_ids:
