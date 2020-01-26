@@ -1,12 +1,12 @@
 """Search Engine Project for CSI4107."""
 import gui
-import corpusPreProcessing
+import corpus_preprocessing
 
 
 def main():
     """Run search engine and related functions."""
-    corpusPreProcessing.parse()
-    gui.SearchEngine()
+    corpus_preprocessing.parse()
+    gui.SearchEngineGUI()
 
 
 main()
