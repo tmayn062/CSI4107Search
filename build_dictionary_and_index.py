@@ -4,6 +4,7 @@
 def build_it(corpus_filename: str,
              remove_stopwords=True, do_stemming=True, do_normalize=True):
     """Build a dictionary from the pre-processed corpus."""
+    # Default to all word treatments on
     return ['test', 'computer', 'optimize']
 
 

@@ -1,5 +1,6 @@
 """Access corpus of documents."""
 import xml.etree.ElementTree as xml
+import os.path
 
 
 class Document:
@@ -21,6 +22,9 @@ def get_documents(corpus_filename, list_doc_ids):
     """order of doc ids is preserved"""
     # XML parse code adapted from
     # https://stackabuse.com/reading-and-writing-xml-files-in-python/
+    if not os.path.isfile(corpus_filename):
+        print(corpus_filename + ' does not exist')
+        return
     tree = xml.parse(corpus_filename)
     root = tree.getroot()
     doc_list = []
