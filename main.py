@@ -3,6 +3,7 @@ import gui
 import corpus_preprocessing
 import build_dictionary_and_index
 import query
+import spelling
 
 
 def main():
@@ -22,6 +23,9 @@ def main():
                         remove_stopwords,
                         do_stemming,
                         do_normalize))
+    print(spelling.edit_distance("execution", "intention"))
+    print(spelling.edit_distance("sunday", "saturday"))
+    print(spelling.edit_distance("dog", "do"))
     gui.SearchEngineGUI()
 
 

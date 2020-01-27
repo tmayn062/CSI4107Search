@@ -129,7 +129,7 @@ class SearchEngineGUI:
         # Clear previous search results
         self.search_results.delete('1.0', "end")
 
-        docs = corpus_access.get_documents(corpus, [])
+        docs = corpus_access.get_documents(corpus, [7, 9, 99])
         hyperlink = HyperlinkManager(self.search_results)
         if docs is None or docs == []:
             self.search_results.insert("insert", 'No documents found')
