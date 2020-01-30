@@ -46,7 +46,10 @@ def main():
         for courseDiv in courseDivBlock:
             course=getValues(courseDiv)
             if course.language=="English":
-                xmlWriter(root, course, filename)
+                if course.description=="No description available for this course":
+                    pass
+                else:
+                    xmlWriter(root, course, filename)
 
 
 
