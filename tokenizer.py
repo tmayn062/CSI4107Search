@@ -3,7 +3,7 @@ import re
 import xml.etree.ElementTree as xml
 from nltk.corpus import stopwords
 import linguistic_processor
-from linguistic_processor import linguisticModule
+from linguistic_processor import linguistic_module
 import pandas as pd
 import nltk
 
@@ -18,8 +18,8 @@ def main():
     root = tree.getroot()
     stop_words = set(stopwords.words('english'))
 
-    # for course in root:
-    #     rawText=expand_contractions(course[2].text)
+    # for course_html_div_element in root:
+    #     rawText=expand_contractions(course_html_div_element[2].text)
 
     # description_string=root[0][2].text
     # print(description_string)
@@ -37,14 +37,14 @@ def main():
     completeList = []
     for coures in root:
         id = coures[0].text
-        # print(id)
+        # print(course_id)
 
         text = linguisticModule(coures[2].text, lingquisticControl)
         # print(text)
         for words in text:
             wordTag = [id, words]
 
-            tag = {"id": id, "word": words}
+            tag = {"course_id": id, "word": words}
             completeList.append(tag)
         countdd += 1
 
@@ -56,7 +56,7 @@ def main():
     idList = []
     invertedIndex = []
     for element in sortedList:
-        courseID = element.get("id")
+        courseID = element.get("course_id")
         word = element.get("word")
 
         if word == prevWord:

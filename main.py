@@ -12,21 +12,22 @@ def main():
     remove_stopwords = True
     do_stemming = True
     do_normalize = True
-    corpus_preprocessing.parse("UofO_Courses.html")
+    corpus_preprocessing.parse("UofO_Courses.html", "corpus.xml")
     # TODO : Update to include Reuters dictionary routine when available
-    build_dictionary_and_index.build_it("uOttawaCourseList.xml",
-                                        remove_stopwords,
-                                        do_stemming,
-                                        do_normalize)
+    # build_dictionary_and_index.build_it("uOttawaCourseList.xml",
+    #                                     remove_stopwords,
+    #                                     do_stemming,
+    #                                     do_normalize)
 
-    print(query.process("testing U.S.A. low-cost women babies cacti ",
-                        remove_stopwords,
-                        do_stemming,
-                        do_normalize))
-    print(spelling.edit_distance("execution", "intention"))
-    print(spelling.edit_distance("sunday", "saturday"))
-    print(spelling.edit_distance("dog", "do"))
-    gui.SearchEngineGUI()
+    # print(query.process("testing U.S.A. low-cost women babies cacti ",
+    #                     remove_stopwords,
+    #                     do_stemming,
+    #                     do_normalize))
+    # print(spelling.edit_distance("execution", "intention"))
+    # print(spelling.edit_distance("sunday", "saturday"))
+    # print(spelling.edit_distance("dog", "do"))
+    # gui.SearchEngineGUI()
 
 
-main()
+if __name__ == '__main__':
+    main()

@@ -78,7 +78,7 @@ class SearchEngineGUI:
                             font=(font_to_use, 18),
                             variable=self.search_model,
                             value=2).pack(side='left')
-        # Initialize collection to 1 - uO course catalogue
+        # Initialize collection to 1 - uO course_html_div_element catalogue
         self.search_collection = tkinter.IntVar()
         self.search_collection.set(1)
         tkinter.Label(self.collection_frame,

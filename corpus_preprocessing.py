@@ -1,94 +1,159 @@
-"""Course HTML file pre-processing."""
+"""
+Corpus Pre-processing Module
+
+
+CSI4107 Project
+Vanilla System Module 2
+
+Created: 22 Jan 2020
+Last modified: 31 Jan 2020
+
+@author: Jonathan Boerger
+
+Status: Completed
+"""
+"""
+Known issues:
+    -> There is still some french text in the title/descriptions. 
+        |-> However there is now simple way of removing this text (would require manual extraction)
+        |-> Given that it has minimal impact on other modules and zero impact on functionality,
+             this is not a high priority issues
+
+"""
+
+
 import os
+import xml.etree.ElementTree as xml
 import bs4
 from bs4 import BeautifulSoup
-import xml.etree.ElementTree as xml
 
 
 class Course:
     """Course holds the information for courses."""
 
-    def __init__(self, id, title, description, language):
+    def __init__(self, course_id, title, description, language):
         """Course init."""
-        self.id = id
+        self.course_id = course_id
         self.title = title
         self.description = description
         self.language = language
 
-    def sanitizeCourseInfo(self):
-        """Clean up the course information from the file."""
+    def sanitize_course_info(self):
+        """Clean up the course_html_div_element information from the file."""
         # filtering out french courses
-        languageSpecifier = self.id[5]
+        language_specifier = self.course_id[5]
 
-        if languageSpecifier in ['5', '7', '6']:
+        if language_specifier in ['5', '7', '6']:
             self.language = "French"
         else:
-            # Stripping french title from billingual course
+            # Stripping french title from bilingual course_html_div_element
             if self.title.find('/') > 0:
                 self.title = self.title.replace(
                     '(3 crÃ©dits / 3 units)', "(3 units)")
                 self.title = self.title[self.title.find('/') + 2:]
-
+        # Stripping french description from bilingual course_html_div_element
         if self.description.find('. / ') > 0:
-            self.description = (self.description[self.description.find('. / ')
-                                + 4:])
+            # '. /' delineates english and french description
+            self.description = (self.description[self.description.find('. / ') + 4:])
 
 
-def parse(filename):
-    """Parse HTML course list file."""
-    if os.path.exists(filename) is True:
-        if os.path.getsize(filename) <= 0:
+def parse(html_filename, corpus_filename):
+    """
+    This method takes the provided HTML file and identifies all courses, extract the relevant
+     information, sanitizes the information and compiles a corpus in XML format.
+
+    :param html_filename: Filename of the source HTML file
+    :param corpus_filename: Filename of the XML corpus
+    :return: Corpus of documents contained in an XML file
+    """
+
+    # Checking to see if file already exist
+    if os.path.exists(corpus_filename) is True:
+        # Ensuring file has actual content
+        if os.path.getsize(corpus_filename) <= 0:
             pass
+        # If file exist and has content, then the method exits
         else:
             print("Parsed file already exists")
             return
 
     root = xml.Element("Courses")
-    with open("UofO_Courses.html", "r") as f:
-        data = f.read()
+    with open(html_filename, "r") as file:
+        data = file.read()
         soup = BeautifulSoup(data, 'html.parser')
-        courseDivBlock = soup.findAll("div", {"class": "courseblock"})
-        for courseDiv in courseDivBlock:
-            course=getValues(courseDiv)
-            if course.language=="English":
-                if course.description=="No description available for this course":
+
+        # course_div_list is a list of all HTML div element which contains
+        # all information for one course_html_div_element
+
+        course_div_list = soup.findAll("div", {"class": "courseblock"})
+
+        # accessing each individual course_html_div_element course_div_block
+        for course_div in course_div_list:
+
+            # getting relevant information from the HTML elements
+            course = get_values(course_div
+                                )
+            # only process courses which are english
+            if course.language == "English":
+                # only process course_html_div_element which have a course_html_div_element description
+                if course.description == "No description available for this course_html_div_element":
                     pass
+                # adding course_html_div_element to the XML corpus
                 else:
-                    xmlWriter(root, course, filename)
+                    xml_writer(root, course, corpus_filename)
 
 
-def xmlWriter(root, course, filename):
-    """Write XML."""
-    userelement = xml.Element("Course")
-    root.append(userelement)
-    courseID = xml.SubElement(userelement, "courseID")
-    courseID.text = course.id
-    courseTitle = xml.SubElement(userelement, "courseTitle")
-    courseTitle.text = course.title
-    courseDescription = xml.SubElement(userelement, "courseDescription")
-    courseDescription.text = course.description
+def xml_writer(root, course, filename):
+    """
+    This methods takes a course_html_div_element information after having been sanitized
+    and adds it to the XML corpus as a new document.
+
+    :param root: Root element of the XML corpus
+    :param course: Instance of course_html_div_element object containing all
+                   information to be added to corpus
+    :param filename: Name of XML corpus
+    :return: course_html_div_element information added to corpus
+    """
+    user_element = xml.Element("Course")
+    root.append(user_element)
+    course_id = xml.SubElement(user_element, "course_id")
+    course_id.text = course.course_id
+    course_title = xml.SubElement(user_element, "course_title")
+    course_title.text = course.title
+    course_description = xml.SubElement(user_element, "course_description")
+    course_description.text = course.description
     tree = xml.ElementTree(root)
-    with open(filename, "wb") as fh:
-        tree.write(fh)
+    with open(filename, "wb") as file:
+        tree.write(file)
 
 
-def getValues(course):
-    """Get course values."""
-    currentCourse = Course(
-        "xxx", "Nil", "No description available for this course", "English")
+def get_values(course_html_div_element):
+    """
+    This methods takes html code and extracts all relevant course information and
+    instantiates a course class object to store this info
 
-    for element in course:
-        ty = type(element)
-        if ty is bs4.element.Tag:
-            classType = element['class'][0]
-            if classType == "courseblocktitle":
-                title = element.get_text()
-                currentCourse.id = title[:8]
-                currentCourse.title = title[9:]
+    :param course_html_div_element: HTML div element which contains course info
+    :return: Instance of course class with course info for course_id, title and description
+    """
 
-            if classType == "courseblockdesc":
-                descript = element.get_text()
-                currentCourse.description = descript
+    # creating instance of course class
+    current_course = Course(
+        "xxx", "Nil", "No description available for this course_html_div_element", "English")
 
-    currentCourse.sanitizeCourseInfo()
-    return currentCourse
+    for html_element in course_html_div_element:
+        element_type = type(html_element)
+        if element_type is bs4.element.Tag:
+
+            class_type = html_element['class'][0]
+
+            if class_type == "courseblocktitle":
+                title = html_element.get_text()
+                current_course.course_id = title[:8]
+                current_course.title = title[9:]
+
+            if class_type == "courseblockdesc":
+                description = html_element.get_text()
+                current_course.description = description
+
+    current_course.sanitize_course_info()
+    return current_course
