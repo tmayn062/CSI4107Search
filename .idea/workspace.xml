@@ -21,8 +21,8 @@
   <component name="ProjectId" id="1Wl8tslaLn60rlod6q5XfjrYbWM" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../loggintest/seanCody.py" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Anaconda3/Scripts/flake8.exe" />
+    <property name="settings.editor.selected.configurable" value="preferences.externalTools" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -123,7 +123,7 @@
       <updated>1579713038721</updated>
       <workItem from="1579713053130" duration="12241000" />
       <workItem from="1580419420318" duration="19183000" />
-      <workItem from="1580487487378" duration="180000" />
+      <workItem from="1580487487378" duration="5741000" />
     </task>
     <servers />
   </component>

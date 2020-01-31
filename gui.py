@@ -57,8 +57,8 @@ class SearchEngineGUI:
         self.search_button.pack(side='left')
         self.quit_button.pack(side='left')
         self.results_label = tkinter.Label(
-                                self.bottom_frame,
-                                text='Search results')
+            self.bottom_frame,
+            text='Search results')
         self.results_label.config(font=(font_to_use, 18))
         self.results_label.pack()
         self.search_model = tkinter.IntVar()
