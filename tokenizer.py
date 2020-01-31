@@ -91,7 +91,7 @@ def main():
             writer.writerow(to_append.split(';!'))
     data =pd.read_csv("inverted_index.csv")
 
-    find_in_index("year")
+
 
 
 
