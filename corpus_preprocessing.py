@@ -1,16 +1,18 @@
 """
-Corpus Pre-processing Module
+Title: Corpus Pre-processing Module
 
-
-CSI4107 Project
-Vanilla System Module 2
+Project: CSI4107 Project
+Version: Vanilla System
+Component: Module 2
 
 Created: 22 Jan 2020
 Last modified: 31 Jan 2020
 
-@author: Jonathan Boerger
-
+Author: Jonathan Boerger
 Status: Completed
+
+Description: This module takes an HTML documents and extracts course information to create
+a XML document corpus.
 """
 """
 Known issues:

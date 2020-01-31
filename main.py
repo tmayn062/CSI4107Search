@@ -9,9 +9,13 @@ import spelling
 def main():
     """Run search engine and related functions."""
     # TODO : Update to include Reuters parse routine when available
-    remove_stopwords = True
-    do_stemming = True
-    do_normalize = True
+    # remove_stopwords = True
+    # do_stemming = True
+    # do_normalize = True
+    lingquistic_process_toggle = {"do_contractions": True, "do_normalize_hyphens": True,
+                                  "do_normalize_periods": True, "do_remove_punctuation": True, "do_case_fold": True,
+                                  "do_stop_word_removal": True, "do_stemming": True, "do_lemming": False}
+
     corpus_preprocessing.parse("UofO_Courses.html", "corpus.xml")
     # TODO : Update to include Reuters dictionary routine when available
     # build_dictionary_and_index.build_it("uOttawaCourseList.xml",

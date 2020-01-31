@@ -1,15 +1,26 @@
 """
-Linguistic Processor Module
+Title: Linguistic Processor Module
 
-CSI4107 Project
-Vanilla System
+Project: CSI4107 Project
+Version: Vanilla System
+Component: Module 3
 
 Created: 30 Jan 2020
 Last modified: 31 Jan 2020
 
-@author: Jonathan Boeger
+Author: Jonathan Boerger
+Status: Completed
 
-Status: Complete
+Description: This module applies linguistic pre-processing on text including:
+    -contraction expansion
+    -tokenizing
+    -normalization
+    -punctuation removal
+    -case folding
+    -stop word removal
+    -stemming
+    -lemmatization
+
 """
 
 import string
@@ -22,7 +33,7 @@ from contractions import expand_contractions
 nltk.download('wordnet')
 
 
-def stopword_remouval(raw_text_list):
+def stop_word_removal(raw_text_list):
     """
     This method removes all stop words, as defined in the NLTK package.
 
@@ -166,31 +177,31 @@ def linguistic_module(raw_text, control_dic):
     :param raw_text: A string of text
     :param control_dic: A dictionary in the form bellow, which is used to specify which
     linguistic processes to be applied to the raw text.
-            {"contractions": True,  "Normalize Hyphens": True,
-              "Normalize Periods": True, "Punctuation": True, "Case Fold": True,
-              "stop word": True, "stemming": True, "lemming": False}
+            {"do_contractions": True, "do_normalize_hyphens": True,
+            "do_normalize_periods": True, "do_remove_punctuation": True, "do_case_fold": True,
+            "do_stop_word_removal": True, "do_stemming": True, "do_lemming": False}
 
     :return: A list which contains fully processed tokens
     """
-    if control_dic.get("contractions"):
+    if control_dic.get("do_contractions"):
         clean_text = contractions_expander(raw_text)
         clean_text = tokenize(clean_text)
     else:
         clean_text = tokenize(raw_text)
 
-    if control_dic.get("Normalize Hyphens"):
+    if control_dic.get("do_normalize_hyphens"):
         clean_text = normalizer_hyphens(clean_text)
-    if control_dic.get("Normalize Periods"):
+    if control_dic.get("do_normalize_periods"):
         clean_text = normalizer_periods(clean_text)
-    if control_dic.get("Punctuation"):
+    if control_dic.get("do_remove_punctuation"):
         clean_text = punctuation_remover(clean_text)
-    if control_dic.get("Case Fold"):
+    if control_dic.get("do_case_fold"):
         clean_text = case_fold(clean_text)
-    if control_dic.get("stop word"):
-        clean_text = stopword_remouval(clean_text)
-    if control_dic.get("stemming"):
+    if control_dic.get("do_stop_word_removal"):
+        clean_text = stop_word_removal(clean_text)
+    if control_dic.get("do_stemming"):
         clean_text = stemmer(clean_text)
-    if control_dic.get("lemming"):
+    if control_dic.get("do_lemming"):
         clean_text = lemmatizer(clean_text)
 
     return clean_text
