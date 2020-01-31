@@ -22,7 +22,7 @@ Known issues:
              this is not a high priority issues
 
 """
-
+# todo and numerix id key to corupus
 
 import os
 import xml.etree.ElementTree as xml

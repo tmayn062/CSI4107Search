@@ -4,7 +4,9 @@ import corpus_preprocessing
 import build_dictionary_and_index
 import query
 import spelling
-
+HTMLFILE="UofO_Courses.html"
+CORPUSUOTTAWA="corpus.xml"
+INVETEDINDEXUOTTAWA="inverted_index.csv"
 
 def main():
     """Run search engine and related functions."""
@@ -30,7 +32,7 @@ def main():
     # print(spelling.edit_distance("execution", "intention"))
     # print(spelling.edit_distance("sunday", "saturday"))
     # print(spelling.edit_distance("dog", "do"))
-    # gui.SearchEngineGUI()
+    gui.SearchEngineGUI()
 
 
 if __name__ == '__main__':

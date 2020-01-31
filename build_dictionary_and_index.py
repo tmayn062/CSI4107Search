@@ -13,13 +13,12 @@ Status: In progress
 
 Description: This takes a corpus, applies linguistic processing on the documents within the corpus
             and creates an IR dictionary which is then used to build an inverted index in csv file
-            format. 
+            format.
 
 """
 import xml.etree.ElementTree as xml
 import pandas as pd
 from linguistic_processor import linguistic_module
-
 
 
 def build_dictionary(corpus_filename, linquistic_toggole):
