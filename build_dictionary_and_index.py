@@ -104,8 +104,7 @@ def find_in_index(query):
             point += 1
         if point == len(queryList):
             break
-
-
+#todo csv file
 def main():
     find_in_index("year")
     find_in_index("hash")
