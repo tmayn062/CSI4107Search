@@ -174,8 +174,10 @@ def linguistic_module(raw_text, control_dic):
     """
     if control_dic.get("contractions"):
         clean_text = contractions_expander(raw_text)
+        clean_text = tokenize(clean_text)
+    else:
+        clean_text = tokenize(raw_text)
 
-    clean_text = tokenize(clean_text)
     if control_dic.get("Normalize Hyphens"):
         clean_text = normalizer_hyphens(clean_text)
     if control_dic.get("Normalize Periods"):
