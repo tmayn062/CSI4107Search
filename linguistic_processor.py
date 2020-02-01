@@ -84,6 +84,7 @@ def normalizer_hyphens(raw_text_list):
         :param raw_text_list: List of tokenized words strings
         :return: List of tokenized word strings with hyphenated word replaced by its component words
     """
+    # todo consider normalizing in both forms
     results = []
     for words in raw_text_list:
         if words.find('-') != -1:
@@ -118,11 +119,16 @@ def punctuation_remover(raw_text_list):
     :param raw_text_list: List of tokenized words strings
     :return: List of tokenized words strings where punctuations marks are removed.
     """
-    # todo remove '.' '-' from punct
-    table = str.maketrans('', '', string.punctuation)
+    punct_list = string.punctuation
+    punct_list = punct_list.replace('-', '')
+    punct_list = punct_list.replace('.', '')
+    table = str.maketrans('', '', punct_list)
     stripped = [w.translate(table) for w in raw_text_list]
     result = []
     for words in stripped:
+        # removes terminating periods in a word iff there is only one period
+        if words.endswith(".") and words.count(".")==1:
+            words = words.replace(".","")
         # removing any potential empty items ([""])
         if words == "":
             pass
