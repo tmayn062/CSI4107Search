@@ -9,7 +9,7 @@ Created: 30 Jan 2020
 Last modified: 31 Jan 2020
 
 Author: Jonathan Boerger
-Status: Completed
+Status: In progress- small tweaks
 
 Description: This module applies linguistic pre-processing on text including:
     -contraction expansion
@@ -118,7 +118,7 @@ def punctuation_remover(raw_text_list):
     :param raw_text_list: List of tokenized words strings
     :return: List of tokenized words strings where punctuations marks are removed.
     """
-    #todo remove '.' '-' from punct
+    # todo remove '.' '-' from punct
     table = str.maketrans('', '', string.punctuation)
     stripped = [w.translate(table) for w in raw_text_list]
     result = []
@@ -184,7 +184,7 @@ def linguistic_module(raw_text, control_dic):
     :return: A list which contains fully processed tokens
     """
     # todo make dictionary key mapping
-    # todo consider chaning raw_text to clean_text
+    # todo consider changing raw_text to clean_text
     if control_dic.get("do_contractions"):
         clean_text = contractions_expander(raw_text)
         clean_text = tokenize(clean_text)

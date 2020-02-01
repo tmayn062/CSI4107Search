@@ -13,16 +13,14 @@ Status: Completed
 
 Description: This module takes an HTML documents and extracts course information to create
 a XML document corpus.
-"""
-"""
+
 Known issues:
-    -> There is still some french text in the title/descriptions. 
+    -> There is still some french text in the title/descriptions.
         |-> However there is now simple way of removing this text (would require manual extraction)
         |-> Given that it has minimal impact on other modules and zero impact on functionality,
              this is not a high priority issues
-
 """
-# todo and numerix id key to corupus
+
 
 import os
 import xml.etree.ElementTree as xml
@@ -90,6 +88,7 @@ def parse(html_filename, corpus_filename):
         course_div_list = soup.findAll("div", {"class": "courseblock"})
 
         # accessing each individual course_html_div_element course_div_block
+        index = 0
         for course_div in course_div_list:
 
             # getting relevant information from the HTML elements
@@ -97,15 +96,18 @@ def parse(html_filename, corpus_filename):
                                 )
             # only process courses which are english
             if course.language == "English":
-                # only process course_html_div_element which have a course_html_div_element description
-                if course.description == "No description available for this course_html_div_element":
+                # only process course_html_div_element which have a
+                # course_html_div_element description
+                if course.description == "No description available for this " \
+                                         "course_html_div_element":
                     pass
                 # adding course_html_div_element to the XML corpus
                 else:
-                    xml_writer(root, course, corpus_filename)
+                    xml_writer(root, course, corpus_filename, index)
+                    index += 1
 
 
-def xml_writer(root, course, filename):
+def xml_writer(root, course, filename, index):
     """
     This methods takes a course_html_div_element information after having been sanitized
     and adds it to the XML corpus as a new document.
@@ -117,6 +119,7 @@ def xml_writer(root, course, filename):
     :return: course_html_div_element information added to corpus
     """
     user_element = xml.Element("Course")
+    user_element.set("doc_id", str(index))
     root.append(user_element)
     course_id = xml.SubElement(user_element, "course_id")
     course_id.text = course.course_id
