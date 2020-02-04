@@ -21,8 +21,8 @@ def main():
     # do_normalize = True
     start_time=datetime.now()
     print(datetime.now())
-    linguistic_processing_parameters = {"do_contractions": True, "do_normalize_hyphens": False,
-                                        "do_normalize_periods": False, "do_remove_punctuation": True,
+    linguistic_processing_parameters = {"do_contractions": True, "do_normalize_hyphens": True,
+                                        "do_normalize_periods": True, "do_remove_punctuation": True,
                                         "do_case_fold": True, "do_stop_word_removal": True,
                                         "do_stemming": True, "do_lemming": False}
 

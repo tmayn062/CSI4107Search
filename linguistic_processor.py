@@ -31,6 +31,7 @@ from nltk.corpus import stopwords
 from contractions import expand_contractions
 
 nltk.download('wordnet')
+nltk.download('stopwords')
 
 
 def stop_word_removal(raw_text_list):
@@ -127,8 +128,8 @@ def punctuation_remover(raw_text_list):
     result = []
     for words in stripped:
         # removes terminating periods in a word iff there is only one period
-        if words.endswith(".") and words.count(".")==1:
-            words = words.replace(".","")
+        if words.endswith(".") and words.count(".") == 1:
+            words = words.replace(".", "")
         # removing any potential empty items ([""])
         if words == "":
             pass
@@ -174,6 +175,27 @@ def lemmatizer(raw_text_list):
     for words in raw_text_list:
         results.append(wordnet_lemmatizer.lemmatize(words))
     return results
+
+
+def bigraph_splitter(word, bigraph_list=[]):
+    """
+    This method splits a string into its respective bigraphs, including $ to delineate terminating
+    characters.
+
+    :param word: string to be split into bigraphs
+    :param bigraph_list: optional parameter that allows user to import a list already containing
+                        other bigraphs
+    :return: A list of bigraphs and associated word
+    """
+    bigraph = f'${word[0]}'
+    bigraph_list.append([bigraph, word])
+
+    for x in range(0, len(word) - 1):
+        bigraph = f'{word[x]}{word[x + 1]}'
+        bigraph_list.append([bigraph, word])
+    bigraph = f'{word[len(word) - 1]}$'
+    bigraph_list.append([bigraph, word])
+    return bigraph_list
 
 
 def linguistic_module(raw_text, control_dic):

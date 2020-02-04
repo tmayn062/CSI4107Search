@@ -3,7 +3,7 @@ Title: Dictionary and Inverted Index Builder Module
 
 Project: CSI4107 Project
 Version: Vanilla System
-Component: Module 3 & 4
+Component: Module 3 & 4 + supporting methods for module 7
 
 Created: 30 Jan 2020
 Last modified: 31 Jan 2020
@@ -12,15 +12,15 @@ Author: Jonathan Boerger
 Status: Complete
 
 Description: This takes a corpus, applies linguistic processing on the documents within the corpus
-            and creates an IR dictionary which is then used to build an inverted index in csv file
-            format.
+            and creates an IR dictionary which is then used to build an inverted index and bigraph
+            index in csv file format.
 
 """
 import csv
 import os
 import xml.etree.ElementTree as xml
 import pandas as pd
-from linguistic_processor import linguistic_module
+from linguistic_processor import linguistic_module, bigraph_splitter
 
 
 def __build_dictionary(corpus_filename, linguistic_processing_parameters):
@@ -228,17 +228,83 @@ def __linguistic_processor_parameters_validator(lpp_csv_file, lpp_dictionary):
             return -1
     return 1
 
+def __bigraph_index_creator(inverted_index_filename):
+    """
+    This private method creates a bigraph index based on the inverted index.
+
+    :param inverted_index_filename: The file which contains the inverted index
+    :return: A list of list containing the bigraph and its associated words
+    """
+    inverted_index = pd.read_csv(inverted_index_filename)
+    bigraph_list = []
+    for index in range(0, inverted_index.shape[0]):
+        word = str(inverted_index.iloc[index, 0])
+        bigraph_list = bigraph_splitter(word, bigraph_list)
+
+    bigraph_list.sort()
+    bigraph_index = []
+    bigraph_word_list = []
+    previous_bigraph = bigraph_list[0][0]
+    for bigraph_list_row in bigraph_list:
+        bigraph = bigraph_list_row[0]
+        if previous_bigraph == bigraph:
+            bigraph_word_list.append(bigraph_list_row[1])
+        else:
+            bigraph_index.append([previous_bigraph, bigraph_word_list])
+            bigraph_word_list = [bigraph_list_row[1]]
+            previous_bigraph = bigraph
+
+    return bigraph_index
+
+def __bigraph_index_csv_creator(bi_filename):
+    """
+    This private methods creates a csv file to store the bigraph index.
+
+    :param bi_filename: filename for the bigraph index csv file
+    :return: an empty csv file
+    """
+    # since this method may be called when the csv file needs to be re-created
+    # the methods deletes the existing
+    try:
+        os.unlink(bi_filename)
+    except:
+        pass
+    file = open(bi_filename, 'w', newline='', encoding='utf-8')
+    with file:
+        header = ["Bigraph", "Word List"]
+        writer = csv.writer(file)
+        writer.writerow(header)
+
+def __bigraph_index_csv(bi_filename, bigraph_index):
+    """
+    This private methods inputs the bigraph index into its csv file.
+
+    :param bi_filename: The file name of the bigraph index csv file
+    :param bigraph_index: The list contain all bigrams
+    :return: A csv containing the bigraph index
+
+    """
+    __bigraph_index_csv_creator(bi_filename)
+    for element in bigraph_index:
+        to_append = f'{element[0]};!{element[1]}'
+        file = open(bi_filename, 'a', newline='', encoding='utf-8')
+        with file:
+            writer = csv.writer(file)
+            writer.writerow(to_append.split(';!'))
+
+
+
 
 def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, inverted_index_filename,
-                                          corpus_filename, lp_parameter_filename):
+                                          corpus_filename, lp_parameter_filename, bigraph_filename):
     """
-    This is the public methods for the build dictionary and inverted index module.
+    This is the public methods for the build dictionary, inverted index and bigraph index module.
     This methods integrates all methods required to build the IR dictionary and its
-    corresponding inverted index.
+    corresponding inverted index and bigraph index.
     Additionally, it also checks to see if the inverted file already exist, if it does
     the methods carries on without recreating the index.
     Lastly, in the event that the linguistic pre-processing parameters are changed, regardless
-    if the inverted index already exist, will create a new inverted index to reflect
+    if the inverted index already exist, will create new indexes to reflect
     the changes in dictionary resulting from different linguistic processing.
 
 
@@ -246,15 +312,18 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, inverte
     :param linguistic_control_dictionary: The dictionary which specifies which linguistic
         processing modules should be used to create the inverted index.
     :param inverted_index_filename: The inverted index file name
-     :param corpus_filename:
+     :param corpus_filename: The document corpus filename
+     :param bigraph_filename: The bigraph index filename
     :param lp_parameter_filename: The linguistic processing control file
-    :return: A csv file containing the inverted index
+    :return: A csv file containing the inverted index and bigraph index
     """
 
     def create_index():
         ir_dictionary = __build_dictionary(corpus_filename, linguistic_control_dictionary)
         inverted_index = __create_inverted_index(ir_dictionary)
         __inverted_index_csv(inverted_index, inverted_index_filename)
+        bigraph_index = __bigraph_index_creator(inverted_index_filename)
+        __bigraph_index_csv(bigraph_filename, bigraph_index)
         __linguistic_processing_parameters_csv(linguistic_control_dictionary, lp_parameter_filename)
 
     # The required files dont exits -> create them
