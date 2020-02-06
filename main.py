@@ -11,6 +11,7 @@ html_file="UofO_Courses.html"
 uottawa_corpus="uottawa_corpus.xml"
 uottawa_inverted_index="uottawa_inverted_index.csv"
 uottawa_lpp="uottawa_lpp.csv"
+uottawa_bigraph= "uottawa_bigraph_index.csv"
 
 
 def main():
@@ -28,7 +29,7 @@ def main():
 
     corpus_preprocessing.parse(html_file, uottawa_corpus)
     dictionary_and_inverted_index_wrapper(linguistic_processing_parameters,uottawa_inverted_index,
-                                          uottawa_corpus, uottawa_lpp)
+                                          uottawa_corpus, uottawa_lpp, uottawa_bigraph)
     end_time=datetime.now()
     total_time=end_time-start_time
     print(total_time)

@@ -177,7 +177,7 @@ def lemmatizer(raw_text_list):
     return results
 
 
-def bigraph_splitter(word, bigraph_list=[]):
+def bigraph_splitter(word, bigraph_list=None):
     """
     This method splits a string into its respective bigraphs, including $ to delineate terminating
     characters.
@@ -187,6 +187,8 @@ def bigraph_splitter(word, bigraph_list=[]):
                         other bigraphs
     :return: A list of bigraphs and associated word
     """
+    if bigraph_list is None:
+        bigraph_list = []
     bigraph = f'${word[0]}'
     bigraph_list.append([bigraph, word])
 
