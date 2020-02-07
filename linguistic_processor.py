@@ -123,6 +123,8 @@ def punctuation_remover(raw_text_list):
     punct_list = string.punctuation
     punct_list = punct_list.replace('-', '')
     punct_list = punct_list.replace('.', '')
+    # not removing * for wildcard management
+    punct_list = punct_list.replace('*', '')
     table = str.maketrans('', '', punct_list)
     stripped = [w.translate(table) for w in raw_text_list]
     result = []

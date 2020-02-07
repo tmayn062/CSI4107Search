@@ -80,8 +80,15 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
             pass
         else:
             actual_word_list.append(duplicate_word)
+    # transforming result into a string where words are separated by OR such that it
+    # can be used in a boolean search
+    or_string = f'({actual_word_list[0]}'
+    if len(actual_word_list) > 1:
+        for x in range(1, len(actual_word_list)):
+            or_string = or_string + f' OR {actual_word_list[x]}'
+    or_string = or_string + ')'
 
-    return actual_word_list
+    return or_string
 
 
 def bigraph_word_find_in_index(bigraph_query_list, index):
@@ -105,6 +112,6 @@ def bigraph_word_find_in_index(bigraph_query_list, index):
             point += 1
         # elif str(data.iloc[xxxx + 1, 0]) > query[point]:
         #     point += 1
-        # if point == len(query):
-        #     break
+        if point == len(bigraph_query_list):
+            break
     return result_list

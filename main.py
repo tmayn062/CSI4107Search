@@ -4,9 +4,11 @@ import corpus_preprocessing
 import build_dictionary_and_index
 import query
 import spelling
+from wildcard_management import wildcard_word_finder
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
 from linguistic_processor import linguistic_module
 from datetime import datetime
+import boolean
 html_file="UofO_Courses.html"
 uottawa_corpus="uottawa_corpus.xml"
 uottawa_inverted_index="uottawa_inverted_index.csv"
@@ -39,6 +41,12 @@ def main():
     test_tokens=linguistic_module(test_string, linguistic_processing_parameters)
     for token in test_tokens:
         print(token)
+
+    tesstt=linguistic_module('*ge',linguistic_processing_parameters)
+    print(tesstt)
+
+    print(wildcard_word_finder(tesstt[0], uottawa_bigraph))
+
 
     # TODO : Update to include Reuters dictionary routine when available
     # build_dictionary_and_index.build_it("uOttawaCourseList.xml",
