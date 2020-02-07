@@ -21,8 +21,8 @@ from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
 
 """
- Next steps:(done +/-)
- -> expand wildcards in search prior to converting to postfix
+ Next steps:
+ -> expand wildcards in search prior to converting to postfix (done +/-)
         |-> replace word with * with expansion
                 |-> could be as simple as .replace or query[xx:yy] 
                         |-> difficulty is isolating the word 

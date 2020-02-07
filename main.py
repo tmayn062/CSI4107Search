@@ -42,7 +42,7 @@ def main():
     for token in test_tokens:
         print(token)
 
-    tesstt=linguistic_module('*ey',linguistic_processing_parameters)
+    tesstt=linguistic_module('eterrery',linguistic_processing_parameters)
     print(tesstt)
 
     print(wildcard_word_finder(tesstt[0], uottawa_bigraph))

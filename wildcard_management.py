@@ -30,6 +30,7 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
     asterisks_position = wildcard_search_word.find('*')
     if asterisks_position == -1:
         # todo: decide how to deal with queries where there isn't actually an asterisks
+        # simply returns origional string thus no need to validate nil *
         pass
     # removing the * from the search word
     stripped_search_word = wildcard_search_word.replace("*", "")
