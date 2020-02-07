@@ -80,8 +80,11 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
             pass
         else:
             actual_word_list.append(duplicate_word)
+
     # transforming result into a string where words are separated by OR such that it
     # can be used in a boolean search
+    if len(actual_word_list) == 0:
+        return ""
     or_string = f'({actual_word_list[0]}'
     if len(actual_word_list) > 1:
         for x in range(1, len(actual_word_list)):

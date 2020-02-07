@@ -42,7 +42,7 @@ def main():
     for token in test_tokens:
         print(token)
 
-    tesstt=linguistic_module('*ge',linguistic_processing_parameters)
+    tesstt=linguistic_module('*mon',linguistic_processing_parameters)
     print(tesstt)
 
     print(wildcard_word_finder(tesstt[0], uottawa_bigraph))
@@ -65,22 +65,7 @@ def main():
 
 
 
-# _____________________________________________________________---
-# def find_in_index(query):
-#     queryList = query.split(", ")
-#     print(queryList)
-#     queryList.sort()
-#     data = pd.read_csv("inverted_index.csv")
-#     point = 0
-#     for x in range(0, data.shape[0]):
-#         if data.iloc[x, 0] == queryList[point]:
-#             print(data.iloc[x])
-#             point += 1
-#         elif str(data.iloc[x + 1, 0]) > queryList[point]:
-#             print("Word not found")
-#             point += 1
-#         if point == len(queryList):
-#             break
+
 
 if __name__ == '__main__':
     main()
