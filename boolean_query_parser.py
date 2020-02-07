@@ -1,9 +1,9 @@
 """
-Title: Boolean Query Parser Module
+Title: Boolean Search Module
 
 Project: CSI4107 Project
 Version: Vanilla System
-Component: Module 6A
+Component: Module 6
 
 Created: 06 Feb 2020
 Last modified: 06 Feb 2020
@@ -45,55 +45,75 @@ def main():
                                         "do_normalize_periods": True, "do_remove_punctuation": True,
                                         "do_case_fold": True, "do_stop_word_removal": True,
                                         "do_stemming": True, "do_lemming": False}
-    exclusion = ["AND", "OR", "AND_NOT", '(',')']
     test_query="(*ge AND_NOT (man* OR health*))"
-    test_query = test_query.replace('(', '( ')
-    test_query = test_query.replace(')', ' )')
-    test_query_list=test_query.split()
-    print(test_query_list)
-    output_list=[]
-    for elements in test_query_list:
+    infix_query=boolean_query_preprocessing(test_query, linguistic_processing_parameters, "uottawa_bigraph_index.csv")
+    print(infix_query)
+    postfix_query=postfix_translation(infix_query)
+    print(postfix_query)
+
+
+
+
+
+def boolean_query_preprocessing(raw_query, linguistic_processing_parameters, bigraph_csv_file):
+    """
+
+    :param raw_query:
+    :param linguistic_processing_parameters:
+    :param bigraph_csv_file:
+    :return:
+    """
+    exclusion = ["AND", "OR", "AND_NOT", '(', ')']
+    raw_query = raw_query.replace('(', '( ')
+    raw_query = raw_query.replace(')', ' )')
+    raw_query_list = raw_query.split()
+    output_list = []
+    for elements in raw_query_list:
         if elements not in exclusion:
-            elements=linguistic_module(elements, linguistic_processing_parameters)
+            elements = linguistic_module(elements, linguistic_processing_parameters)
             if elements[0].find("*") != -1:
-                elements=wildcard_word_finder(elements[0], "uottawa_bigraph_index.csv")
+                elements = wildcard_word_finder(elements[0], bigraph_csv_file)
         output_list.append(elements)
-    print(output_list)
-    test_string=" ".join(output_list)
-    print(test_string)
+    full_boolean_query = " ".join(output_list)
+    return full_boolean_query
 
 
 
 
-    #test_string=wildcard_word_finder('*ge', "uottawa_bigraph_index.csv")
-    # test_string=test_string.replace('(', '( ')
-    # test_string =test_string.replace(')', ' )')
-    test_string=test_string.split()
-    operators=["AND","OR","AND_NOT"]
-    opStack = Stack()
-    postfixList = []
-    for token in test_string:
+def postfix_translation(boolean_infix_query):
+    """
 
+    :param boolean_infix_query:
+    :return:
+    """
+    boolean_infix_query = boolean_infix_query.split()
+    operators = ["AND", "OR", "AND_NOT"]
+    op_stack = Stack()
+    postfix_list = []
+    for token in boolean_infix_query:
 
         if token in operators:
-            opStack.push(token)
+            op_stack.push(token)
 
-        elif token =="(":
-            opStack.push(token)
-        elif token ==")":
-            while opStack.peek() != '(':
-                postfixList.append(opStack.pop())
+        elif token == "(":
+            op_stack.push(token)
+        elif token == ")":
+            while op_stack.peek() != '(':
+                postfix_list.append(op_stack.pop())
         else:
-            postfixList.append(token)
+            postfix_list.append(token)
 
-    while not opStack.isEmpty():
-        if opStack.peek() == '(':
-            opStack.pop()
+    while not op_stack.isEmpty():
+        if op_stack.peek() == '(':
+            op_stack.pop()
         else:
-            postfixList.append(opStack.pop())
-    print( " ".join(postfixList))
-
-
+            postfix_list.append(op_stack.pop())
+    print(postfix_list)
+    return postfix_list
+    # postfix_query=" ".join(postfix_list)
+    #
+    # return postfix_query
+    
 
 
 if __name__ == '__main__':
