@@ -254,9 +254,7 @@ def postfix_translation(boolean_infix_query):
             postfix_list.append(op_stack.pop())
     print(postfix_list)
     return postfix_list
-    # postfix_query=" ".join(postfix_list)
-    #
-    # return postfix_query
+
     
 
 
