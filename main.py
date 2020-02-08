@@ -5,6 +5,7 @@ import build_dictionary_and_index
 import query
 import spelling
 from wildcard_management import wildcard_word_finder
+from boolean_search import boolean_search_module
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
 from linguistic_processor import linguistic_module
 from datetime import datetime
@@ -42,10 +43,13 @@ def main():
     for token in test_tokens:
         print(token)
 
-    tesstt=linguistic_module('eterrery',linguistic_processing_parameters)
+    tesstt=linguistic_module('crypto*',linguistic_processing_parameters)
     print(tesstt)
 
     print(wildcard_word_finder(tesstt[0], uottawa_bigraph))
+    boolean_query='(*ge AND_NOT (man* OR health*))'
+    print(boolean_query)
+    print(boolean_search_module(boolean_query, linguistic_processing_parameters, uottawa_bigraph, uottawa_inverted_index))
 
 
     # TODO : Update to include Reuters dictionary routine when available

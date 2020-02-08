@@ -11,7 +11,7 @@ Last modified: 06 Feb 2020
 Author: Jonathan Boerger
 Status: Effectively complete- small tweaks remaining
 
-Description: 
+Description:
 
 The wildcard management module resolves wildcards into all possible words
 which satisfy the wildcard
@@ -23,11 +23,11 @@ from linguistic_processor import bigraph_splitter
 def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
     """
     This method resolves a wildcard search to return all possible words
-    which satisfies the wildcard. 
+    which satisfies the wildcard.
 
     Of note: if the query does not actually have an asteriks, the output is simply
     the original word. Therefore, the method does not require input validation.
-    
+
     :param wildcard_search_word: The wildcard search word to be resolved
     :param bigraph_index_filename: The CSV file containing the bigraph inverted index
     :return: A list of words which satisfies the wildcard search
@@ -91,9 +91,9 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
         return ""
     or_string = f'{actual_word_list[0]}'
     if len(actual_word_list) > 1:
-        or_string='( '+or_string
-        for x in range(1, len(actual_word_list)):
-            or_string = or_string + f' OR {actual_word_list[x]}'
+        or_string = '( '+or_string
+        for index in range(1, len(actual_word_list)):
+            or_string = or_string + f' OR {actual_word_list[index]}'
         or_string = or_string + ' )'
 
     return or_string
@@ -118,8 +118,6 @@ def bigraph_word_find_in_index(bigraph_query_list, index):
         if data.iloc[xxxx, 0] == bigraph_query_list[point]:
             result_list.append(data.iloc[xxxx, 1])
             point += 1
-        # elif str(data.iloc[xxxx + 1, 0]) > query[point]:
-        #     point += 1
         if point == len(bigraph_query_list):
             break
     return result_list

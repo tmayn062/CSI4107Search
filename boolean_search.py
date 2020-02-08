@@ -13,18 +13,19 @@ Status: Completed
 
 Description:
 
-The boolean search module implements the boolean search method for information retival.
+The boolean search module implements the boolean search method for information retrieval.
 
 """
 
-from pythonds.basic import Stack
-import pandas as pd
-import ast
 
+import ast
+import pandas as pd
+from pythonds.basic import Stack
 from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
 
-def boolean_search_module(query, linguistic_processing_parameters, bigraph_filename, inverted_index_filename):
+def boolean_search_module(query, linguistic_processing_parameters,
+                          bigraph_filename, inverted_index_filename):
     """
     This is the wrapper method for the entire boolean search module. It ties together all
     supporting modules.
@@ -43,7 +44,8 @@ def boolean_search_module(query, linguistic_processing_parameters, bigraph_filen
     :return: A list of docIDs
     """
 
-    infix_query = boolean_query_preprocessing(query, linguistic_processing_parameters, bigraph_filename)
+    infix_query = boolean_query_preprocessing(query, linguistic_processing_parameters,
+                                              bigraph_filename)
     postfix_query = postfix_translation(infix_query)
     doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_filename)
     return doc_id_list
@@ -88,20 +90,21 @@ def intersect_wrapper(word1, word2, operator, inverted_index):
     :return: A list of merged docIDs
 
     """
-    if type(word1) == str:
+    if isinstance(word1, str):
         word1 = get_doc_id(word1, inverted_index)
         if word1 == -1:
             word1 = []
-    if type(word2) == str:
+    if isinstance(word2, str):
         word2 = get_doc_id(word2, inverted_index)
         if word2 == -1:
             word2 = []
     if operator == 'AND':
-        return intersect_and(word1, word2)
+        result = intersect_and(word1, word2)
     elif operator == 'OR':
-        return intersect_or(word1, word2)
+        result = intersect_or(word1, word2)
     elif operator == "AND_NOT":
-        return intersect_and_not(word1, word2)
+        result = intersect_and_not(word1, word2)
+    return result
 
 
 def intersect_and_not(doc_id_list_1, doc_id_list_2):
