@@ -13,6 +13,8 @@ Status: Effectively complete- small tweaks remaining
 
 Description: 
 
+The wildcard management module resolves wildcards into all possible words
+which satisfy the wildcard
 """
 import pandas as pd
 from linguistic_processor import bigraph_splitter
@@ -20,6 +22,11 @@ from linguistic_processor import bigraph_splitter
 
 def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
     """
+    This method resolves a wildcard search to return all possible words
+    which satisfies the wildcard. 
+
+    Of note: if the query does not actually have an asteriks, the output is simply
+    the original word. Therefore, the method does not require input validation.
     
     :param wildcard_search_word: The wildcard search word to be resolved
     :param bigraph_index_filename: The CSV file containing the bigraph inverted index
@@ -28,10 +35,6 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
     TODO: dealing with multiple wildcards (if so choose to)
     """
     asterisks_position = wildcard_search_word.find('*')
-    if asterisks_position == -1:
-        # todo: decide how to deal with queries where there isn't actually an asterisks
-        # simply returns origional string thus no need to validate nil *
-        pass
     # removing the * from the search word
     stripped_search_word = wildcard_search_word.replace("*", "")
     # transforming the word into bigraphs
@@ -98,7 +101,7 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
 
 def bigraph_word_find_in_index(bigraph_query_list, index):
     """
-
+    This method finds the words associated with a bigraph
 
     Since the query_list and the index are both sorted alphabetically the search and retrieve
     takes O(n).
