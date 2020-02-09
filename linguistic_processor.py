@@ -194,8 +194,8 @@ def bigraph_splitter(word, bigraph_list=None):
     bigraph = f'${word[0]}'
     bigraph_list.append([bigraph, word])
 
-    for x in range(0, len(word) - 1):
-        bigraph = f'{word[x]}{word[x + 1]}'
+    for i in range(0, len(word) - 1):
+        bigraph = f'{word[i]}{word[i + 1]}'
         bigraph_list.append([bigraph, word])
     bigraph = f'{word[len(word) - 1]}$'
     bigraph_list.append([bigraph, word])

@@ -136,8 +136,8 @@ def __inverted_index_csv(inverted_index, inverted_index_filename):
     for element in inverted_index:
         to_append = f'{element.get("word")};!{element.get("document_frequency")}' \
                     f';!{element.get("postings")}'
-        file = open(inverted_index_filename, 'a', newline='', encoding='utf-8')
-        with file:
+
+        with open(inverted_index_filename, 'a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(to_append.split(';!'))
 
@@ -153,10 +153,10 @@ def __inverted_index_csv_creator(ii_filename):
     # the methods deletes the existing
     try:
         os.unlink(ii_filename)
-    except:
-        pass
-    file = open(ii_filename, 'w', newline='', encoding='utf-8')
-    with file:
+    except FileNotFoundError:
+        print("Inverted index file not found so it can't be deleted")
+
+    with open(ii_filename, 'w', newline='', encoding='utf-8') as file:
         header = ["Word", "Document Frequency", "Postings"]
         writer = csv.writer(file)
         writer.writerow(header)
@@ -174,10 +174,10 @@ def __linguistic_processing_parameter_csv_creator(lpp_file):
     # the methods deletes the existing
     try:
         os.unlink(lpp_file)
-    except:
-        pass
-    file = open(lpp_file, 'w', newline='', encoding='utf-8')
-    with file:
+    except FileNotFoundError:
+        print("Linguistic processing file not found so it can't be deleted")
+
+    with open(lpp_file, 'w', newline='', encoding='utf-8') as file:
         header = ["Para1", "Para2", "Para3", "Para4", "Para5", "Para6", "Para7", "Para8", ]
         writer = csv.writer(file)
         writer.writerow(header)
@@ -197,8 +197,8 @@ def __linguistic_processing_parameters_csv(linguistic_processing_parameters_dict
     to_append = ''
     for key in linguistic_processing_parameters_dictionary:
         to_append = to_append + f' {linguistic_processing_parameters_dictionary[key]}'
-    file = open(lpp_csv_file, 'a', newline='', encoding='utf-8')
-    with file:
+
+    with open(lpp_csv_file, 'a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(to_append.split())
 
@@ -258,7 +258,7 @@ def __bigraph_index_creator(inverted_index_filename):
 
 def __bigraph_index_csv_creator(bi_filename):
     """
-    This private methods creates a csv file to store the bigraph index.
+    This private method creates a csv file to store the bigraph index.
 
     :param bi_filename: filename for the bigraph index csv file
     :return: an empty csv file
@@ -267,10 +267,10 @@ def __bigraph_index_csv_creator(bi_filename):
     # the methods deletes the existing
     try:
         os.unlink(bi_filename)
-    except:
-        pass
-    file = open(bi_filename, 'w', newline='', encoding='utf-8')
-    with file:
+    except FileNotFoundError:
+        print("Bigraph file not found, so it can't be deleted")
+
+    with open(bi_filename, 'w', newline='', encoding='utf-8') as file:
         header = ["Bigraph", "Word List"]
         writer = csv.writer(file)
         writer.writerow(header)
@@ -287,8 +287,8 @@ def __bigraph_index_csv(bi_filename, bigraph_index):
     __bigraph_index_csv_creator(bi_filename)
     for element in bigraph_index:
         to_append = f'{element[0]};!{element[1]}'
-        file = open(bi_filename, 'a', newline='', encoding='utf-8')
-        with file:
+
+        with open(bi_filename, 'a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(to_append.split(';!'))
 
@@ -298,13 +298,13 @@ def __bigraph_index_csv(bi_filename, bigraph_index):
 def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, inverted_index_filename,
                                           corpus_filename, lp_parameter_filename, bigraph_filename):
     """
-    This is the public methods for the build dictionary, inverted index and bigraph index module.
-    This methods integrates all methods required to build the IR dictionary and its
+    This is the public method for the build dictionary, inverted index and bigraph index module.
+    This method integrates all methods required to build the IR dictionary and its
     corresponding inverted index and bigraph index.
-    Additionally, it also checks to see if the inverted file already exist, if it does
-    the methods carries on without recreating the index.
+    Additionally, it also checks to see if the inverted file already exists, if it does
+    the method carries on without recreating the index.
     Lastly, in the event that the linguistic pre-processing parameters are changed, regardless
-    if the inverted index already exist, will create new indexes to reflect
+    if the inverted index already exists, will create new indexes to reflect
     the changes in dictionary resulting from different linguistic processing.
 
 

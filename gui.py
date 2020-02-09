@@ -1,6 +1,7 @@
 """GUI for Search Engine."""
 import tkinter
 from tkinter import messagebox
+import config
 import corpus_access
 
 
@@ -16,40 +17,38 @@ class SearchEngineGUI:
         self.root = tkinter.Tk()
         self.root.title("Jindalee")
         self.root.geometry("1000x800")
-        # Create two frames
-        # One frame for the top of the window
-        # Another frame for bottom of the window
-        self.top_frame = tkinter.Frame(self.root)
-        self.spelling_frame = tkinter.Frame(self.root)
-        self.search_frame = tkinter.Frame(self.root)
-        self.collection_frame = tkinter.Frame(self.root)
-        self.button_frame = tkinter.Frame(self.root)
-        self.bottom_frame = tkinter.Frame(self.root)
-        self.results_frame = tkinter.Frame(self.bottom_frame)
+        # Create frames
+        top_frame = tkinter.Frame(self.root)
+        spelling_frame = tkinter.Frame(self.root)
+        search_frame = tkinter.Frame(self.root)
+        collection_frame = tkinter.Frame(self.root)
+        button_frame = tkinter.Frame(self.root)
+        bottom_frame = tkinter.Frame(self.root)
+        results_frame = tkinter.Frame(bottom_frame)
         # Create labels
-        self.prompt_label = tkinter.Label(
-            self.top_frame,
+        prompt_label = tkinter.Label(
+            top_frame,
             text='Enter search string: ')
-        self.prompt_label.config(font=(font_to_use, 24))
-        self.entry = tkinter.Entry(self.top_frame, textvariable="Type here",
+        prompt_label.config(font=(font_to_use, 24))
+        self.entry = tkinter.Entry(top_frame, textvariable="Type here",
                                    font=(font_to_use, 24))
         self.spelling_label = tkinter.Label(
-            self.spelling_frame,
+            spelling_frame,
             text="Did you mean X?", font=(font_to_use, 18))
         self.spelling_label.pack(side='left')
         # Pack top frame widgets
-        self.prompt_label.pack(side='left')
+        prompt_label.pack(side='left')
         self.entry.pack(side='left')
 
         # Create the button widgets
         self.search_button = tkinter.Button(
-            self.button_frame,
+            button_frame,
             text='Search',
             command=self.run_search,
             font=(font_to_use, 18))
         # root.destroy exits/destroys the main window
         self.quit_button = tkinter.Button(
-            self.button_frame,
+            button_frame,
             text='Quit',
             command=self.root.destroy,
             font=(font_to_use, 18))
@@ -57,23 +56,23 @@ class SearchEngineGUI:
         self.search_button.pack(side='left')
         self.quit_button.pack(side='left')
         self.results_label = tkinter.Label(
-            self.bottom_frame,
+            bottom_frame,
             text='Search results')
         self.results_label.config(font=(font_to_use, 18))
         self.results_label.pack()
         self.search_model = tkinter.IntVar()
         # Initialize search model to 1 - Boolean
         self.search_model.set(1)
-        tkinter.Label(self.search_frame,
+        tkinter.Label(search_frame,
                       text="Choose a search model:",
                       justify=tkinter.LEFT,
                       font=(font_to_use, 18)).pack(side='left')
-        tkinter.Radiobutton(self.search_frame,
+        tkinter.Radiobutton(search_frame,
                             text="Boolean",
                             font=(font_to_use, 18),
                             variable=self.search_model,
                             value=1).pack(side='left')
-        tkinter.Radiobutton(self.search_frame,
+        tkinter.Radiobutton(search_frame,
                             text="VSM",
                             font=(font_to_use, 18),
                             variable=self.search_model,
@@ -81,42 +80,42 @@ class SearchEngineGUI:
         # Initialize collection to 1 - uO course_html_div_element catalogue
         self.search_collection = tkinter.IntVar()
         self.search_collection.set(1)
-        tkinter.Label(self.collection_frame,
+        tkinter.Label(collection_frame,
                       text="Choose a collection:",
                       justify=tkinter.LEFT,
                       font=(font_to_use, 18)).pack(side='left')
-        tkinter.Radiobutton(self.collection_frame,
+        tkinter.Radiobutton(collection_frame,
                             text="uO Course Catalogue",
                             font=(font_to_use, 18),
                             variable=self.search_collection,
                             value=1).pack(side='left')
-        tkinter.Radiobutton(self.collection_frame,
+        tkinter.Radiobutton(collection_frame,
                             text="Reuters",
                             font=(font_to_use, 18),
                             variable=self.search_collection,
                             value=2).pack(side='left')
-        self.search_results = tkinter.Text(self.results_frame,
+        self.search_results = tkinter.Text(results_frame,
                                            state="normal",
                                            font=(font_to_use, 12))
         self.search_results.pack(side='bottom')
         # Now pack the frames also
-        self.top_frame.pack()
-        self.spelling_frame.pack()
-        self.search_frame.pack()
-        self.collection_frame.pack()
-        self.button_frame.pack()
-        self.results_frame.pack()
-        self.bottom_frame.pack()
+        top_frame.pack()
+        spelling_frame.pack()
+        search_frame.pack()
+        collection_frame.pack()
+        button_frame.pack()
+        results_frame.pack()
+        bottom_frame.pack()
         self.root.mainloop()
 
     def run_search(self):
         """Start search (callback function for search button)."""
         # Set corpus to be used for search
         if self.search_collection.get() == 1:
-            corpus = 'uOttawaCourseList.xml'
+            corpus = config.UOTTAWA_CORPUS
         else:
-            corpus = 'reuters.xml'
-            print("not yet available")
+            corpus = config.REUTERS_CORPUS
+            print("Reuters not yet available")
         # Set search type
         if self.search_model.get() == 1:
             search = 'Boolean'
@@ -138,15 +137,13 @@ class SearchEngineGUI:
                 self.search_results.insert("insert",
                                            doc.title + '\n',
                                            hyperlink.add
-                                           (click_link, doc.id, corpus))
-
-
-def click_link(id, corpus):
-    """Click link function."""
-    doc = corpus_access.get_documents(corpus, [id])[0]
-    messagebox.showinfo(
-        doc.title,
-        doc.doctext)
+                                           (self.click_link, doc.doc_id, corpus))
+    def click_link(self, click_id, corpus):
+        """Click link function."""
+        doc = corpus_access.get_documents(corpus, [click_id])[0]
+        messagebox.showinfo(
+            doc.title,
+            doc.doctext)
 
 
 # Code for hyperlink manager modified from

@@ -20,7 +20,6 @@ The boolean search module implements the boolean search method for information r
 
 import ast
 import pandas as pd
-from pythonds.basic import Stack
 from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
 
@@ -61,19 +60,20 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     :return: A list of docIDs
     """
     operators = ["AND", "OR", "AND_NOT"]
-    operand_stack = Stack()
+    #operand_stack = Stack()
+    operand_stack = []
     # if the query is a single word, return the docID list for the word
     if len(postfix_query) == 1:
         return get_doc_id(postfix_query[0], inverted_index)
 
     for token in postfix_query:
         if token not in operators:
-            operand_stack.push(token)
+            operand_stack.append(token)
         else:
             word1 = operand_stack.pop()
             word2 = operand_stack.pop()
             result = intersect_wrapper(word1, word2, token, inverted_index)
-            operand_stack.push(result)
+            operand_stack.append(result)
     return operand_stack.pop()
 
 
@@ -250,9 +250,6 @@ def inverted_index_word_dictionary_retrieval(word, inverted_index):
     for index in range(0, data.shape[0]):
         if data.iloc[index, 0] == word:
             return data.iloc[index, 2]
-
-        elif str(data.iloc[index + 1, 0]) > word:
-            return -1
     return -1
 
 
@@ -305,27 +302,27 @@ def postfix_translation(boolean_infix_query):
     """
     boolean_infix_query = boolean_infix_query.split()
     operators = ["AND", "OR", "AND_NOT"]
-    op_stack = Stack()
+    op_stack = []
     postfix_list = []
     for token in boolean_infix_query:
 
         # pushing the logical operator onto the stack
         if token in operators:
-            op_stack.push(token)
+            op_stack.append(token)
         # pushing the opening parentheses onto the stack
         elif token == "(":
-            op_stack.push(token)
+            op_stack.append(token)
         # if a closing parentheses is processed, all items on the stack between the respective
         # parentheses is appended to the result list
         elif token == ")":
-            while op_stack.peek() != '(':
+            while op_stack[0] != '(':
                 postfix_list.append(op_stack.pop())
         # appending regular words directly to the result list
         else:
             postfix_list.append(token)
     # extracting all remaining logical operators from the stack
-    while not op_stack.isEmpty():
-        if op_stack.peek() == '(':
+    while op_stack:
+        if op_stack[0] == '(':
             op_stack.pop()
         else:
             postfix_list.append(op_stack.pop())

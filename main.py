@@ -1,21 +1,15 @@
 """Search Engine Project for CSI4107."""
+from datetime import datetime
+import config
 import gui
 import corpus_preprocessing
-import build_dictionary_and_index
-import query
+#import build_dictionary_and_index
+#import query
 import spelling
 from wildcard_management import wildcard_word_finder
 from boolean_search import boolean_search_module
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
 from linguistic_processor import linguistic_module
-from datetime import datetime
-import boolean
-html_file="UofO_Courses.html"
-uottawa_corpus="uottawa_corpus.xml"
-uottawa_inverted_index="uottawa_inverted_index.csv"
-uottawa_lpp="uottawa_lpp.csv"
-uottawa_bigraph= "uottawa_bigraph_index.csv"
-
 
 def main():
     """Run search engine and related functions."""
@@ -23,33 +17,36 @@ def main():
     # remove_stopwords = True
     # do_stemming = True
     # do_normalize = True
-    start_time=datetime.now()
+    start_time = datetime.now()
     print(datetime.now())
-    linguistic_processing_parameters = {"do_contractions": True, "do_normalize_hyphens": True,
-                                        "do_normalize_periods": True, "do_remove_punctuation": True,
-                                        "do_case_fold": True, "do_stop_word_removal": True,
-                                        "do_stemming": True, "do_lemming": False}
 
-    corpus_preprocessing.parse(html_file, uottawa_corpus)
-    dictionary_and_inverted_index_wrapper(linguistic_processing_parameters,uottawa_inverted_index,
-                                          uottawa_corpus, uottawa_lpp, uottawa_bigraph)
-    end_time=datetime.now()
-    total_time=end_time-start_time
+
+    corpus_preprocessing.parse(config.HTML_FILE, config.UOTTAWA_CORPUS)
+    dictionary_and_inverted_index_wrapper(config.LINGUISTIC_PARAMS,
+                                          config.UOTTAWA_INVERTED_INDEX,
+                                          config.UOTTAWA_CORPUS,
+                                          config.UOTTAWA_LPP,
+                                          config.UOTTAWA_BIGRAPH)
+    end_time = datetime.now()
+    total_time = end_time-start_time
     print(total_time)
     print(datetime.now())
 
     test_string = "U.S.A. hello. he.lp state-of-the-art"
-    test_tokens=linguistic_module(test_string, linguistic_processing_parameters)
+    test_tokens = linguistic_module(test_string, config.LINGUISTIC_PARAMS)
     for token in test_tokens:
         print(token)
 
-    tesstt=linguistic_module('crypto*',linguistic_processing_parameters)
+    tesstt = linguistic_module('crypto*', config.LINGUISTIC_PARAMS)
     print(tesstt)
 
-    print(wildcard_word_finder(tesstt[0], uottawa_bigraph))
-    boolean_query='(*ge AND_NOT (man* OR health*))'
+    print(wildcard_word_finder(tesstt[0], config.UOTTAWA_BIGRAPH))
+    boolean_query = '(*ge AND_NOT (man* OR health*))'
     print(boolean_query)
-    print(boolean_search_module(boolean_query, linguistic_processing_parameters, uottawa_bigraph, uottawa_inverted_index))
+    print(boolean_search_module(boolean_query,
+                                config.LINGUISTIC_PARAMS,
+                                config.UOTTAWA_BIGRAPH,
+                                config.UOTTAWA_INVERTED_INDEX))
 
 
     # TODO : Update to include Reuters dictionary routine when available
@@ -62,10 +59,10 @@ def main():
     #                     remove_stopwords,
     #                     do_stemming,
     #                     do_normalize))
-    # print(spelling.edit_distance("execution", "intention"))
-    # print(spelling.edit_distance("sunday", "saturday"))
-    # print(spelling.edit_distance("dog", "do"))
-    #gui.SearchEngineGUI()
+    print(spelling.edit_distance("execution", "intention"))
+    print(spelling.edit_distance("sunday", "saturday"))
+    print(spelling.edit_distance("dog", "do"))
+    gui.SearchEngineGUI()
 
 
 

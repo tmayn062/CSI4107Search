@@ -16,9 +16,9 @@ a XML document corpus.
 
 Known issues:
     -> There is still some french text in the title/descriptions.
-        |-> However there is now simple way of removing this text (would require manual extraction)
+        |-> However there is no simple way of removing this text (would require manual extraction)
         |-> Given that it has minimal impact on other modules and zero impact on functionality,
-             this is not a high priority issues
+             this is not a high priority issue
 """
 
 
@@ -56,6 +56,8 @@ class Course:
             # '. /' delineates english and french description
             self.description = (self.description[self.description.find('. / ') + 4:])
 
+    def __str__(self):
+        return self.course_id
 
 def parse(html_filename, corpus_filename):
     """
