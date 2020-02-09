@@ -1,4 +1,19 @@
-"""GUI for Search Engine."""
+"""
+Title: GUI for Search Engine
+
+Project: CSI4107 Project
+Version: Vanilla System
+Component: Module 1
+
+Created: 23 Jan 2020
+Last modified: 9 Feb 2020
+
+Author: Tiffany Maynard
+Status: In progress
+
+Description: Allow a user to access search engine capabilities
+
+"""
 import tkinter
 from tkinter import messagebox
 import config

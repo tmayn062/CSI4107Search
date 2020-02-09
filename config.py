@@ -6,7 +6,7 @@ UOTTAWA_INVERTED_INDEX = "uottawa_inverted_index.csv"
 UOTTAWA_LPP = "uottawa_lpp.csv"
 UOTTAWA_BIGRAPH = "uottawa_bigraph_index.csv"
 REUTERS_CORPUS = "reuters_corpus.xml"
-
+K_RETRIEVAL = 10
 LINGUISTIC_PARAMS = {"do_contractions": True,
                      "do_normalize_hyphens": True,
                      "do_normalize_periods": True,

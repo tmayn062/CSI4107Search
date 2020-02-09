@@ -1,4 +1,19 @@
-"""Access corpus of documents."""
+"""
+Access corpus of documents
+
+Project: CSI4107 Project
+Version: Vanilla System
+Component: Module 5
+
+Created: 26 Jan 2020
+Last modified: 09 Feb 2020
+
+Author: Tiffany Maynard
+Status: Completed
+
+Description: Access documents from the corpus
+
+"""
 import xml.etree.ElementTree as xml
 import os.path
 from dataclasses import dataclass

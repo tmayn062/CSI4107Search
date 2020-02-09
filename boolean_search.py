@@ -60,7 +60,6 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     :return: A list of docIDs
     """
     operators = ["AND", "OR", "AND_NOT"]
-    #operand_stack = Stack()
     operand_stack = []
     # if the query is a single word, return the docID list for the word
     if len(postfix_query) == 1:
@@ -235,10 +234,9 @@ def inverted_index_word_dictionary_retrieval(word, inverted_index):
     """
     The following method returns the dictionary entry associated with a word in the inverted index.
 
-
     Since the query_list and the index are both sorted alphabetically the search and retrieve
-    takes O(n). Nevertheless, a more efficent search algorith could be used to bring it down to
-    O(nlogn).
+    takes O(n). Nevertheless, a more efficent search algorithm could be used to bring it down to
+    O(logn).
 
     :param bigraph_query_list: The word to be searched for
     :param index: The index to be searched
