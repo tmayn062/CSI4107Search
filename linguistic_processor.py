@@ -216,12 +216,11 @@ def linguistic_module(raw_text, control_dic):
     :return: A list which contains fully processed tokens
     """
     # todo make dictionary key mapping
-    # todo consider changing raw_text to clean_text
+    clean_text = raw_text
     if control_dic.get("do_contractions"):
-        clean_text = contractions_expander(raw_text)
-        clean_text = tokenize(clean_text)
-    else:
-        clean_text = tokenize(raw_text)
+        clean_text = contractions_expander(clean_text)
+
+    clean_text = tokenize(clean_text)
 
     if control_dic.get("do_normalize_hyphens"):
         clean_text = normalizer_hyphens(clean_text)

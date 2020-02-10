@@ -6,7 +6,7 @@ Version: Vanilla System
 Component: Module 1
 
 Created: 23 Jan 2020
-Last modified: 9 Feb 2020
+Last modified: 10 Feb 2020
 
 Author: Tiffany Maynard
 Status: In progress
@@ -18,7 +18,8 @@ import tkinter
 from tkinter import messagebox
 import config
 import corpus_access
-
+import vsm_retrieval
+import boolean_search
 
 class SearchEngineGUI:
     """Start the search engine GUI."""
@@ -136,14 +137,26 @@ class SearchEngineGUI:
             search = 'Boolean'
         else:
             search = 'VSM'
-        messagebox.showinfo(
-            'Response',
-            'You clicked the search button and typed '
-            + self.entry.get() + ' ' + search + ' ' + corpus)
+
+        # messagebox.showinfo(
+        #     'Response',
+        #     'You clicked the search button and typed '
+        #     + self.entry.get() + ' ' + search + ' ' + corpus)
+        if search == 'VSM':
+        #do VSM search
+            docs_retrieved = vsm_retrieval.retrieve(self.entry.get(), corpus)
+        else:
+        #TODO change parameters to just be query and corpus to match VSM?
+        #do boolean search
+            docs_retrieved = boolean_search.boolean_search_module(
+                self.entry.get(),
+                config.LINGUISTIC_PARAMS,
+                config.UOTTAWA_BIGRAPH,
+                config.UOTTAWA_INVERTED_INDEX)
         # Clear previous search results
         self.search_results.delete('1.0', "end")
 
-        docs = corpus_access.get_documents(corpus, [7, 9, 99])
+        docs = corpus_access.get_documents(corpus, docs_retrieved)
         hyperlink = HyperlinkManager(self.search_results)
         if docs is None or docs == []:
             self.search_results.insert("insert", 'No documents found')

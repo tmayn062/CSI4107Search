@@ -18,13 +18,12 @@ from heapq import nlargest
 import ast
 import numpy as np
 import config
+import linguistic_processor
 #import vsm_weight
 
 def convert_query(query):
     """Convert the query string to a vector."""
-    query_list = query.split()
-    #TODO add text preprocessing for query here
-    return query_list
+    return linguistic_processor.linguistic_module(query, config.LINGUISTIC_PARAMS)
 
 def similarity(doc_list, query_list):
     """Calculate the cosine similarity for the two vectors."""
@@ -73,7 +72,7 @@ def shortlist(query, corpus):
 
 def read_inverted_index_from_csv(corpus):
     """Read in the inverted index file from disk."""
-    if corpus == "uOttawa":
+    if corpus == config.UOTTAWA_CORPUS:
         csv_filename = config.UOTTAWA_VSM_INVERTED_INDEX
     else:
         csv_filename = config.REUTERS_VSM_INVERTED_INDEX

@@ -18,8 +18,6 @@ import corpus_preprocessing
 #import build_dictionary_and_index
 #import query
 
-import vsm_retrieval
-
 import spelling
 from wildcard_management import wildcard_word_finder
 from boolean_search import boolean_search_module
@@ -78,12 +76,6 @@ def main():
     print(spelling.edit_distance("sunday", "saturday"))
     print(spelling.edit_distance("dog", "do"))
 
-    corp = "uOttawa"
-    qry = "environ lobbi"
-    slist = vsm_retrieval.shortlist(qry, corp)
-    print(slist)
-    ret1 = vsm_retrieval.retrieve(qry, corp)
-    print(ret1)
     gui.SearchEngineGUI()
 
 
