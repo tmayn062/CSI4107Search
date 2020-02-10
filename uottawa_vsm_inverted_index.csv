@@ -1,0 +1,4 @@
+dog,{5: {'frequency': 1, 'weight': 0.1812381165789131}}
+apple,{7: {'frequency': 2, 'weight': 0.2872556184789065}}
+cat,{7: {'frequency': 1, 'weight': 0.1812381165789131}}
+beans,{3: {'frequency': 2, 'weight': 0.14362780923945326}, 9: {'frequency': 1, 'weight': 0.09061905828945654}}

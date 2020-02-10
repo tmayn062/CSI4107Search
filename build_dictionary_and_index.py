@@ -21,7 +21,8 @@ import os
 import xml.etree.ElementTree as xml
 import pandas as pd
 from linguistic_processor import linguistic_module, bigraph_splitter
-
+import vsm_weight
+import config
 
 def __build_dictionary(corpus_filename, linguistic_processing_parameters):
     """
@@ -214,15 +215,15 @@ def __linguistic_processor_parameters_validator(lpp_csv_file, lpp_dictionary):
                 specific in the dictionary
             1 if the csv file and dictionary match
     """
-    previous_lingguistic_settings = []
-    current_lingguistic_settings = []
+    previous_linguistic_settings = []
+    current_linguistic_settings = []
     data = pd.read_csv(lpp_csv_file)
     for index in range(0, 8):
-        previous_lingguistic_settings.append(data.iloc[0, index])
+        previous_linguistic_settings.append(data.iloc[0, index])
     for key in lpp_dictionary:
-        current_lingguistic_settings.append(lpp_dictionary[key])
+        current_linguistic_settings.append(lpp_dictionary[key])
     for index in range(0, 8):
-        if current_lingguistic_settings[index] == previous_lingguistic_settings[index]:
+        if current_linguistic_settings[index] == previous_linguistic_settings[index]:
             pass
         else:
             return -1

@@ -77,6 +77,25 @@ def main():
     print(spelling.edit_distance("dog", "do"))
     print(vsm_weight.similarity([2, 3, 5], [0, 0, 2]))
     print(vsm_weight.similarity([3, 7, 1], [0, 0, 2]))
+    d1 = []
+    tag = {"course_id": "ADM 1234", "doc_id": 5, "word": "dog"}
+    d1.append(tag)
+    tag = {"course_id": "CSI 1234", "doc_id": 7, "word": "apple"}
+    d1.append(tag)
+    tag = {"course_id": "CSI 1234", "doc_id": 7, "word": "apple"}
+    d1.append(tag)
+    tag = {"course_id": "CSI 1234", "doc_id": 7, "word": "cat"}
+    d1.append(tag)
+    tag = {"course_id": "PSY 5554", "doc_id": 3, "word": "beans"}
+    d1.append(tag)
+    tag = {"course_id": "PSY 5554", "doc_id": 3, "word": "beans"}
+    d1.append(tag)
+    tag = {"course_id": "PSY 5554", "doc_id": 9, "word": "beans"}
+    d1.append(tag)
+    print(vsm_weight.create_inverted_index_vsm(d1))
+    test = vsm_weight.set_weights_in_index(vsm_weight.create_inverted_index_vsm(d1))
+    print(test)
+    vsm_weight.vsm_inv_index_tocsv(test, config.UOTTAWA_VSM_INVERTED_INDEX)
     gui.SearchEngineGUI()
 
 
