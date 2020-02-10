@@ -4,7 +4,7 @@ Version: Vanilla System
 Component: Main
 
 Created: 30 Jan 2020
-Last modified: 31 Jan 2020
+Last modified: 10 Feb 2020
 
 Author: Jonathan Boerger & Tiffany Maynard
 Status: In Progress
@@ -17,7 +17,8 @@ import gui
 import corpus_preprocessing
 #import build_dictionary_and_index
 #import query
-import vsm_weight
+
+import vsm_retrieval
 import spelling
 from wildcard_management import wildcard_word_finder
 from boolean_search import boolean_search_module
@@ -75,27 +76,16 @@ def main():
     print(spelling.edit_distance("execution", "intention"))
     print(spelling.edit_distance("sunday", "saturday"))
     print(spelling.edit_distance("dog", "do"))
-    print(vsm_weight.similarity([2, 3, 5], [0, 0, 2]))
-    print(vsm_weight.similarity([3, 7, 1], [0, 0, 2]))
-    d1 = []
-    tag = {"course_id": "ADM 1234", "doc_id": 5, "word": "dog"}
-    d1.append(tag)
-    tag = {"course_id": "CSI 1234", "doc_id": 7, "word": "apple"}
-    d1.append(tag)
-    tag = {"course_id": "CSI 1234", "doc_id": 7, "word": "apple"}
-    d1.append(tag)
-    tag = {"course_id": "CSI 1234", "doc_id": 7, "word": "cat"}
-    d1.append(tag)
-    tag = {"course_id": "PSY 5554", "doc_id": 3, "word": "beans"}
-    d1.append(tag)
-    tag = {"course_id": "PSY 5554", "doc_id": 3, "word": "beans"}
-    d1.append(tag)
-    tag = {"course_id": "PSY 5554", "doc_id": 9, "word": "beans"}
-    d1.append(tag)
-    print(vsm_weight.create_inverted_index_vsm(d1))
-    test = vsm_weight.set_weights_in_index(vsm_weight.create_inverted_index_vsm(d1))
-    print(test)
-    vsm_weight.vsm_inv_index_tocsv(test, config.UOTTAWA_VSM_INVERTED_INDEX)
+    print(vsm_retrieval.similarity([2, 3, 5], [0, 0, 2]))
+    print(vsm_retrieval.similarity([3, 7, 1], [0, 0, 2]))
+    #print(vsm_weight.create_inverted_index_vsm(d1))
+    #test = vsm_weight.set_weights_in_index(vsm_weight.create_inverted_index_vsm(d1))
+    #print(test)
+    #vsm_weight.vsm_inv_index_tocsv(test, config.UOTTAWA_VSM_INVERTED_INDEX)
+    #print("Below this is read in")
+    #test1 = vsm_retrieval.read_inverted_index_from_csv("uOttawa")
+    #print(test1)
+    #print(test1['beans'][9]['weight'])
     gui.SearchEngineGUI()
 
 

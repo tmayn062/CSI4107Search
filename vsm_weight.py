@@ -15,9 +15,8 @@ Description: Include term weights in the index
 """
 import math
 from collections import Counter
-import csv
-import numpy as np
 
+#Adapted from https://medium.com/@fro_g/writing-a-simple-inverted-index-in-python-3c8bcb52169a
 def create_inverted_index_vsm(dictionary):
     """Creates an inverted index file with the VSM weights included
     based on the given dictionary doc_id word"""
@@ -70,12 +69,3 @@ def calc_tfidf_weight(num_docs, t_f, d_f):
     tf (term frequency) and df (document frequency)
     using tf-idf weight version from slide 21 of Winter2020-CSI4107-VSM.pdf"""
     return math.log10(1+t_f) * math.log10(num_docs/(d_f or num_docs))
-
-def similarity(doc_list, query_list):
-    """Calculate the cosine similarity for the two vectors."""
-    #adapted Method 2 from https://stackoverflow.com/a/43943429
-    doc_vector = np.array(doc_list)
-    query_vector = np.array(query_list)
-    doc_norm = doc_vector / np.linalg.norm(doc_vector, axis=0)
-    query_norm = query_vector / np.linalg.norm(query_vector, axis=0)
-    return np.dot(doc_norm, query_norm)

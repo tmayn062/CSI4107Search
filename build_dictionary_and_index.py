@@ -323,6 +323,8 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, inverte
         ir_dictionary = __build_dictionary(corpus_filename, linguistic_control_dictionary)
         inverted_index = __create_inverted_index(ir_dictionary)
         __inverted_index_csv(inverted_index, inverted_index_filename)
+        vsm_weight.vsm_inv_index_tocsv(vsm_weight.create_inverted_index_vsm(ir_dictionary),
+                                       config.UOTTAWA_VSM_INVERTED_INDEX)
         bigraph_index = __bigraph_index_creator(inverted_index_filename)
         __bigraph_index_csv(bigraph_filename, bigraph_index)
         __linguistic_processing_parameters_csv(linguistic_control_dictionary, lp_parameter_filename)
