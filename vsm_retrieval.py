@@ -37,13 +37,12 @@ def similarity(doc_list, query_list):
 
 def retrieve(query, corpus):
     """Retrieve ranked list of documents"""
-    query_list = convert_query(query)
+    #create list of 1's for each word in query, assumes equal weighting for each term
+    query_ones = [1 for x in range(len(convert_query(query)))]
     score = dict()
     docs = shortlist(query, corpus)
     for doc_id in docs:
-        #TODO fill in doclist
-        doc_list = []
-        score[doc_id] = similarity(doc_list, query_list)
+        score[doc_id] = similarity(docs[doc_id], query_ones)
     #Adapted from https://www.geeksforgeeks.org/python-n-largest-values-in-dictionary/
     return nlargest(config.K_RETRIEVAL, score, key=score.get)
 
@@ -52,10 +51,24 @@ def shortlist(query, corpus):
      least one search term from the query."""
     inv_index = read_inverted_index_from_csv(corpus)
     doc_shortlist = dict()
-    for word in convert_query(query):
-        for doc_id in inv_index[word]:
-            #TODO add zeroes when word not present in doc
-            doc_shortlist[doc_id] = inv_index[word][doc_id]['weight']
+    query_word_list = convert_query(query)
+    print("qwl")
+    print(query_word_list)
+    weight_list_len = len(query_word_list)
+    for index, word in enumerate(query_word_list):
+        if word in inv_index:
+            #allow for queries that contain words not in the corpus
+            for doc_id in inv_index[word]:
+                if doc_id in doc_shortlist:
+                    #doc already added, just update weight entry for this word
+                    doc_shortlist[doc_id][index] = inv_index[word][doc_id]['weight']
+                else:
+                    #doc not added yet add doc_id to shortlist,
+                    #initialize list to 0s for all words in query
+                    #update weight entry for current word
+                    entry = [0 for x in range(weight_list_len)]
+                    entry[index] = inv_index[word][doc_id]['weight']
+                    doc_shortlist[doc_id] = entry
     return doc_shortlist
 
 def read_inverted_index_from_csv(corpus):

@@ -207,7 +207,7 @@ def linguistic_module(raw_text, control_dic):
     This method takes a string of text and applies specified linguistic text process.
 
     :param raw_text: A string of text
-    :param control_dic: A dictionary in the form bellow, which is used to specify which
+    :param control_dic: A dictionary in the form below, which is used to specify which
     linguistic processes to be applied to the raw text.
             {"do_contractions": True, "do_normalize_hyphens": True,
             "do_normalize_periods": True, "do_remove_punctuation": True, "do_case_fold": True,

@@ -19,6 +19,7 @@ import corpus_preprocessing
 #import query
 
 import vsm_retrieval
+
 import spelling
 from wildcard_management import wildcard_word_finder
 from boolean_search import boolean_search_module
@@ -76,16 +77,13 @@ def main():
     print(spelling.edit_distance("execution", "intention"))
     print(spelling.edit_distance("sunday", "saturday"))
     print(spelling.edit_distance("dog", "do"))
-    print(vsm_retrieval.similarity([2, 3, 5], [0, 0, 2]))
-    print(vsm_retrieval.similarity([3, 7, 1], [0, 0, 2]))
-    #print(vsm_weight.create_inverted_index_vsm(d1))
-    #test = vsm_weight.set_weights_in_index(vsm_weight.create_inverted_index_vsm(d1))
-    #print(test)
-    #vsm_weight.vsm_inv_index_tocsv(test, config.UOTTAWA_VSM_INVERTED_INDEX)
-    #print("Below this is read in")
-    #test1 = vsm_retrieval.read_inverted_index_from_csv("uOttawa")
-    #print(test1)
-    #print(test1['beans'][9]['weight'])
+
+    corp = "uOttawa"
+    qry = "environ lobbi"
+    slist = vsm_retrieval.shortlist(qry, corp)
+    print(slist)
+    ret1 = vsm_retrieval.retrieve(qry, corp)
+    print(ret1)
     gui.SearchEngineGUI()
 
 

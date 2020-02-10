@@ -40,7 +40,8 @@ def create_inverted_index_vsm(dictionary):
             posting = dict()
             posting[term['doc_id']] = ({'frequency':1, 'weight':0})
             vsm_inverted_index[term['word']] = posting
-    return vsm_inverted_index
+    
+    return set_weights_in_index(vsm_inverted_index)
 
 def set_weights_in_index(inv_index):
     """Go through inverted index and set the tf-idf weights."""
