@@ -6,10 +6,10 @@ Version: Vanilla System
 Component: Module 8b
 
 Created: 09 Feb 2020
-Last modified: 09 Feb 2020
+Last modified: 10 Feb 2020
 
 Author: Tiffany Maynard
-Status: In Progress
+Status: Complete
 
 Description: Implement Vector Space Model from retrieval
 """
@@ -72,10 +72,7 @@ def shortlist(query, corpus):
 
 def read_inverted_index_from_csv(corpus):
     """Read in the inverted index file from disk."""
-    if corpus == config.UOTTAWA_CORPUS:
-        csv_filename = config.UOTTAWA_VSM_INVERTED_INDEX
-    else:
-        csv_filename = config.REUTERS_VSM_INVERTED_INDEX
+    csv_filename = config.CORPUS[corpus]['vsm_inverted_index_file']
 
     new_data_dict = {}
     with open(csv_filename, 'r') as data_file:

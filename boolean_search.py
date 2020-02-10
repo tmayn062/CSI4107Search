@@ -22,9 +22,10 @@ import ast
 import pandas as pd
 from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
+import config
 
-def boolean_search_module(query, linguistic_processing_parameters,
-                          bigraph_filename, inverted_index_filename):
+def boolean_search_module(query, corpus):
+
     """
     This is the wrapper method for the entire boolean search module. It ties together all
     supporting modules.
@@ -35,14 +36,13 @@ def boolean_search_module(query, linguistic_processing_parameters,
     input validation is not required in this specific use-case.
 
     :param query: The raw query as entered by the user
-    :param linguistic_processing_parameters: The LPP dictionary to be applied to the query.
-    (Same as what was applied to the inverted index. See linguistic module method of
-    linguistic_processor.py for formatting details)
-    :param bigraph_filename: The filename for the bigraph csv file
-    :param inverted_index_filename: The filename for the inverted index csv file
+    :param corpus: used to lookup bigraph and inverted index files in config
+
     :return: A list of docIDs
     """
-
+    linguistic_processing_parameters = config.LINGUISTIC_PARAMS
+    bigraph_filename = config.CORPUS[corpus]['bigraph_file']
+    inverted_index_filename = config.CORPUS[corpus]['inverted_index_file']
     infix_query = boolean_query_preprocessing(query, linguistic_processing_parameters,
                                               bigraph_filename)
     postfix_query = postfix_translation(infix_query)

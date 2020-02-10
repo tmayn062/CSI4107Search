@@ -18,7 +18,6 @@ import corpus_preprocessing
 #import build_dictionary_and_index
 #import query
 
-import spelling
 from wildcard_management import wildcard_word_finder
 from boolean_search import boolean_search_module
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
@@ -26,20 +25,15 @@ from linguistic_processor import linguistic_module
 
 def main():
     """Run search engine and related functions."""
-    # TODO : Update to include Reuters parse routine when available
-    # remove_stopwords = True
-    # do_stemming = True
-    # do_normalize = True
     start_time = datetime.now()
     print(datetime.now())
+    corpus = "uOttawa"
 
-
-    corpus_preprocessing.parse(config.HTML_FILE, config.UOTTAWA_CORPUS)
+    corpus_preprocessing.parse(corpus)
+#   TODO create pre-processing parser for Reuters
+#   corpus_preprocessing.parse("Reuters")
     dictionary_and_inverted_index_wrapper(config.LINGUISTIC_PARAMS,
-                                          config.UOTTAWA_INVERTED_INDEX,
-                                          config.UOTTAWA_CORPUS,
-                                          config.UOTTAWA_LPP,
-                                          config.UOTTAWA_BIGRAPH)
+                                          corpus)
     end_time = datetime.now()
     total_time = end_time-start_time
     print(total_time)
@@ -53,28 +47,10 @@ def main():
     tesstt = linguistic_module('crypto*', config.LINGUISTIC_PARAMS)
     print(tesstt)
 
-    print(wildcard_word_finder(tesstt[0], config.UOTTAWA_BIGRAPH))
+    print(wildcard_word_finder(tesstt[0], config.CORPUS[corpus]['bigraph_file']))
     boolean_query = '(*ge AND_NOT (man* OR health*))'
     print(boolean_query)
-    print(boolean_search_module(boolean_query,
-                                config.LINGUISTIC_PARAMS,
-                                config.UOTTAWA_BIGRAPH,
-                                config.UOTTAWA_INVERTED_INDEX))
-
-
-    # TODO : Update to include Reuters dictionary routine when available
-    # build_dictionary_and_index.build_it("uOttawaCourseList.xml",
-    #                                     remove_stopwords,
-    #                                     do_stemming,
-    #                                     do_normalize)
-
-    # print(query.process("testing U.S.A. low-cost women babies cacti ",
-    #                     remove_stopwords,
-    #                     do_stemming,
-    #                     do_normalize))
-    print(spelling.edit_distance("execution", "intention"))
-    print(spelling.edit_distance("sunday", "saturday"))
-    print(spelling.edit_distance("dog", "do"))
+    print(boolean_search_module(boolean_query, corpus))
 
     gui.SearchEngineGUI()
 

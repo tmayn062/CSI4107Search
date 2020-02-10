@@ -128,9 +128,9 @@ class SearchEngineGUI:
         """Start search (callback function for search button)."""
         # Set corpus to be used for search
         if self.search_collection.get() == 1:
-            corpus = config.UOTTAWA_CORPUS
+            corpus = config.UOTTAWA
         else:
-            corpus = config.REUTERS_CORPUS
+            corpus = config.REUTERS
             print("Reuters not yet available")
         # Set search type
         if self.search_model.get() == 1:
@@ -146,13 +146,9 @@ class SearchEngineGUI:
         #do VSM search
             docs_retrieved = vsm_retrieval.retrieve(self.entry.get(), corpus)
         else:
-        #TODO change parameters to just be query and corpus to match VSM?
         #do boolean search
             docs_retrieved = boolean_search.boolean_search_module(
-                self.entry.get(),
-                config.LINGUISTIC_PARAMS,
-                config.UOTTAWA_BIGRAPH,
-                config.UOTTAWA_INVERTED_INDEX)
+                self.entry.get(), corpus)
         # Clear previous search results
         self.search_results.delete('1.0', "end")
 

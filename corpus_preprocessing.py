@@ -26,7 +26,7 @@ import os
 import xml.etree.ElementTree as xml
 import bs4
 from bs4 import BeautifulSoup
-
+import config
 
 class Course:
     """Course holds the information for courses."""
@@ -59,7 +59,7 @@ class Course:
     def __str__(self):
         return self.course_id
 
-def parse(html_filename, corpus_filename):
+def parse(corpus):
     """
     This method takes the provided HTML file and identifies all courses, extract the relevant
      information, sanitizes the information and compiles a corpus in XML format.
@@ -68,7 +68,8 @@ def parse(html_filename, corpus_filename):
     :param corpus_filename: Filename of the XML corpus
     :return: Corpus of documents contained in an XML file
     """
-
+    html_filename = config.CORPUS[corpus]['source']
+    corpus_filename = config.CORPUS[corpus]['corpusxml']
     # Checking to see if file already exist
     if os.path.exists(corpus_filename) is True:
         # Ensuring file has actual content

@@ -17,6 +17,7 @@ Description: Access documents from the corpus
 import xml.etree.ElementTree as xml
 import os.path
 from dataclasses import dataclass
+import config
 
 @dataclass
 class Document:
@@ -26,11 +27,12 @@ class Document:
     doctext: str
 
 
-def get_documents(corpus_filename, list_doc_ids):
+def get_documents(corpus, list_doc_ids):
     """Return a list of documents using a given list of doc ids
        order of doc ids is preserved."""
     # XML parse code adapted from
     # https://stackabuse.com/reading-and-writing-xml-files-in-python/
+    corpus_filename = config.CORPUS[corpus]['corpusxml']
     if not os.path.isfile(corpus_filename):
         print(corpus_filename + ' does not exist')
         return []

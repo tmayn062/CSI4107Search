@@ -6,7 +6,7 @@ Version: Vanilla System
 Component: Module 9
 
 Created: 27 Jan 2020
-Last modified: 9 Feb 2020
+Last modified: 10 Feb 2020
 
 Author: Tiffany Maynard
 Status: In Progress
@@ -44,6 +44,13 @@ def edit_distance(word1, word2, cost_function=DEFAULT_COST):
                                    array_dist[i-1, j-1] + add_fact)
     return array_dist[len_word2, len_word1]
 
+def create_spelling_dictionary(text_list):
+    """Convert list to dictionary with frequency and export to csv."""
+    #spelling suggestions after lemmatizing or stemming will confuse the user
+    if text_list:
+        print("stub")
+
+#Cost list adapted from http://norvig.com/ngrams/count_1edit.txt
 COST_LIST = [
     ('e', 'i', 917),
     ('a', 'e', 856),

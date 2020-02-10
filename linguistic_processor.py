@@ -85,7 +85,6 @@ def normalizer_hyphens(raw_text_list):
         :param raw_text_list: List of tokenized words strings
         :return: List of tokenized word strings with hyphenated word replaced by its component words
     """
-    # todo consider normalizing in both forms
     results = []
     for words in raw_text_list:
         if words.find('-') != -1:
@@ -212,7 +211,7 @@ def linguistic_module(raw_text, control_dic):
             {"do_contractions": True, "do_normalize_hyphens": True,
             "do_normalize_periods": True, "do_remove_punctuation": True, "do_case_fold": True,
             "do_stop_word_removal": True, "do_stemming": True, "do_lemming": False}
-
+    :param corpus: corpus indicator used in call to create_spelling_dictionary
     :return: A list which contains fully processed tokens
     """
     # todo make dictionary key mapping

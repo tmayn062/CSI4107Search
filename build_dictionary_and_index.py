@@ -19,6 +19,7 @@ Description: This takes a corpus, applies linguistic processing on the documents
 import csv
 import os
 import xml.etree.ElementTree as xml
+from collections import Counter
 import pandas as pd
 from linguistic_processor import linguistic_module, bigraph_splitter
 import vsm_weight
@@ -47,6 +48,30 @@ def __build_dictionary(corpus_filename, linguistic_processing_parameters):
             tag = {"course_id": course_id, "doc_id": doc_id, "word": words}
             dictionary.append(tag)
     return dictionary
+
+def __build_spelling_dictionary(corpus_filename, linguistic_processing_parameters):
+    """
+    This private method transform a corpus of documents into a spelling dictionary.
+    The documents undergo linguistic processing prior to forming the dictionary
+    except for stemming and lemmatization
+
+    :param corpus_filename: Name of the corpus
+    :param linguistic_processing_parameters: Dictionary (data struct.) specifying which linguistic
+        process to apply to the text; see linguistic_processor.linguistic_module() for exact format
+    :return: spelling dictionary containing all words in the corpus associated with their frequency
+    """
+    word_list = []
+    tree = xml.parse(corpus_filename)
+    root = tree.getroot()
+    linguistic_revised = linguistic_processing_parameters
+    linguistic_revised["do_stemming"] = False
+    linguistic_revised["do_lemming"] = False
+    for doc in root:
+        processed_text = linguistic_module(doc[2].text, linguistic_revised)
+        for word in processed_text:
+            word_list.append(word)
+
+    return Counter(word_list)
 
 
 def __create_inverted_index(dictionary):
@@ -293,11 +318,46 @@ def __bigraph_index_csv(bi_filename, bigraph_index):
             writer = csv.writer(file)
             writer.writerow(to_append.split(';!'))
 
+def __spelling_dictionary_csv_creator(filename):
+    """
+    This private method creates a csv file to store the spelling dictionary.
+
+    :param filename: filename for the spelling dictionary csv file
+    :return: an empty csv file
+    """
+    # since this method may be called when the csv file needs to be re-created
+    # the methods deletes the existing
+    try:
+        os.unlink(filename)
+    except FileNotFoundError:
+        print("Spelling dictionary file not found, so it can't be deleted")
+
+    with open(filename, 'w', newline='', encoding='utf-8') as file:
+        header = ["word", "frequency"]
+        writer = csv.writer(file)
+        writer.writerow(header)
+
+def __spelling_dictionary_csv(filename, spelling_dictionary):
+    """
+    This private method writes the spelling dictionary to the csv file.
+
+    :param filename: The file name of the spelling dictionary csv file
+    :param spelling_dictionary: The dictionary containing all words and frequencies
+    :return: A csv containing the spelling dictionary
+
+    """
+    __spelling_dictionary_csv_creator(filename)
+
+    with open(filename, 'a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        for key, value in spelling_dictionary.items():
+            writer.writerow([key, value])
 
 
 
-def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, inverted_index_filename,
-                                          corpus_filename, lp_parameter_filename, bigraph_filename):
+
+
+def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, corpus):
     """
     This is the public method for the build dictionary, inverted index and bigraph index module.
     This method integrates all methods required to build the IR dictionary and its
@@ -318,16 +378,25 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, inverte
     :param lp_parameter_filename: The linguistic processing control file
     :return: A csv file containing the inverted index and bigraph index
     """
+    inverted_index_filename = config.CORPUS[corpus]['inverted_index_file']
+    corpus_filename = config.CORPUS[corpus]['corpusxml']
+    lp_parameter_filename = config.CORPUS[corpus]['lpp_file']
+    bigraph_filename = config.CORPUS[corpus]['bigraph_file']
+    spelling_filename = config.CORPUS[corpus]['spelling_file']
+    vsm_inverted_index_file = config.CORPUS[corpus]['vsm_inverted_index_file']
 
     def create_index():
         ir_dictionary = __build_dictionary(corpus_filename, linguistic_control_dictionary)
         inverted_index = __create_inverted_index(ir_dictionary)
         __inverted_index_csv(inverted_index, inverted_index_filename)
         vsm_weight.vsm_inv_index_tocsv(vsm_weight.create_inverted_index_vsm(ir_dictionary),
-                                       config.UOTTAWA_VSM_INVERTED_INDEX)
+                                       vsm_inverted_index_file)
         bigraph_index = __bigraph_index_creator(inverted_index_filename)
         __bigraph_index_csv(bigraph_filename, bigraph_index)
         __linguistic_processing_parameters_csv(linguistic_control_dictionary, lp_parameter_filename)
+        spelling_dictionary = __build_spelling_dictionary(corpus_filename,
+                                                          linguistic_control_dictionary)
+        __spelling_dictionary_csv(spelling_filename, spelling_dictionary)
 
     # The required files dont exits -> create them
     if not os.path.exists(inverted_index_filename)  \
