@@ -13,8 +13,9 @@ Status: In Progress
 
 Description: Provide suggestions for corrected words to the user
 """
-
+import csv
 import numpy
+import config
 
 DEFAULT_COST = numpy.ones((26, 26), dtype=numpy.float64) * 2.
 
@@ -44,11 +45,16 @@ def edit_distance(word1, word2, cost_function=DEFAULT_COST):
                                    array_dist[i-1, j-1] + add_fact)
     return array_dist[len_word2, len_word1]
 
-def create_spelling_dictionary(text_list):
-    """Convert list to dictionary with frequency and export to csv."""
+def get_spelling_dictionary(corpus):
+    """Read in words and their frequencies from csv."""
     #spelling suggestions after lemmatizing or stemming will confuse the user
-    if text_list:
-        print("stub")
+    filename = config.CORPUS[corpus]['spelling_file']
+    spelling_dict = {}
+    with open(filename, 'r') as data_file:
+        reader = csv.DictReader(data_file)
+        for row in reader:
+            spelling_dict[row['word']] = row['frequency']
+    return spelling_dict
 
 #Cost list adapted from http://norvig.com/ngrams/count_1edit.txt
 COST_LIST = [

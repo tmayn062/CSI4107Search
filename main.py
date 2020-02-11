@@ -17,7 +17,7 @@ import gui
 import corpus_preprocessing
 #import build_dictionary_and_index
 #import query
-
+import spelling
 from wildcard_management import wildcard_word_finder
 from boolean_search import boolean_search_module
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
@@ -50,6 +50,9 @@ def main():
     boolean_query = '(*ge AND_NOT (man* OR health*))'
     print(boolean_query)
     print(boolean_search_module(boolean_query, corpus))
+    spelling_dict = spelling.get_spelling_dictionary(corpus)
+    print(spelling_dict['administration'])
+    print(spelling_dict['organization'])
 
     gui.SearchEngineGUI()
 
