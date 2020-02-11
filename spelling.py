@@ -15,14 +15,29 @@ Description: Provide suggestions for corrected words to the user
 """
 import csv
 import collections
+import unicodedata
+from heapq import nsmallest
 import numpy
 import config
 
 DEFAULT_COST = numpy.ones((26, 26), dtype=numpy.float64) * 2.
 
+def suggest_words(given_words, corpus):
+    """Returns list of suggested words based on a given word
+       assumes first letter is correct"""
+    ed_score = dict()
+    words = given_words.split()
+    first_letter_dict = make_first_letter_dict(get_spelling_dictionary(corpus))
+    for given_word in words:
+        for word in first_letter_dict[given_word[0]]:
+            ed_score[word] = edit_distance(word, given_word)
+    return nsmallest(config.TOP_N_SPELLING, ed_score, key=ed_score.get)
+
 def edit_distance(word1, word2, cost_function=DEFAULT_COST):
     """Dynamic programming to calculate weighted edit distance."""
 # Adapted from Winter2020-CSI4107-TolerantRetrieval slides
+    word1 = remove_accents(word1)
+    word2 = remove_accents(word2)
     len_word1 = len(word1)
     len_word2 = len(word2)
     array_dist = numpy.zeros((len_word2+1, len_word1+1), dtype='int32')
@@ -65,6 +80,12 @@ def make_first_letter_dict(spelling_dict):
     for word in spelling_dict:
         result[word[0]].append(word)
     return result
+
+#From https://stackoverflow.com/a/517974
+def remove_accents(input_str):
+    """Remove accents from characters"""
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 #Cost list adapted from http://norvig.com/ngrams/count_1edit.txt
 COST_LIST = [

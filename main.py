@@ -54,7 +54,8 @@ def main():
     print(spelling_dict['administration'])
     print(spelling_dict['organization'])
     first = spelling.make_first_letter_dict(spelling_dict)
-    print(first['z'])
+    print(first['y'])
+    print(spelling.suggest_words('yout', corpus))
     gui.SearchEngineGUI()
 
 

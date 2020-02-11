@@ -64,8 +64,9 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     operand_stack = []
     # if the query is a single word, return the docID list for the word
     if len(postfix_query) == 1:
-        return get_doc_id(postfix_query[0], inverted_index)
-
+        if postfix_query[0] in inverted_index:
+            return get_doc_id(postfix_query[0], inverted_index)
+        return []
 
     for token in postfix_query:
         if token not in operators:

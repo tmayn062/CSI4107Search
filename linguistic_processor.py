@@ -214,7 +214,7 @@ def linguistic_module(raw_text, control_dic):
     :param corpus: corpus indicator used in call to create_spelling_dictionary
     :return: A list which contains fully processed tokens
     """
-    # todo make dictionary key mapping
+
     clean_text = raw_text
     if control_dic.get("do_contractions"):
         clean_text = contractions_expander(clean_text)

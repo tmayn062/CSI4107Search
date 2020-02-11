@@ -20,6 +20,7 @@ import config
 import corpus_access
 import vsm_retrieval
 import boolean_search
+import spelling
 
 class SearchEngineGUI:
     """Start the search engine GUI."""
@@ -50,7 +51,7 @@ class SearchEngineGUI:
                                    font=(font_to_use, 24))
         self.spelling_label = tkinter.Label(
             spelling_frame,
-            text="Did you mean X?", font=(font_to_use, 18))
+            text=" ", font=(font_to_use, 18))
         self.spelling_label.pack(side='left')
         # Pack top frame widgets
         prompt_label.pack(side='left')
@@ -127,6 +128,7 @@ class SearchEngineGUI:
     def run_search(self):
         """Start search (callback function for search button)."""
         # Set corpus to be used for search
+        self.spelling_label.config(text=" ")
         if self.search_collection.get() == 1:
             corpus = config.UOTTAWA
         else:
@@ -144,20 +146,23 @@ class SearchEngineGUI:
         #     + self.entry.get() + ' ' + search + ' ' + corpus)
         if search == 'VSM':
         #do VSM search
-            docs_retrieved = vsm_retrieval.retrieve(self.entry.get(), corpus)
+            docs_retrieved = vsm_retrieval.retrieve(self.entry.get().strip(), corpus)
         else:
         #do boolean search
             docs_retrieved = boolean_search.boolean_search_module(
-                self.entry.get(), corpus)
+                self.entry.get().strip(), corpus)
         # Clear previous search results
         self.search_results.delete('1.0', "end")
         #account for times a word is returned
-        if docs_retrieved and isinstance(docs_retrieved[0], str):
+        if docs_retrieved and isinstance(docs_retrieved, str):
             docs_retrieved = []
         docs = corpus_access.get_documents(corpus, docs_retrieved)
         hyperlink = HyperlinkManager(self.search_results)
         if docs is None or docs == []:
             self.search_results.insert("insert", 'No documents found')
+            suggestions = spelling.suggest_words(self.entry.get().strip(), corpus)
+            print(suggestions)
+            self.spelling_label.config(text="Did you mean? " + ', '.join(suggestions))
         else:
             for doc in docs:
                 self.search_results.insert("insert",

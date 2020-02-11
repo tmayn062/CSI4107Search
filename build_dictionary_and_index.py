@@ -21,6 +21,7 @@ import csv
 import os
 import xml.etree.ElementTree as xml
 from collections import Counter
+from collections import OrderedDict
 import pandas as pd
 from linguistic_processor import linguistic_module, bigraph_splitter
 import vsm_weight
@@ -71,10 +72,10 @@ def __build_spelling_dictionary(corpus_filename, linguistic_processing_parameter
     for doc in root:
         processed_text = linguistic_module(doc[2].text, linguistic_revised)
         for word in processed_text:
-            word_list.append(word)
-
-    return Counter(word_list)
-
+            if not any(char.isdigit() for char in word):
+                word_list.append(word)
+    #sort by word frequency from https://stackoverflow.com/a/613218
+    return OrderedDict(sorted(Counter(word_list).items(), reverse=True, key=lambda kv: kv[1]))
 
 def __create_inverted_index(dictionary):
     """

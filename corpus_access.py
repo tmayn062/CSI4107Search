@@ -39,8 +39,6 @@ def get_documents(corpus, list_doc_ids):
     tree = xml.parse(corpus_filename)
     root = tree.getroot()
     doc_list = []
-    print("in get_documents")
-    print(list_doc_ids)
     for i in list_doc_ids:
         doc_to_add = Document(i,
                               root[i][0].text+' '+root[i][1].text,

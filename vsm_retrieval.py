@@ -51,8 +51,6 @@ def shortlist(query, corpus):
     inv_index = read_inverted_index_from_csv(corpus)
     doc_shortlist = dict()
     query_word_list = convert_query(query)
-    print("qwl")
-    print(query_word_list)
     weight_list_len = len(query_word_list)
     for index, word in enumerate(query_word_list):
         if word in inv_index:
