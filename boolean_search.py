@@ -18,11 +18,10 @@ The boolean search module implements the boolean search method for information r
 """
 
 
-import ast
-import pandas as pd
 from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
 import config
+import vsm_retrieval
 
 def boolean_search_module(query, corpus):
 
@@ -42,11 +41,12 @@ def boolean_search_module(query, corpus):
     """
     linguistic_processing_parameters = config.LINGUISTIC_PARAMS
     bigraph_filename = config.CORPUS[corpus]['bigraph_file']
-    inverted_index_filename = config.CORPUS[corpus]['inverted_index_file']
     infix_query = boolean_query_preprocessing(query, linguistic_processing_parameters,
                                               bigraph_filename)
     postfix_query = postfix_translation(infix_query)
-    doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_filename)
+    #read in inverted_index dictionary from csv just once per search
+    inverted_index_dict = inverted_index_dictionary(corpus)
+    doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_dict)
     return doc_id_list
 
 
@@ -63,7 +63,7 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     operand_stack = []
     # if the query is a single word, return the docID list for the word
     if len(postfix_query) == 1:
-        return get_doc_id(postfix_query[0], inverted_index)
+        return inverted_index[postfix_query[0]]
 
     for token in postfix_query:
         if token not in operators:
@@ -85,7 +85,7 @@ def intersect_wrapper(word1, word2, operator, inverted_index):
     :param word1: The string or list containing the information to be merged
     :param word2: The string or list containing the information to be merged
     :param operator: The logical operator specifying the type of merge operation
-    :param inverted_index: The filename of the inverted index
+    :param inverted_index: The inverted index as dictionary
     :return: A list of merged docIDs
 
     """
@@ -200,54 +200,33 @@ def get_doc_id(word_query, inverted_index):
     This methods returns the list of documentIDs which contain the word query.
 
     :param word_query: The word for which docIDs are to be returned
-    :param inverted_index: The filename of the inverted index
+    :param inverted_index: The inverted index as dictionary
     :return: A list of the documentIDs containing the word
             A -1 if there are no documents which contain the word
     """
-    word_dictionary_string = inverted_index_word_dictionary_retrieval(word_query, inverted_index)
-
     # handling the situation where the dictionary retrieval returns no documents
-    if word_dictionary_string == -1:
+    if inverted_index == -1:
         # print(f"No documents found containing {word_query} ")
         return -1
-
-    # formatting the dictionary strings such that to be able to convert the strings back into
-    # dictionaries
-    # replacing the commas between dictionary entries with a semi-colon to enable splitting the
-    # string into its respective dictionary entries
-    word_dictionary_string = word_dictionary_string.replace('},', '};')
-    word_dictionary_string = word_dictionary_string.replace('[', '')
-    word_dictionary_string = word_dictionary_string.replace(']', '')
-    # splitting the string on the semi-colon
-    word_dictionary_string = word_dictionary_string.split(';')
     doc_id_list = []
-    for dictionary_entry in word_dictionary_string:
-        dictionary_entry = dictionary_entry.replace(' {', '{')
-        # converting the string to a dictionary
-        dictionary_entry = ast.literal_eval(dictionary_entry)
-        doc_id_list.append(dictionary_entry.get('doc_id'))
+    for doc_id in inverted_index[word_query]:
+        doc_id_list.append(doc_id)
 
     return doc_id_list
 
 
-def inverted_index_word_dictionary_retrieval(word, inverted_index):
+def inverted_index_dictionary(corpus):
     """
-    The following method returns the dictionary entry associated with a word in the inverted index.
+    The following method returns inverted index as a dictionary.
 
-    Since the query_list and the index are both sorted alphabetically the search and retrieve
-    takes O(n). Nevertheless, a more efficent search algorithm could be used to bring it down to
-    O(logn).
+    :param corpus: The corpus that produced the inverted index
+    :return: Inverted index as a dictionary
 
-    :param bigraph_query_list: The word to be searched for
-    :param index: The index to be searched
-    :return: A string containing the dictionary entries for the given word
-            If the word does not exist in the index, it returns a -1.
     """
-    data = pd.read_csv(inverted_index)
+    word_dict = vsm_retrieval.read_inverted_index_from_csv(corpus)
 
-    for index in range(0, data.shape[0]):
-        if data.iloc[index, 0] == word:
-            return data.iloc[index, 2]
+    if word_dict:
+        return word_dict
     return -1
 
 

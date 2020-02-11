@@ -27,13 +27,12 @@ def main():
     """Run search engine and related functions."""
     start_time = datetime.now()
     print(datetime.now())
-    corpus = "uOttawa"
+    corpus = config.UOTTAWA
 
     corpus_preprocessing.parse(corpus)
 #   TODO create pre-processing parser for Reuters
 #   corpus_preprocessing.parse("Reuters")
-    dictionary_and_inverted_index_wrapper(config.LINGUISTIC_PARAMS,
-                                          corpus)
+    dictionary_and_inverted_index_wrapper(config.LINGUISTIC_PARAMS, corpus)
     end_time = datetime.now()
     total_time = end_time-start_time
     print(total_time)

@@ -72,7 +72,7 @@ def shortlist(query, corpus):
 
 def read_inverted_index_from_csv(corpus):
     """Read in the inverted index file from disk."""
-    csv_filename = config.CORPUS[corpus]['vsm_inverted_index_file']
+    csv_filename = config.CORPUS[corpus]['inverted_index_file']
 
     new_data_dict = {}
     with open(csv_filename, 'r') as data_file:

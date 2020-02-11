@@ -23,6 +23,7 @@ from collections import Counter
 import pandas as pd
 from linguistic_processor import linguistic_module, bigraph_splitter
 import vsm_weight
+import vsm_retrieval
 import config
 
 def __build_dictionary(corpus_filename, linguistic_processing_parameters):
@@ -76,96 +77,25 @@ def __build_spelling_dictionary(corpus_filename, linguistic_processing_parameter
 
 def __create_inverted_index(dictionary):
     """
-    This private method takes an IR dictionary and creates an inverted index which includes document
-    frequency and term frequency
+    This private method takes an IR dictionary and creates an inverted index which includes
+    term frequency and tfidf weights
 
     :param dictionary: List of dictionaries (data structure) containing word-docID association
-    :return: Inverted index as a list of dictionaries (data structure)
+    :return: Inverted index as a dict of dicts (data structure)
     """
-    # sorting dictionary on the value of the words
-    sorted_dictionary = sorted(dictionary, key=lambda i: i['word'])
 
-    # starting conditions
-    previous_course_id = ""
-    previous_word = ""
-    previous_doc_id = 0
-    term_frequency = 1
-    document_frequency = 0
-    term_frequency = 0
-    posting_list = []
-    inverted_index = []
-    semaphore_one = 0
-    semaphore_two = 0
-    for element_index, element in enumerate(sorted_dictionary):
-        doc_id = element.get("doc_id")
-        course_id = element.get("course_id")
-        word = element.get("word")
-
-        # No change in word -> no entry in inverted index
-        if word == previous_word:
-            semaphore_one = 0
-
-            # different docID -> add to posting list & increment document frequency
-            if previous_course_id != course_id:
-
-                document_frequency += 1
-                posting_list.append({"course_id": previous_course_id, "doc_id": previous_doc_id,
-                                     "term_frequency": term_frequency})
-                previous_word = word
-                previous_doc_id = doc_id
-                previous_course_id = course_id
-                term_frequency = 1
-                semaphore_one = 1
-                semaphore_two = 0
-            # same docID -> carry on to next entry in dictionary
-            else:
-                term_frequency += 1
-                previous_word = word
-                previous_course_id = course_id
-                previous_doc_id = doc_id
-        # change in word -> add previous word to inverted index
-        else:
-            if semaphore_one == 1 or semaphore_two == 1:
-                posting_list.append({"course_id": previous_course_id, "doc_id": previous_doc_id,
-                                     "term_frequency": term_frequency})
-
-            index_entry = {"word": previous_word, "document_frequency": document_frequency,
-                           "postings": posting_list}
-            inverted_index.append(index_entry)
-            # setting up initial conditions for new word
-            document_frequency = 1
-            posting_list = [{"course_id": course_id, "doc_id": doc_id,
-                             "term_frequency": term_frequency}]
-            term_frequency = 1
-            previous_word = word
-            previous_course_id = course_id
-            previous_doc_id = doc_id
-            next_element = sorted_dictionary[element_index + 1]
-            semaphore_one = 0
-            semaphore_two = 0
-            if next_element.get("word") == word:
-                semaphore_two = 1
-                posting_list = []
-
-    return inverted_index
+    return vsm_weight.create_inverted_index_vsm(dictionary)
 
 
 def __inverted_index_csv(inverted_index, inverted_index_filename):
     """
     This private methods creates a csv file for the inverted index and fills it
 
-    :param inverted_index: The inverted index (in list form)
+    :param inverted_index: The inverted index (in dict form)
     :param inverted_index_filename: The name of the inverted index csv file
-    :return: A csv file containing the inverted index
+    :output: A csv file containing the inverted index
     """
-    __inverted_index_csv_creator(inverted_index_filename)
-    for element in inverted_index:
-        to_append = f'{element.get("word")};!{element.get("document_frequency")}' \
-                    f';!{element.get("postings")}'
-
-        with open(inverted_index_filename, 'a', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
-            writer.writerow(to_append.split(';!'))
+    vsm_weight.vsm_inv_index_tocsv(inverted_index, inverted_index_filename)
 
 
 def __inverted_index_csv_creator(ii_filename):
@@ -183,7 +113,7 @@ def __inverted_index_csv_creator(ii_filename):
         print("Inverted index file not found so it can't be deleted")
 
     with open(ii_filename, 'w', newline='', encoding='utf-8') as file:
-        header = ["Word", "Document Frequency", "Postings"]
+        header = ["Word", "Postings"]
         writer = csv.writer(file)
         writer.writerow(header)
 
@@ -254,17 +184,16 @@ def __linguistic_processor_parameters_validator(lpp_csv_file, lpp_dictionary):
             return -1
     return 1
 
-def __bigraph_index_creator(inverted_index_filename):
+def __bigraph_index_creator(corpus):
     """
     This private method creates a bigraph index based on the inverted index.
 
-    :param inverted_index_filename: The file which contains the inverted index
+    :param corpus: The corpus name to locate the inverted index file
     :return: A list of list containing the bigraph and its associated words
     """
-    inverted_index = pd.read_csv(inverted_index_filename)
+    inverted_index = vsm_retrieval.read_inverted_index_from_csv(corpus)
     bigraph_list = []
-    for index in range(0, inverted_index.shape[0]):
-        word = str(inverted_index.iloc[index, 0])
+    for word in inverted_index:
         bigraph_list = bigraph_splitter(word, bigraph_list)
 
     bigraph_list.sort()
@@ -383,15 +312,15 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, corpus)
     lp_parameter_filename = config.CORPUS[corpus]['lpp_file']
     bigraph_filename = config.CORPUS[corpus]['bigraph_file']
     spelling_filename = config.CORPUS[corpus]['spelling_file']
-    vsm_inverted_index_file = config.CORPUS[corpus]['vsm_inverted_index_file']
+#    vsm_inverted_index_file = config.CORPUS[corpus]['vsm_inverted_index_file']
 
     def create_index():
         ir_dictionary = __build_dictionary(corpus_filename, linguistic_control_dictionary)
         inverted_index = __create_inverted_index(ir_dictionary)
         __inverted_index_csv(inverted_index, inverted_index_filename)
-        vsm_weight.vsm_inv_index_tocsv(vsm_weight.create_inverted_index_vsm(ir_dictionary),
-                                       vsm_inverted_index_file)
-        bigraph_index = __bigraph_index_creator(inverted_index_filename)
+#        vsm_weight.vsm_inv_index_tocsv(vsm_weight.create_inverted_index_vsm(ir_dictionary),
+#                                       vsm_inverted_index_file)
+        bigraph_index = __bigraph_index_creator(corpus)
         __bigraph_index_csv(bigraph_filename, bigraph_index)
         __linguistic_processing_parameters_csv(linguistic_control_dictionary, lp_parameter_filename)
         spelling_dictionary = __build_spelling_dictionary(corpus_filename,
