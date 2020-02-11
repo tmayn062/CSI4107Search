@@ -6,9 +6,10 @@ Version: Vanilla System
 Component: Module 6
 
 Created: 06 Feb 2020
-Last modified: 06 Feb 2020
+Last modified: 10 Feb 2020
 
 Author: Jonathan Boerger
+Modified by: Tiffany Maynard
 Status: Completed
 
 Description:
@@ -204,15 +205,15 @@ def get_doc_id(word_query, inverted_index):
     :return: A list of the documentIDs containing the word
             A -1 if there are no documents which contain the word
     """
-    # handling the situation where the dictionary retrieval returns no documents
-    if inverted_index == -1:
-        # print(f"No documents found containing {word_query} ")
-        return -1
-    doc_id_list = []
-    for doc_id in inverted_index[word_query]:
-        doc_id_list.append(doc_id)
 
-    return doc_id_list
+    doc_id_list = []
+    if word_query in inverted_index:
+        for doc_id in inverted_index[word_query]:
+            doc_id_list.append(doc_id)
+
+        return doc_id_list
+# handling the situation where the dictionary retrieval returns no documents
+    return -1
 
 
 def inverted_index_dictionary(corpus):

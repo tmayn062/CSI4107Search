@@ -6,9 +6,10 @@ Version: Vanilla System
 Component: Module 3 & 4 + supporting methods for module 7
 
 Created: 30 Jan 2020
-Last modified: 31 Jan 2020
+Last modified: 10 Feb 2020
 
 Author: Jonathan Boerger
+Modified by: Tiffany Maynard
 Status: Complete
 
 Description: This takes a corpus, applies linguistic processing on the documents within the corpus
