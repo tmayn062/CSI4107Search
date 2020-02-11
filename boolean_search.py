@@ -64,9 +64,8 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     operand_stack = []
     # if the query is a single word, return the docID list for the word
     if len(postfix_query) == 1:
-        if postfix_query[0] in inverted_index:
-            return inverted_index[postfix_query[0]]
-        return []
+        return get_doc_id(postfix_query[0], inverted_index)
+
 
     for token in postfix_query:
         if token not in operators:
@@ -76,6 +75,7 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
             word2 = operand_stack.pop()
             result = intersect_wrapper(word1, word2, token, inverted_index)
             operand_stack.append(result)
+    #TODO check what happens when there is no AND OR AND_NOT
     return operand_stack.pop()
 
 

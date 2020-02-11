@@ -151,7 +151,9 @@ class SearchEngineGUI:
                 self.entry.get(), corpus)
         # Clear previous search results
         self.search_results.delete('1.0', "end")
-
+        #account for times a word is returned
+        if docs_retrieved and isinstance(docs_retrieved[0], str):
+            docs_retrieved = []
         docs = corpus_access.get_documents(corpus, docs_retrieved)
         hyperlink = HyperlinkManager(self.search_results)
         if docs is None or docs == []:

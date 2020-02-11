@@ -53,7 +53,8 @@ def main():
     spelling_dict = spelling.get_spelling_dictionary(corpus)
     print(spelling_dict['administration'])
     print(spelling_dict['organization'])
-
+    first = spelling.make_first_letter_dict(spelling_dict)
+    print(first['z'])
     gui.SearchEngineGUI()
 
 

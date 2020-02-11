@@ -14,6 +14,7 @@ Status: In Progress
 Description: Provide suggestions for corrected words to the user
 """
 import csv
+import collections
 import numpy
 import config
 
@@ -49,12 +50,21 @@ def get_spelling_dictionary(corpus):
     """Read in words and their frequencies from csv."""
     #spelling suggestions after lemmatizing or stemming will confuse the user
     filename = config.CORPUS[corpus]['spelling_file']
-    spelling_dict = {}
+    spelling_dict = dict()
     with open(filename, 'r') as data_file:
         reader = csv.DictReader(data_file)
         for row in reader:
             spelling_dict[row['word']] = row['frequency']
     return spelling_dict
+
+def make_first_letter_dict(spelling_dict):
+    """Makes a dictionary based on the first letter of the word
+        used for heuristic to reduce number of words to compare to"""
+#From https://stackoverflow.com/a/47298774
+    result = collections.defaultdict(list)
+    for word in spelling_dict:
+        result[word[0]].append(word)
+    return result
 
 #Cost list adapted from http://norvig.com/ngrams/count_1edit.txt
 COST_LIST = [
