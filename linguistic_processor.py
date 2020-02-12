@@ -122,20 +122,20 @@ def punctuation_remover(raw_text_list):
     punct_list = string.punctuation
     punct_list = punct_list.replace('-', '')
     punct_list = punct_list.replace('.', '')
+    punct_list = punct_list.replace('/', '')
     # not removing * for wildcard management
     punct_list = punct_list.replace('*', '')
+
     table = str.maketrans('', '', punct_list)
     stripped = [w.translate(table) for w in raw_text_list]
     result = []
-    for words in stripped:
+    for word in stripped:
         # removes terminating periods in a word iff there is only one period
-        if words.endswith(".") and words.count(".") == 1:
-            words = words.replace(".", "")
+        if word.endswith(".") and word.count(".") == 1:
+            word = word.replace(".", "")
         # removing any potential empty items ([""])
-        if words == "":
-            pass
-        else:
-            result.append(words)
+        if word not in ('', ' '):
+            result.append(word)
     return result
 
 
@@ -215,7 +215,7 @@ def linguistic_module(raw_text, control_dic):
     :return: A list which contains fully processed tokens
     """
 
-    clean_text = raw_text
+    clean_text = raw_text.replace('/', ' ')
     if control_dic.get("do_contractions"):
         clean_text = contractions_expander(clean_text)
 

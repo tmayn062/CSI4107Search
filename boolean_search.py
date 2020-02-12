@@ -110,7 +110,7 @@ def intersect_wrapper(word1, word2, operator, inverted_index):
     return result
 
 
-def intersect_and_not(doc_id_list_1, doc_id_list_2):
+def intersect_and_not(doc_id_list_2, doc_id_list_1):
     """
     This methods implements the boolean intersect algorithm for AND NOT operations.
 

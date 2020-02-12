@@ -27,7 +27,7 @@ class SearchEngineGUI:
 
     def __init__(self):
         """Initialize search GUI."""
-        font_to_use = "courier 10 pitch"
+        self.font_to_use = "courier 10 pitch"
         # GUI Code adapted from
         # https://codinginfinite.com/gui-application-in-python-tkinter-tutorial/
         # Create a root window
@@ -36,62 +36,57 @@ class SearchEngineGUI:
         self.root.geometry("1000x800")
         # Create frames
         top_frame = tkinter.Frame(self.root)
-        spelling_frame = tkinter.Frame(self.root)
+        self.spelling_frame = tkinter.Frame(self.root)
+        self.spelling_list = list()
         search_frame = tkinter.Frame(self.root)
         collection_frame = tkinter.Frame(self.root)
         button_frame = tkinter.Frame(self.root)
         bottom_frame = tkinter.Frame(self.root)
         results_frame = tkinter.Frame(bottom_frame)
         # Create labels
-        prompt_label = tkinter.Label(
-            top_frame,
-            text='Enter search string: ')
-        prompt_label.config(font=(font_to_use, 24))
-        self.entry = tkinter.Entry(top_frame, textvariable="Type here",
-                                   font=(font_to_use, 24))
+        tkinter.Label(top_frame, font=(self.font_to_use, 18),
+                      text='Enter search string: ').pack(side='left')
+
+        self.search_entry = tkinter.Entry(top_frame, width=40, textvariable="Type here",
+                                          font=(self.font_to_use, 18))
+        self.search_entry.pack(side='left')
         self.spelling_label = tkinter.Label(
-            spelling_frame,
-            text=" ", font=(font_to_use, 18))
+            self.spelling_frame,
+            text=" ", font=(self.font_to_use, 18))
         self.spelling_label.pack(side='left')
-        # Pack top frame widgets
-        prompt_label.pack(side='left')
-        self.entry.pack(side='left')
 
         # Create the button widgets
         self.search_button = tkinter.Button(
             button_frame,
             text='Search',
             command=self.run_search,
-            font=(font_to_use, 18))
+            font=(self.font_to_use, 18))
         # root.destroy exits/destroys the main window
         self.quit_button = tkinter.Button(
             button_frame,
             text='Quit',
             command=self.root.destroy,
-            font=(font_to_use, 18))
+            font=(self.font_to_use, 18))
         # Pack the buttons
         self.search_button.pack(side='left')
         self.quit_button.pack(side='left')
-        self.results_label = tkinter.Label(
-            bottom_frame,
-            text='Search results')
-        self.results_label.config(font=(font_to_use, 18))
-        self.results_label.pack()
+        tkinter.Label(bottom_frame, font=(self.font_to_use, 18),
+                      text='Search results').pack()
         self.search_model = tkinter.IntVar()
         # Initialize search model to 1 - Boolean
         self.search_model.set(1)
         tkinter.Label(search_frame,
                       text="Choose a search model:",
                       justify=tkinter.LEFT,
-                      font=(font_to_use, 18)).pack(side='left')
+                      font=(self.font_to_use, 18)).pack(side='left')
         tkinter.Radiobutton(search_frame,
                             text="Boolean",
-                            font=(font_to_use, 18),
+                            font=(self.font_to_use, 18),
                             variable=self.search_model,
                             value=1).pack(side='left')
         tkinter.Radiobutton(search_frame,
                             text="VSM",
-                            font=(font_to_use, 18),
+                            font=(self.font_to_use, 18),
                             variable=self.search_model,
                             value=2).pack(side='left')
         # Initialize collection to 1 - uO course_html_div_element catalogue
@@ -100,24 +95,26 @@ class SearchEngineGUI:
         tkinter.Label(collection_frame,
                       text="Choose a collection:",
                       justify=tkinter.LEFT,
-                      font=(font_to_use, 18)).pack(side='left')
+                      font=(self.font_to_use, 18)).pack(side='left')
         tkinter.Radiobutton(collection_frame,
                             text="uO Course Catalogue",
-                            font=(font_to_use, 18),
+                            font=(self.font_to_use, 18),
                             variable=self.search_collection,
                             value=1).pack(side='left')
-        tkinter.Radiobutton(collection_frame,
-                            text="Reuters",
-                            font=(font_to_use, 18),
-                            variable=self.search_collection,
-                            value=2).pack(side='left')
+        self.reuters_radio = tkinter.Radiobutton(collection_frame,
+                                                 text="Reuters",
+                                                 font=(self.font_to_use, 18),
+                                                 variable=self.search_collection,
+                                                 value=2)
+        self.reuters_radio.pack(side='left')
+        self.reuters_radio.configure(state=tkinter.DISABLED)
         self.search_results = tkinter.Text(results_frame,
                                            state="normal",
-                                           font=(font_to_use, 12))
+                                           font=(self.font_to_use, 12))
         self.search_results.pack(side='bottom')
         # Now pack the frames also
         top_frame.pack()
-        spelling_frame.pack()
+        self.spelling_frame.pack()
         search_frame.pack()
         collection_frame.pack()
         button_frame.pack()
@@ -128,41 +125,43 @@ class SearchEngineGUI:
     def run_search(self):
         """Start search (callback function for search button)."""
         # Set corpus to be used for search
-        self.spelling_label.config(text=" ")
+
         if self.search_collection.get() == 1:
             corpus = config.UOTTAWA
         else:
             corpus = config.REUTERS
-            print("Reuters not yet available")
+
         # Set search type
         if self.search_model.get() == 1:
             search = 'Boolean'
         else:
             search = 'VSM'
 
-        # messagebox.showinfo(
-        #     'Response',
-        #     'You clicked the search button and typed '
-        #     + self.entry.get() + ' ' + search + ' ' + corpus)
         if search == 'VSM':
         #do VSM search
-            docs_retrieved = vsm_retrieval.retrieve(self.entry.get().strip(), corpus)
+            docs_retrieved = vsm_retrieval.retrieve(self.search_entry.get().strip(),
+                                                    corpus)
         else:
         #do boolean search
             docs_retrieved = boolean_search.boolean_search_module(
-                self.entry.get().strip(), corpus)
+                self.search_entry.get().strip(), corpus)
         # Clear previous search results
         self.search_results.delete('1.0', "end")
-        #account for times a word is returned
+        # Clear previous suggestions
+        self.spelling_label.config(text="")
+        for lab in self.spelling_list:
+            lab.destroy()
+        #account for times a word is returned instead of a doc_id
         if docs_retrieved and isinstance(docs_retrieved, str):
             docs_retrieved = []
         docs = corpus_access.get_documents(corpus, docs_retrieved)
         hyperlink = HyperlinkManager(self.search_results)
+
         if docs is None or docs == []:
             self.search_results.insert("insert", 'No documents found')
-            suggestions = spelling.suggest_words(self.entry.get().strip(), corpus)
-            print(suggestions)
-            self.spelling_label.config(text="Did you mean? " + ', '.join(suggestions))
+            suggestions = spelling.suggest_words(self.search_entry.get().strip(), corpus)
+            self.show_spelling_options(config.TOP_N_SPELLING, suggestions)
+            self.spelling_label.config(text="Did you mean? ")
         else:
             for doc in docs:
                 self.search_results.insert("insert",
@@ -175,7 +174,21 @@ class SearchEngineGUI:
         messagebox.showinfo(
             doc.title,
             doc.doctext)
-
+#config.TOP_N_SPELLING
+    def show_spelling_options(self, max_count, suggestions):
+        """Show spelling suggestions."""
+        for i in range(max_count):
+            if suggestions[i]:
+                self.spelling_list.append(tkinter.Label(self.spelling_frame, fg="blue",
+                                                        font=(self.font_to_use, 18),
+                                                        text=suggestions[i]))
+                def update_search_term(event, word=suggestions[i]):
+                    self.spelling_label.config(text="Did you mean? ")
+                    self.search_entry.delete(0, tkinter.END)
+                    self.search_entry.insert(0, word)
+                    self.run_search()
+                self.spelling_list[-1].bind("<Button-1>", update_search_term)
+                self.spelling_list[-1].pack(side='left', padx=10, pady=10)
 
 # Code for hyperlink manager modified from
 # http://effbot.org/zone/tkinter-text-hyperlink.htm

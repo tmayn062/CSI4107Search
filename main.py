@@ -15,9 +15,6 @@ from datetime import datetime
 import config
 import gui
 import corpus_preprocessing
-#import build_dictionary_and_index
-#import query
-import spelling
 from wildcard_management import wildcard_word_finder
 from boolean_search import boolean_search_module
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
@@ -38,11 +35,6 @@ def main():
     print(total_time)
     print(datetime.now())
 
-    test_string = "U.S.A. hello. he.lp state-of-the-art"
-    test_tokens = linguistic_module(test_string, config.LINGUISTIC_PARAMS)
-    for token in test_tokens:
-        print(token)
-
     tesstt = linguistic_module('crypto*', config.LINGUISTIC_PARAMS)
     print(tesstt)
 
@@ -50,12 +42,7 @@ def main():
     boolean_query = '(*ge AND_NOT (man* OR health*))'
     print(boolean_query)
     print(boolean_search_module(boolean_query, corpus))
-    spelling_dict = spelling.get_spelling_dictionary(corpus)
-    print(spelling_dict['administration'])
-    print(spelling_dict['organization'])
-    first = spelling.make_first_letter_dict(spelling_dict)
-    print(first['y'])
-    print(spelling.suggest_words('yout', corpus))
+
     gui.SearchEngineGUI()
 
 

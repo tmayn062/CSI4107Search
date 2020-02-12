@@ -19,6 +19,7 @@ import unicodedata
 from heapq import nsmallest
 import numpy
 import config
+from linguistic_processor import punctuation_remover
 
 DEFAULT_COST = numpy.ones((26, 26), dtype=numpy.float64) * 2.
 
@@ -36,8 +37,8 @@ def suggest_words(given_words, corpus):
 def edit_distance(word1, word2, cost_function=DEFAULT_COST):
     """Dynamic programming to calculate weighted edit distance."""
 # Adapted from Winter2020-CSI4107-TolerantRetrieval slides
-    word1 = remove_accents(word1)
-    word2 = remove_accents(word2)
+    word1 = punctuation_remover(remove_accents(word1.replace("’", "").replace("*", "")))
+    word2 = punctuation_remover(remove_accents(word2.replace("’", "").replace("*", "")))
     len_word1 = len(word1)
     len_word2 = len(word2)
     array_dist = numpy.zeros((len_word2+1, len_word1+1), dtype='int32')
