@@ -41,19 +41,13 @@ def boolean_search_module(query, corpus):
     :return: A list of docIDs
     """
     linguistic_processing_parameters = config.LINGUISTIC_PARAMS
-    print(linguistic_processing_parameters)
     bigraph_filename = config.CORPUS[corpus]['bigraph_file']
-    print(bigraph_filename)
     infix_query = boolean_query_preprocessing(query, linguistic_processing_parameters,
                                               bigraph_filename)
-    print(infix_query)
     postfix_query = postfix_translation(infix_query)
-    print(postfix_query)
     #read in inverted_index dictionary from csv just once per search
     inverted_index_dict = inverted_index_dictionary(corpus)
-    print(len(inverted_index_dict))
     doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_dict)
-    print(doc_id_list)
     return doc_id_list
 
 
