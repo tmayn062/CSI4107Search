@@ -56,6 +56,12 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     This methods takes a postfix query and actually executes the query to return
     a list of relevant docIDs.
 
+    This method was developed based on the information provided at:
+    https://runestone.academy/runestone/books/published/pythonds/BasicDS/
+        InfixPrefixandPostfixExpressions.html#fig-evalpost2
+    Specifically, it was adapted from the code provided in the 'Active Code 2' section
+    Also referenced https://www.geeksforgeeks.org/stack-set-2-infix-to-postfix/
+
     :param postfix_query: A list containing the postfix query
     :param inverted_index: The filename of the inverted index csv
     :return: A list of docIDs
