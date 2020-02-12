@@ -66,6 +66,7 @@ def shortlist(query, corpus):
                     entry = [0 for x in range(weight_list_len)]
                     entry[index] = inv_index[word][doc_id]['weight']
                     doc_shortlist[doc_id] = entry
+
     return doc_shortlist
 
 def read_inverted_index_from_csv(corpus):

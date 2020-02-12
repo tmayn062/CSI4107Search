@@ -19,6 +19,7 @@ from wildcard_management import wildcard_word_finder
 from boolean_search import boolean_search_module
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
 from linguistic_processor import linguistic_module
+import vsm_retrieval
 
 def main():
     """Run search engine and related functions."""
@@ -42,7 +43,8 @@ def main():
     boolean_query = '(*ge AND_NOT (man* OR health*))'
     print(boolean_query)
     print(boolean_search_module(boolean_query, corpus))
-
+    print(boolean_search_module("ergodic", corpus))
+    print(vsm_retrieval.retrieve("ergodic", corpus))
     gui.SearchEngineGUI()
 
 

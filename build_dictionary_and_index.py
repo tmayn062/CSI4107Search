@@ -66,7 +66,7 @@ def __build_spelling_dictionary(corpus_filename, linguistic_processing_parameter
     word_list = []
     tree = xml.parse(corpus_filename)
     root = tree.getroot()
-    linguistic_revised = linguistic_processing_parameters
+    linguistic_revised = linguistic_processing_parameters.copy()
     linguistic_revised["do_stemming"] = False
     linguistic_revised["do_lemming"] = False
     for doc in root:
@@ -168,8 +168,8 @@ def __linguistic_processor_parameters_validator(lpp_csv_file, lpp_dictionary):
 
     :param lpp_csv_file: the csv file containing the LPP for the current inverted index csv
     :param lpp_dictionary: a dictionary (data structure) containing the current LPP
-    :return: -1 if there is a differnece between the LPP found in the csv file and those
-                specific in the dictionary
+    :return: -1 if there is a difference between the LPP found in the csv file and those
+                specified in the dictionary
             1 if the csv file and dictionary match
     """
     previous_linguistic_settings = []
@@ -328,21 +328,23 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, corpus)
 
     # The required files dont exits -> create them
     if not os.path.exists(inverted_index_filename)  \
-            or not os.path.exists(lp_parameter_filename):
+            or not os.path.exists(lp_parameter_filename) \
+            or not os.path.exists(bigraph_filename) \
+            or not os.path.exists(spelling_filename):
         print("Not all files exist which need to exist thus we are creating them")
         create_index()
         return
 
     check_val = __linguistic_processor_parameters_validator(lp_parameter_filename,
                                                             linguistic_control_dictionary)
-    # the required files exist & no changes to the LPP -> carry on
+
     if check_val == -1:
+        # the required files exist BUT changes to the LPP -> create a new inverted index
         print("II already exits, however there has been a change in LP settings, thus "
               "recalculating it")
         create_index()
-
-    # the required files exist BUT changes to the LPP -> create a new inverted index
     else:
+        # the required files exist & no changes to the LPP -> carry on
         print("II already exist and there has been no change in LP settings. Therefore all done.")
 
     return
