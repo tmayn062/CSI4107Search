@@ -122,7 +122,6 @@ def punctuation_remover(raw_text_list):
     punct_list = string.punctuation
     punct_list = punct_list.replace('-', '')
     punct_list = punct_list.replace('.', '')
-    punct_list = punct_list.replace('/', '')
     # not removing * for wildcard management
     punct_list = punct_list.replace('*', '')
 

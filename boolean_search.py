@@ -76,7 +76,7 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
             word2 = operand_stack.pop()
             result = intersect_wrapper(word1, word2, token, inverted_index)
             operand_stack.append(result)
-    #TODO check what happens when there is no AND OR AND_NOT
+
     return operand_stack.pop()
 
 
@@ -248,7 +248,7 @@ def boolean_query_preprocessing(raw_query, linguistic_processing_parameters, big
     :param bigraph_csv_file: The filename of the bigraph csv file needed to resolve wildcards
     :return: A string containing the properly formatted and processed boolean query
     """
-    exclusion = ["AND", "OR", "AND_NOT", '(', ')']
+    exclusion = ["AND", "OR", "AND_NOT", "(", ")"]
     # separating the parentheses from its associated word to facilitate future processing
     raw_query = raw_query.replace('(', '( ')
     raw_query = raw_query.replace(')', ' )')
@@ -257,13 +257,16 @@ def boolean_query_preprocessing(raw_query, linguistic_processing_parameters, big
     for elements in raw_query_list:
         # if the element is an actual word apply the LPP to it
         if elements not in exclusion:
-            elements = linguistic_module(elements, linguistic_processing_parameters)
+            element = linguistic_module(elements, linguistic_processing_parameters)
             # if the word contains an asterisks, resolve the wildcard
-            if elements[0].find("*") != -1:
-                elements = wildcard_word_finder(elements[0], bigraph_csv_file)
+
+            if element[0].find("*") != -1:
+                element = wildcard_word_finder(element[0], bigraph_csv_file)
             else:
-                elements = elements[0]
-        output_list.append(elements)
+                element = element[0]
+            output_list.append(element)
+        else:
+            output_list.append(elements)
 
     full_boolean_query = " ".join(output_list)
     return full_boolean_query
@@ -282,29 +285,37 @@ def postfix_translation(boolean_infix_query):
     :return: A list containing the postfix query
     """
     boolean_infix_query = boolean_infix_query.split()
-    operators = ["AND", "OR", "AND_NOT"]
+    #precedence
+    prec = {}
+    prec["AND"] = 1
+    prec["OR"] = 1
+    prec["AND_NOT"] = 1
+    prec["("] = 3
+
+    operators = ["AND", "OR", "AND_NOT", "(", ")"]
     op_stack = []
     postfix_list = []
     for token in boolean_infix_query:
-
-        # pushing the logical operator onto the stack
-        if token in operators:
-            op_stack.append(token)
+        if token not in operators:
+        # appending regular words directly to the result list
+            postfix_list.append(token)
+        elif token == '(':
         # pushing the opening parentheses onto the stack
-        elif token == "(":
             op_stack.append(token)
+        elif token == ')':
         # if a closing parentheses is processed, all items on the stack between the respective
         # parentheses is appended to the result list
-        elif token == ")":
-            while op_stack[0] != '(':
+            while (op_stack and op_stack[-1] != '('):
                 postfix_list.append(op_stack.pop())
-        # appending regular words directly to the result list
-        else:
-            postfix_list.append(token)
-    # extracting all remaining logical operators from the stack
-    while op_stack:
-        if op_stack[0] == '(':
+            if (op_stack and op_stack[-1] != '('):
+                return -1
             op_stack.pop()
         else:
-            postfix_list.append(op_stack.pop())
+        # pushing the logical operator onto the stack
+            while op_stack and (prec[op_stack[-1]] < prec[token]):
+                postfix_list.append(op_stack.pop())
+            op_stack.append(token)
+    # extracting all remaining logical operators from the stack
+    while op_stack:
+        postfix_list.append(op_stack.pop())
     return postfix_list
