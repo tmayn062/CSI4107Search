@@ -6,7 +6,7 @@ Version: Vanilla System
 Component: Module 6
 
 Created: 06 Feb 2020
-Last modified: 10 Feb 2020
+Last modified: 12 Feb 2020
 
 Author: Jonathan Boerger
 Modified by: Tiffany Maynard
@@ -280,7 +280,7 @@ def postfix_translation(boolean_infix_query):
     https://runestone.academy/runestone/books/published/pythonds/BasicDS/
         InfixPrefixandPostfixExpressions.html#fig-evalpost2
     Specifically, it was adapted from the code provided in the 'Active Code 1' section
-
+    Also referenced https://www.geeksforgeeks.org/stack-set-2-infix-to-postfix/
     :param boolean_infix_query: A string containing the infix query
     :return: A list containing the postfix query
     """

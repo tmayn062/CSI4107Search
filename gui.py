@@ -6,10 +6,10 @@ Version: Vanilla System
 Component: Module 1
 
 Created: 23 Jan 2020
-Last modified: 10 Feb 2020
+Last modified: 11 Feb 2020
 
 Author: Tiffany Maynard
-Status: In progress
+Status: Complete
 
 Description: Allow a user to access search engine capabilities
 

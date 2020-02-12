@@ -9,7 +9,7 @@ Created: 27 Jan 2020
 Last modified: 10 Feb 2020
 
 Author: Tiffany Maynard
-Status: In Progress
+Status: Complete
 
 Description: Provide suggestions for corrected words to the user
 """
