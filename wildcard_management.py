@@ -58,7 +58,7 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index):
             potential_word_list.append(word_string)
     # the following sections trims all the possible words associated with the bigraph to those
     # which conform with the requirements of the wildcard
-    potential_word_list.sort()
+
     duplicate_word_list = []
     # If the wild card has the form *xxxx i.e. looking for a specific ending of a word
     if asterisks_position == 0:
