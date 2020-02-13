@@ -17,8 +17,7 @@ Description:
 The boolean search module implements the boolean search method for information retrieval.
 
 """
-
-
+import ast
 from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
 import config
@@ -41,9 +40,11 @@ def boolean_search_module(query, corpus):
     :return: A list of docIDs
     """
     linguistic_processing_parameters = config.LINGUISTIC_PARAMS
-    bigraph_filename = config.CORPUS[corpus]['bigraph_file']
+
+    #read in csv once per query instead of repeated
+    bigraph_index = read_bigraph_file_from_csv(corpus)
     infix_query = boolean_query_preprocessing(query, linguistic_processing_parameters,
-                                              bigraph_filename)
+                                              bigraph_index)
     postfix_query = postfix_translation(infix_query)
     #read in inverted_index dictionary from csv just once per search
     inverted_index_dict = inverted_index_dictionary(corpus)
@@ -240,7 +241,7 @@ def inverted_index_dictionary(corpus):
     return -1
 
 
-def boolean_query_preprocessing(raw_query, linguistic_processing_parameters, bigraph_csv_file):
+def boolean_query_preprocessing(raw_query, linguistic_processing_parameters, bigraph_index):
     """
     The following method takes a boolean query and applies linguistic pre-processing to the query,
     to match the LPP done to the inverted index, as well as resolves all wildcards in the query.
@@ -263,17 +264,15 @@ def boolean_query_preprocessing(raw_query, linguistic_processing_parameters, big
     for elements in raw_query_list:
         # if the element is an actual word apply the LPP to it
         if elements not in exclusion:
-            element = linguistic_module(elements, linguistic_processing_parameters)
             # if the word contains an asterisks, resolve the wildcard
-
-            if element[0].find("*") != -1:
-                element = wildcard_word_finder(element[0], bigraph_csv_file)
+            if elements.find("*") != -1:
+                elements = wildcard_word_finder(elements, bigraph_index)
+                output_list.append(elements)
             else:
-                element = element[0]
-            output_list.append(element)
+                elements = linguistic_module(elements, linguistic_processing_parameters)
+                output_list.extend(elements)
         else:
             output_list.append(elements)
-
     full_boolean_query = " ".join(output_list)
     return full_boolean_query
 
@@ -335,3 +334,15 @@ def check_for_operators(input_string):
         if word in ["AND", "OR", "AND_NOT"]:
             return True
     return False
+
+def read_bigraph_file_from_csv(corpus):
+    """Read in the bigraph index file from disk."""
+    csv_filename = config.CORPUS[corpus]['bigraph_file']
+
+    new_data_dict = {}
+    with open(csv_filename, 'r') as data_file:
+        next(data_file, None)
+        for row in data_file:
+            row = row.strip().split(",", 1)
+            new_data_dict[row[0]] = ast.literal_eval(row[1])
+    return new_data_dict

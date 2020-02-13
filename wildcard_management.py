@@ -6,21 +6,22 @@ Version: Vanilla System
 Component: Module 7
 
 Created: 02 Feb 2020
-Last modified: 06 Feb 2020
+Last modified: 13 Feb 2020
 
 Author: Jonathan Boerger
-Status: Effectively complete- small tweaks remaining
+Modified by: Tiffany Maynard
+Status: Complete
 
 Description:
 
 The wildcard management module resolves wildcards into all possible words
 which satisfy the wildcard
 """
-import pandas as pd
-from linguistic_processor import bigraph_splitter
 
+import linguistic_processor
+import config
 
-def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
+def wildcard_word_finder(wildcard_search_word, bigraph_index):
     """
     This method resolves a wildcard search to return all possible words
     which satisfies the wildcard.
@@ -38,21 +39,17 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
     # removing the * from the search word
     stripped_search_word = wildcard_search_word.replace("*", "")
     # transforming the word into bigraphs
-    search_word_bigraphs = bigraph_splitter(stripped_search_word)
-
+    search_word_bigraphs = linguistic_processor.bigraph_splitter(stripped_search_word)
     # extracting the bigraph from the bigraph-search word pair
     bigraph_list = []
     for bigraph in search_word_bigraphs:
         bigraph_list.append(bigraph[0])
 
     # getting all possible words for the given bigraphs
-    potential_words_strings = bigraph_word_find_in_index(bigraph_list, bigraph_index_filename)
-
-    # the words associated to the bigraph are returned as a string. Therefore the following
-    # does some string post processing and splits the words in a string into words in a list
+    potential_words_strings = bigraph_word_find_in_index(bigraph_list, bigraph_index)
+    # the words associated to the bigraph are returned as a list
     potential_word_list = []
     for word_string in potential_words_strings:
-        word_string = word_string.replace(']', '')
         word_string_split = word_string.split(',')
         for word in word_string_split:
             potential_word_list.append(word[2:len(word) - 1])
@@ -85,9 +82,14 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
         else:
             actual_word_list.append(duplicate_word)
 
+    if config.LINGUISTIC_PARAMS.get("do_stemming"):
+        actual_word_list = linguistic_processor.stemmer(actual_word_list)
+    if config.LINGUISTIC_PARAMS.get("do_lemming"):
+        actual_word_list = linguistic_processor.lemmatizer(actual_word_list)
+
     # transforming result into a string where words are separated by OR such that it
     # can be used in a boolean search
-    if len(actual_word_list) == 0:
+    if not actual_word_list:
         return ""
     or_string = f'{actual_word_list[0]}'
     if len(actual_word_list) > 1:
@@ -101,23 +103,15 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index_filename):
 
 def bigraph_word_find_in_index(bigraph_query_list, index):
     """
-    This method finds the words associated with a bigraph
+    This method finds the words associated with a list of bigraphs
 
-    Since the query_list and the index are both sorted alphabetically the search and retrieve
-    takes O(n).
-
-    :param bigraph_query_list: List of bigraph to be searched for
+    :param bigraph_query_list: List of bigraphs to be searched for
     :param index: The index to be searched
     :return: List of resulting words associated with the bigraph
     """
-    bigraph_query_list.sort()
-    data = pd.read_csv(index)
-    point = 0
+
     result_list = []
-    for xxxx in range(0, data.shape[0]):
-        if data.iloc[xxxx, 0] == bigraph_query_list[point]:
-            result_list.append(data.iloc[xxxx, 1])
-            point += 1
-        if point == len(bigraph_query_list):
-            break
+    for bigraph in bigraph_query_list:
+        if bigraph in index:
+            result_list.append(index[bigraph])
     return result_list

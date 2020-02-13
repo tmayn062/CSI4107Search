@@ -6,7 +6,7 @@ Version: Vanilla System
 Component: Module 3 & 4 + supporting methods for module 7
 
 Created: 30 Jan 2020
-Last modified: 10 Feb 2020
+Last modified: 13 Feb 2020
 
 Author: Jonathan Boerger
 Modified by: Tiffany Maynard
@@ -22,10 +22,10 @@ import os
 import xml.etree.ElementTree as xml
 from collections import Counter
 from collections import OrderedDict
+from collections import defaultdict
 import pandas as pd
 from linguistic_processor import linguistic_module, bigraph_splitter
 import vsm_weight
-import vsm_retrieval
 import config
 
 def __build_dictionary(corpus_filename, linguistic_processing_parameters):
@@ -112,7 +112,7 @@ def __inverted_index_csv_creator(ii_filename):
     try:
         os.unlink(ii_filename)
     except FileNotFoundError:
-        print("Inverted index file not found so it can't be deleted")
+        pass
 
     with open(ii_filename, 'w', newline='', encoding='utf-8') as file:
         header = ["Word", "Postings"]
@@ -133,7 +133,7 @@ def __linguistic_processing_parameter_csv_creator(lpp_file):
     try:
         os.unlink(lpp_file)
     except FileNotFoundError:
-        print("Linguistic processing file not found so it can't be deleted")
+        pass
 
     with open(lpp_file, 'w', newline='', encoding='utf-8') as file:
         header = ["Para1", "Para2", "Para3", "Para4", "Para5", "Para6", "Para7", "Para8", ]
@@ -186,32 +186,27 @@ def __linguistic_processor_parameters_validator(lpp_csv_file, lpp_dictionary):
             return -1
     return 1
 
-def __bigraph_index_creator(corpus):
+def __bigraph_index_creator(spelling_dict):
     """
-    This private method creates a bigraph index based on the inverted index.
+    This private method creates a bigraph index based on the spelling dictionary.
 
-    :param corpus: The corpus name to locate the inverted index file
+
     :return: A list of list containing the bigraph and its associated words
     """
-    inverted_index = vsm_retrieval.read_inverted_index_from_csv(corpus)
-    bigraph_list = []
-    for word in inverted_index:
-        bigraph_list = bigraph_splitter(word, bigraph_list)
 
-    bigraph_list.sort()
-    bigraph_index = []
-    bigraph_word_list = []
-    previous_bigraph = bigraph_list[0][0]
-    for bigraph_list_row in bigraph_list:
-        bigraph = bigraph_list_row[0]
-        if previous_bigraph == bigraph:
-            bigraph_word_list.append(bigraph_list_row[1])
-        else:
-            bigraph_index.append([previous_bigraph, bigraph_word_list])
-            bigraph_word_list = [bigraph_list_row[1]]
-            previous_bigraph = bigraph
+    bigraph_dict = defaultdict(set)
+    for word in spelling_dict:
+        bigraph_list = bigraph_splitter(word)
+        for bigraph in bigraph_list:
+            if bigraph[0] in bigraph_dict:
+                bigraph_dict[bigraph[0]].add(word)
+            else:
+                #bigraph not in bigraph_dict, add new list
+                word_set = set()
+                word_set.add(word)
+                bigraph_dict[bigraph[0]] = word_set
 
-    return bigraph_index
+    return bigraph_dict
 
 def __bigraph_index_csv_creator(bi_filename):
     """
@@ -225,14 +220,14 @@ def __bigraph_index_csv_creator(bi_filename):
     try:
         os.unlink(bi_filename)
     except FileNotFoundError:
-        print("Bigraph file not found, so it can't be deleted")
+        pass
 
     with open(bi_filename, 'w', newline='', encoding='utf-8') as file:
         header = ["Bigraph", "Word List"]
         writer = csv.writer(file)
         writer.writerow(header)
 
-def __bigraph_index_csv(bi_filename, bigraph_index):
+def __bigraph_index_csv(filename, bigraph_index):
     """
     This private methods inputs the bigraph index into its csv file.
 
@@ -241,13 +236,11 @@ def __bigraph_index_csv(bi_filename, bigraph_index):
     :return: A csv containing the bigraph index
 
     """
-    __bigraph_index_csv_creator(bi_filename)
-    for element in bigraph_index:
-        to_append = f'{element[0]};!{element[1]}'
-
-        with open(bi_filename, 'a', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
-            writer.writerow(to_append.split(';!'))
+    __bigraph_index_csv_creator(filename)
+    with open(filename, 'a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        for key, value in bigraph_index.items():
+            writer.writerow([key, value])
 
 def __spelling_dictionary_csv_creator(filename):
     """
@@ -261,7 +254,7 @@ def __spelling_dictionary_csv_creator(filename):
     try:
         os.unlink(filename)
     except FileNotFoundError:
-        print("Spelling dictionary file not found, so it can't be deleted")
+        pass
 
     with open(filename, 'w', newline='', encoding='utf-8') as file:
         header = ["word", "frequency"]
@@ -319,12 +312,12 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, corpus)
         ir_dictionary = __build_dictionary(corpus_filename, linguistic_control_dictionary)
         inverted_index = __create_inverted_index(ir_dictionary)
         __inverted_index_csv(inverted_index, inverted_index_filename)
-        bigraph_index = __bigraph_index_creator(corpus)
-        __bigraph_index_csv(bigraph_filename, bigraph_index)
-        __linguistic_processing_parameters_csv(linguistic_control_dictionary, lp_parameter_filename)
         spelling_dictionary = __build_spelling_dictionary(corpus_filename,
                                                           linguistic_control_dictionary)
         __spelling_dictionary_csv(spelling_filename, spelling_dictionary)
+        bigraph_index = __bigraph_index_creator(spelling_dictionary)
+        __bigraph_index_csv(bigraph_filename, bigraph_index)
+        __linguistic_processing_parameters_csv(linguistic_control_dictionary, lp_parameter_filename)
 
     # The required files dont exits -> create them
     if not os.path.exists(inverted_index_filename)  \
@@ -340,11 +333,11 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, corpus)
 
     if check_val == -1:
         # the required files exist BUT changes to the LPP -> create a new inverted index
-        print("II already exits, however there has been a change in LP settings, thus "
+        print("Inverted index already exits, however there has been a change in LP settings, thus "
               "recalculating it")
         create_index()
     else:
         # the required files exist & no changes to the LPP -> carry on
-        print("II already exist and there has been no change in LP settings. Therefore all done.")
+        print("Inverted index for these LP setting already exists.")
 
     return

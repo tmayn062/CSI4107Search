@@ -6,7 +6,7 @@ Version: Vanilla System
 Component: Module 1
 
 Created: 23 Jan 2020
-Last modified: 11 Feb 2020
+Last modified: 13 Feb 2020
 
 Author: Tiffany Maynard
 Status: Complete
@@ -33,7 +33,7 @@ class SearchEngineGUI:
         # Create a root window
         self.root = tkinter.Tk()
         self.root.title("Jindalee")
-        self.root.geometry("1000x800")
+        self.root.geometry("1200x1000")
         # Create frames
         top_frame = tkinter.Frame(self.root)
         self.spelling_frame = tkinter.Frame(self.root)

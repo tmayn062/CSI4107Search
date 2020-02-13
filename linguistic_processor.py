@@ -6,10 +6,11 @@ Version: Vanilla System
 Component: Module 3
 
 Created: 30 Jan 2020
-Last modified: 31 Jan 2020
+Last modified: 13 Feb 2020
 
 Author: Jonathan Boerger
-Status: In progress- small tweaks
+Modified by: Tiffany Maynard
+Status: Complete
 
 Description: This module applies linguistic pre-processing on text including:
     -contraction expansion
@@ -145,8 +146,8 @@ def tokenize(raw_text):
     :param raw_text: A string of text
     :return: A list containing individual string tokens
     """
-    words = raw_text.split()
-    return words
+
+    return raw_text.split()
 
 
 def stemmer(raw_text_list):
@@ -210,7 +211,7 @@ def linguistic_module(raw_text, control_dic):
             {"do_contractions": True, "do_normalize_hyphens": True,
             "do_normalize_periods": True, "do_remove_punctuation": True, "do_case_fold": True,
             "do_stop_word_removal": True, "do_stemming": True, "do_lemming": False}
-    :param corpus: corpus indicator used in call to create_spelling_dictionary
+
     :return: A list which contains fully processed tokens
     """
 
