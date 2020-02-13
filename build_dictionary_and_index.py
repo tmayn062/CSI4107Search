@@ -198,13 +198,13 @@ def __bigraph_index_creator(spelling_dict):
     for word in spelling_dict:
         bigraph_list = bigraph_splitter(word)
         for bigraph in bigraph_list:
-            if bigraph[0] in bigraph_dict:
-                bigraph_dict[bigraph[0]].add(word)
-            else:
+            #if bigraph[0] in bigraph_dict:
+            bigraph_dict[bigraph[0]].add(word)
+            #else:
                 #bigraph not in bigraph_dict, add new list
-                word_set = set()
-                word_set.add(word)
-                bigraph_dict[bigraph[0]] = word_set
+        #        word_set = set()
+        #        word_set.add(word)
+        #        bigraph_dict[bigraph[0]] = word_set
 
     return bigraph_dict
 

@@ -124,7 +124,8 @@ def combine_corrections(corrections_dict, word_list):
     """Combine suggested corrections with words from list that
        appear in the spelling dictionary."""
     combinations = []
-    for i in range(config.TOP_N_SPELLING):
+    num_corrections = min(config.TOP_N_SPELLING, len(corrections_dict))
+    for i in range(num_corrections):
         combination = word_list.copy()
         replaced = [corrections_dict[word][i] \
         if word in corrections_dict else word for word in combination]

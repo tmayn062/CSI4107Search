@@ -39,7 +39,7 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index):
     # removing the * from the search word
     stripped_search_word = wildcard_search_word.replace("*", "")
     # transforming the word into bigraphs
-    search_word_bigraphs = linguistic_processor.bigraph_splitter(stripped_search_word)
+    search_word_bigraphs = linguistic_processor.bigraph_splitter(wildcard_search_word)
     # extracting the bigraph from the bigraph-search word pair
     bigraph_list = []
     for bigraph in search_word_bigraphs:
@@ -49,11 +49,13 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index):
     potential_words_strings = bigraph_word_find_in_index(bigraph_list, bigraph_index)
     # the words associated to the bigraph are returned as a list
     potential_word_list = []
-    for word_string in potential_words_strings:
-        word_string_split = word_string.split(',')
-        for word in word_string_split:
-            potential_word_list.append(word[2:len(word) - 1])
-
+    for word_string in potential_words_strings[0]:
+        if len(word_string) > 1:
+            word_string_split = word_string.split(',')
+            for word in word_string_split:
+                potential_word_list.append(word)
+        else:
+            potential_word_list.append(word_string)
     # the following sections trims all the possible words associated with the bigraph to those
     # which conform with the requirements of the wildcard
     potential_word_list.sort()
@@ -75,12 +77,7 @@ def wildcard_word_finder(wildcard_search_word, bigraph_index):
                     and potential_word.endswith(wildcard_search_word[asterisks_position + 1:]):
                 duplicate_word_list.append(potential_word)
     # Removing all duplicate words from the valid word list
-    actual_word_list = []
-    for duplicate_word in duplicate_word_list:
-        if duplicate_word in actual_word_list:
-            pass
-        else:
-            actual_word_list.append(duplicate_word)
+    actual_word_list = list(set(duplicate_word_list))
 
     if config.LINGUISTIC_PARAMS.get("do_stemming"):
         actual_word_list = linguistic_processor.stemmer(actual_word_list)

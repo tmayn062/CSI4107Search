@@ -185,7 +185,7 @@ class SearchEngineGUI:
 #config.TOP_N_SPELLING
     def show_spelling_options(self, max_count, suggestions):
         """Show spelling suggestions."""
-        for i in range(max_count):
+        for i in range(min(max_count, len(suggestions))):
             if suggestions[i]:
                 self.spelling_list.append(tkinter.Label(self.spelling_frame, fg="blue",
                                                         font=(self.font_to_use, 14),

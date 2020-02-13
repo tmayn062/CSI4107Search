@@ -18,6 +18,7 @@ The boolean search module implements the boolean search method for information r
 
 """
 import ast
+import csv
 from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
 import config
@@ -69,7 +70,7 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     """
     operators = ["AND", "OR", "AND_NOT"]
     operand_stack = []
-    # if the query is a single word, return the docID list for the word
+    # if the query is empty or a single word, return the docID list for the word
     if len(postfix_query) == 1:
         if postfix_query[0] in inverted_index:
             return get_doc_id(postfix_query[0], inverted_index)
@@ -83,8 +84,9 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
             word2 = operand_stack.pop()
             result = intersect_wrapper(word1, word2, token, inverted_index)
             operand_stack.append(result)
-
-    return operand_stack.pop()
+    if operand_stack:
+        return operand_stack.pop()
+    return []
 
 
 def intersect_wrapper(word1, word2, operator, inverted_index):
@@ -341,8 +343,10 @@ def read_bigraph_file_from_csv(corpus):
 
     new_data_dict = {}
     with open(csv_filename, 'r') as data_file:
+        reader = csv.reader(data_file, delimiter=',')
         next(data_file, None)
-        for row in data_file:
-            row = row.strip().split(",", 1)
-            new_data_dict[row[0]] = ast.literal_eval(row[1])
+        for row in reader:
+            if row[0] not in new_data_dict:
+                new_data_dict[row[0]] = set()  # creates a new key entry for the new dict1 key
+            new_data_dict[row[0]] = ast.literal_eval(row[1])  # adds another key, value to dict2
     return new_data_dict

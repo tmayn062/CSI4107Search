@@ -41,9 +41,9 @@ def main():
                        '(query AND processing)',
                        'ps*logy',
                        'leadership']
-    for query in boolean_queries:
-        print(query)
-        print(boolean_search.boolean_search_module(query, corpus))
+#    for query in boolean_queries:
+#        print(query)
+#        print(boolean_search.boolean_search_module(query, corpus))
     vsm_queries = ['operoting system',
                    'computers graphical',
                    'lienar',
