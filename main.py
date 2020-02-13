@@ -40,11 +40,26 @@ def main():
     print(tesstt)
 
     print(wildcard_word_finder(tesstt[0], config.CORPUS[corpus]['bigraph_file']))
-    boolean_query = '(*ge AND_NOT (man* OR health*))'
-    print(boolean_query)
-    print(boolean_search_module(boolean_query, corpus))
-    print(boolean_search_module("ergodic", corpus))
-    print(vsm_retrieval.retrieve("ergodic", corpus))
+
+    boolean_queries = ['(*ge AND_NOT (man* OR health*))',
+                       '(statistical OR su*ort)',
+                       '(operating AND (system OR platform))',
+                       '(query AND processing)',
+                       'ps*logy',
+                       'leadership']
+    for query in boolean_queries:
+        print(query)
+        print(boolean_search_module(query, corpus))
+    vsm_queries = ['operoting system',
+                   'computers graphical',
+                   'lienar',
+                   'business administration',
+                   'child psychology',
+                   'bayesian network classification']
+    for query in vsm_queries:
+        print(query)
+        print(vsm_retrieval.retrieve(query, corpus))
+
     gui.SearchEngineGUI()
 
 

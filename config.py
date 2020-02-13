@@ -16,7 +16,7 @@ CORPUS[REUTERS] = {"source" : "UofO_Courses.html",
                    "spelling_file" : "reuters_spelling.csv"}
 
 
-K_RETRIEVAL = 10
+K_RETRIEVAL = 20
 TOP_N_SPELLING = 3
 LINGUISTIC_PARAMS = {"do_contractions": True,
                      "do_normalize_hyphens": True,
