@@ -133,7 +133,14 @@ class SearchEngineGUI:
 
         # Set search type
         if self.search_model.get() == 1:
-            search = 'Boolean'
+            if boolean_search.check_for_operators(self.search_entry.get().strip()):
+                search = 'Boolean'
+            else:
+                messagebox.showinfo(
+                    "Change query to VSM",
+                    "No Boolean operators (AND, OR, AND_NOT) found in query, changing query to VSM")
+                self.search_model.set(2)
+                search = 'VSM'
         else:
             search = 'VSM'
 
@@ -157,11 +164,12 @@ class SearchEngineGUI:
         docs = corpus_access.get_documents(corpus, docs_retrieved)
         hyperlink = HyperlinkManager(self.search_results)
 
-        if docs is None or docs == []:
-            self.search_results.insert("insert", 'No documents found')
-            suggestions = spelling.suggest_words(self.search_entry.get().strip(), corpus)
+        suggestions = spelling.suggest_words(self.search_entry.get().strip(), corpus)
+        if suggestions:
             self.show_spelling_options(config.TOP_N_SPELLING, suggestions)
             self.spelling_label.config(text="Did you mean? ")
+        if docs is None or docs == []:
+            self.search_results.insert("insert", 'No documents found')
         else:
             for doc in docs:
                 self.search_results.insert("insert",
@@ -180,7 +188,7 @@ class SearchEngineGUI:
         for i in range(max_count):
             if suggestions[i]:
                 self.spelling_list.append(tkinter.Label(self.spelling_frame, fg="blue",
-                                                        font=(self.font_to_use, 18),
+                                                        font=(self.font_to_use, 14),
                                                         text=suggestions[i]))
                 def update_search_term(event, word=suggestions[i]):
                     self.spelling_label.config(text="Did you mean? ")

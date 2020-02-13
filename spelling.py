@@ -26,22 +26,41 @@ from linguistic_processor import punctuation_remover
 def suggest_words(given_words, corpus):
     """Returns list of suggested words based on a given word
        assumes first letter is correct"""
-    ed_score = dict()
-    words = given_words.split()
-    first_letter_dict = make_first_letter_dict(get_spelling_dictionary(corpus))
-    for given_word in words:
+
+    word_list = given_words.replace('*', ' ').replace('(', '( ').replace(')', ' )').split()
+    spelling_dict = get_spelling_dictionary(corpus)
+    words_not_in_dic = list_words_not_in_dictionary(word_list, spelling_dict)
+    first_letter_dict = make_first_letter_dict(spelling_dict)
+    suggestions = []
+    #dict to hold corrections for each mispelled word
+    corrections = dict()
+    for given_word in words_not_in_dic:
+        #only suggest corrections for words not found in spelling dictionary
+        ed_score = dict()
         for word in first_letter_dict[given_word[0]]:
+            #assume first letter is correct
+            #and compare only to words that start with same letter
             ed_score[word] = edit_distance(word, given_word)
-    return nsmallest(config.TOP_N_SPELLING, ed_score, key=ed_score.get)
+        corrections[given_word] = nsmallest(config.TOP_N_SPELLING, ed_score, key=ed_score.get)
+
+    if words_not_in_dic:
+        suggestions = combine_corrections(corrections, word_list)
+        return suggestions[:config.TOP_N_SPELLING]
+
+    #return no suggestions if no spelling corrections were necessary
+    return []
+
 
 def edit_distance(word1, word2):
     """Dynamic programming to calculate weighted edit distance."""
 # Adapted from Winter2020-CSI4107-TolerantRetrieval slides
-    cost_swap = {'ae': 0.5, 'ai': 0.5, 'ao': 0.5, 'au': 0.5,
-                 'ea': 0.5, 'ei': 0.5, 'eo': 0.5, 'eu': 0.5,
-                 'ia': 0.5, 'ie': 0.5, 'io': 0.5, 'iu': 0.5,
-                 'oa': 0.5, 'oe': 0.5, 'oi': 0.5, 'ou': 0.5,
-                 'ua': 0.5, 'ue': 0.5, 'ui': 0.5, 'uo': 0.5}
+    cost_swap = {'ae': 0.5, 'ai': 0.5, 'ao': 0.5, 'au': 0.5, 'ay': 0.5,
+                 'ea': 0.5, 'ei': 0.5, 'eo': 0.5, 'eu': 0.5, 'ey': 0.5,
+                 'ia': 0.5, 'ie': 0.5, 'io': 0.5, 'iu': 0.5, 'iy': 0.5,
+                 'oa': 0.5, 'oe': 0.5, 'oi': 0.5, 'ou': 0.5, 'oy': 0.5,
+                 'ua': 0.5, 'ue': 0.5, 'ui': 0.5, 'uo': 0.5, 'uy': 0.5,
+                 'ya': 0.5, 'ye': 0.5, 'yi': 0.5, 'yo': 0.5, 'yu': 0.5,
+                 'rt': 0.5, 'ty': 0.5, 'yt': 0.5}
     word1 = punctuation_remover(remove_accents(word1.replace("’", "").replace("*", "")))
     word2 = punctuation_remover(remove_accents(word2.replace("’", "").replace("*", "")))
     len_word1 = len(word1)
@@ -92,6 +111,25 @@ def remove_accents(input_str):
     """Remove accents from characters"""
     nfkd_form = unicodedata.normalize('NFKD', input_str)
     return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+
+def list_words_not_in_dictionary(input_words, spelling_dict):
+    """Returns list of words not in dictionary."""
+    not_in_dict = []
+    for word in input_words:
+        if word not in spelling_dict and word not in ["AND", "OR", "AND_NOT", "(", ")"]:
+            not_in_dict.append(word)
+    return not_in_dict
+
+def combine_corrections(corrections_dict, word_list):
+    """Combine suggested corrections with words from list that
+       appear in the spelling dictionary."""
+    combinations = []
+    for i in range(config.TOP_N_SPELLING):
+        combination = word_list.copy()
+        replaced = [corrections_dict[word][i] \
+        if word in corrections_dict else word for word in combination]
+        combinations.append(replaced)
+    return combinations
 
 def create_cost_dict():
     """Transform common 1-letter replacements into a cost dictionary"""
@@ -581,5 +619,4 @@ def create_cost_dict():
         letter_from = entry[0]
         letter_to = entry[1]
         cost_dict[letter_from+letter_to] = 1/entry[2]
-    print(cost_dict)
     return cost_dict

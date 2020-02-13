@@ -325,3 +325,13 @@ def postfix_translation(boolean_infix_query):
     while op_stack:
         postfix_list.append(op_stack.pop())
     return postfix_list
+
+def check_for_operators(input_string):
+    """Returns True if input contains at least on Boolean operator or is only 1 word."""
+    words = input_string.split()
+    if len(words) == 1:
+        return True
+    for word in words:
+        if word in ["AND", "OR", "AND_NOT"]:
+            return True
+    return False
