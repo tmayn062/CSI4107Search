@@ -6,7 +6,7 @@ Version: Vanilla System
 Component: Module 5
 
 Created: 26 Jan 2020
-Last modified: 09 Feb 2020
+Last modified: 13 Feb 2020
 
 Author: Tiffany Maynard
 Status: Completed
@@ -35,7 +35,7 @@ class Document:
 
 
 def get_documents(corpus, list_doc_ids):
-    """Return a list of documents using a given ordereddict of doc ids
+    """Return a list of documents using a given list of (doc_id, score)
        order of doc ids is preserved."""
     # XML parse code adapted from
     # https://stackabuse.com/reading-and-writing-xml-files-in-python/
