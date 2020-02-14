@@ -19,6 +19,7 @@ import ast
 import numpy as np
 import config
 import linguistic_processor
+
 #import vsm_weight
 
 def convert_query(query):
@@ -43,7 +44,11 @@ def retrieve(query, corpus):
     for doc_id in docs:
         score[doc_id] = similarity(docs[doc_id], query_ones)
     #Adapted from https://www.geeksforgeeks.org/python-n-largest-values-in-dictionary/
-    return nlargest(config.K_RETRIEVAL, score, key=score.get)
+
+    klargest = nlargest(config.K_RETRIEVAL, score, key=score.get)
+    #Adapted from https://stackoverflow.com/a/38218662
+    return [(x, score[x]) for x in klargest]
+
 
 def shortlist(query, corpus):
     """Create shortlist of docs from inv_index based only on those that have at

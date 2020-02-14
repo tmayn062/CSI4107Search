@@ -16,6 +16,7 @@ Description: Allow a user to access search engine capabilities
 """
 import tkinter
 from tkinter import messagebox
+import tkinter.scrolledtext as tkscrolled
 import config
 import corpus_access
 import vsm_retrieval
@@ -108,9 +109,9 @@ class SearchEngineGUI:
                                                  value=2)
         self.reuters_radio.pack(side='left')
         self.reuters_radio.configure(state=tkinter.DISABLED)
-        self.search_results = tkinter.Text(results_frame,
-                                           state="normal",
-                                           font=(self.font_to_use, 12))
+        self.search_results = tkscrolled.ScrolledText(results_frame,
+                                                      state="normal", wrap='word',
+                                                      font=(self.font_to_use, 12))
         self.search_results.pack(side='bottom')
         # Now pack the frames also
         top_frame.pack()
@@ -173,13 +174,19 @@ class SearchEngineGUI:
             self.search_results.insert("insert", 'No documents found')
         else:
             for doc in docs:
+                score_str = ''
+                if search == 'VSM':
+                    score_str = '{:0.3f}'.format(doc.score) + ' '
                 self.search_results.insert("insert",
-                                           doc.title + '\n',
+                                           score_str + doc.title,
                                            hyperlink.add
                                            (self.click_link, doc.doc_id, corpus))
+                self.search_results.insert("insert", doc.doctext[:80] + '\n')
+
     def click_link(self, click_id, corpus):
         """Click link function."""
-        doc = corpus_access.get_documents(corpus, [click_id])[0]
+        # add score of 1.0 for consistency of arguments
+        doc = corpus_access.get_documents(corpus, [(click_id, 1.0)])[0]
         messagebox.showinfo(
             doc.title,
             doc.doctext)

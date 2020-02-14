@@ -50,7 +50,9 @@ def boolean_search_module(query, corpus):
     #read in inverted_index dictionary from csv just once per search
     inverted_index_dict = inverted_index_dictionary(corpus)
     doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_dict)
-    return doc_id_list
+    #add dummy scores to doc_id_list
+    ones = [1] * len(doc_id_list)
+    return zip(doc_id_list, ones)
 
 
 def boolean_postfix_query_processor(postfix_query, inverted_index):
