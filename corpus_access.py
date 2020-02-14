@@ -16,15 +16,20 @@ Description: Access documents from the corpus
 """
 import xml.etree.ElementTree as xml
 import os.path
-from dataclasses import dataclass
 import config
 
-@dataclass
+
 class Document:
     """Document holds all the document info from a corpus."""
     doc_id: int
     title: str
     doctext: str
+
+    def __init__(self, doc_id, title, doctext):
+        """Initialize document."""
+        self.doc_id = doc_id
+        self.title = title
+        self.doctext = doctext
 
 
 def get_documents(corpus, list_doc_ids):

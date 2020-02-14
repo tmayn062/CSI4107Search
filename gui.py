@@ -33,7 +33,7 @@ class SearchEngineGUI:
         # Create a root window
         self.root = tkinter.Tk()
         self.root.title("Jindalee")
-        self.root.geometry("1200x1000")
+        self.root.geometry("1200x1200")
         # Create frames
         top_frame = tkinter.Frame(self.root)
         self.spelling_frame = tkinter.Frame(self.root)
@@ -165,6 +165,7 @@ class SearchEngineGUI:
         hyperlink = HyperlinkManager(self.search_results)
 
         suggestions = spelling.suggest_words(self.search_entry.get().strip(), corpus)
+
         if suggestions:
             self.show_spelling_options(config.TOP_N_SPELLING, suggestions)
             self.spelling_label.config(text="Did you mean? ")
@@ -182,7 +183,7 @@ class SearchEngineGUI:
         messagebox.showinfo(
             doc.title,
             doc.doctext)
-#config.TOP_N_SPELLING
+
     def show_spelling_options(self, max_count, suggestions):
         """Show spelling suggestions."""
         for i in range(min(max_count, len(suggestions))):

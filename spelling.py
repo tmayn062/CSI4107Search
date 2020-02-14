@@ -31,6 +31,7 @@ def suggest_words(given_words, corpus):
     spelling_dict = get_spelling_dictionary(corpus)
     words_not_in_dic = list_words_not_in_dictionary(word_list, spelling_dict)
     first_letter_dict = make_first_letter_dict(spelling_dict)
+
     suggestions = []
     #dict to hold corrections for each mispelled word
     corrections = dict()
@@ -41,11 +42,17 @@ def suggest_words(given_words, corpus):
             #assume first letter is correct
             #and compare only to words that start with same letter
             ed_score[word] = edit_distance(word, given_word)
+        if len(given_word) > 1:
+            for word in first_letter_dict[given_word[1]]:
+                #assume second letter should be first letter
+                #and compare only to words that start with same letter
+                ed_score[word] = edit_distance(word, given_word)
+
         corrections[given_word] = nsmallest(config.TOP_N_SPELLING, ed_score, key=ed_score.get)
 
     if words_not_in_dic:
         suggestions = combine_corrections(corrections, word_list)
-        return suggestions[:config.TOP_N_SPELLING]
+        return suggestions
 
     #return no suggestions if no spelling corrections were necessary
     return []
@@ -53,14 +60,19 @@ def suggest_words(given_words, corpus):
 
 def edit_distance(word1, word2):
     """Dynamic programming to calculate weighted edit distance."""
-# Adapted from Winter2020-CSI4107-TolerantRetrieval slides
-    cost_swap = {'ae': 0.5, 'ai': 0.5, 'ao': 0.5, 'au': 0.5, 'ay': 0.5,
-                 'ea': 0.5, 'ei': 0.5, 'eo': 0.5, 'eu': 0.5, 'ey': 0.5,
-                 'ia': 0.5, 'ie': 0.5, 'io': 0.5, 'iu': 0.5, 'iy': 0.5,
+# edit distance code Adapted from Winter2020-CSI4107-TolerantRetrieval slides
+# cost_swap somewhat adapted from list of common 1-letter replacements
+# from http://norvig.com/ngrams/count_1edit.txt
+    cost_swap = {'ae': 0.1, 'ai': 0.5, 'ao': 0.5, 'au': 0.5, 'ay': 0.5,
+                 'ea': 0.5, 'ei': 0.1, 'eo': 0.5, 'eu': 0.5, 'ey': 0.5,
+                 'ia': 0.5, 'ie': 0.1, 'io': 0.5, 'iu': 0.5, 'iy': 0.5,
                  'oa': 0.5, 'oe': 0.5, 'oi': 0.5, 'ou': 0.5, 'oy': 0.5,
                  'ua': 0.5, 'ue': 0.5, 'ui': 0.5, 'uo': 0.5, 'uy': 0.5,
                  'ya': 0.5, 'ye': 0.5, 'yi': 0.5, 'yo': 0.5, 'yu': 0.5,
-                 'rt': 0.5, 'ty': 0.5, 'yt': 0.5}
+                 'rt': 0.5, 'tr': 0.5, 'ty': 0.5, 'yt': 0.5, 'sc': 0.5,
+                 'cs': 0.5, 'gh': 0.5, 'hg': 0.5, 'nm': 0.5, 'mn': 0.5,
+                 'td': 0.5, 'dt': 0.5, 'ct': 0.5, 'tc': 0.5, 'sz': 0.5,
+                 'zs': 0.5}
     word1 = punctuation_remover(remove_accents(word1.replace("’", "").replace("*", "")))
     word2 = punctuation_remover(remove_accents(word2.replace("’", "").replace("*", "")))
     len_word1 = len(word1)
@@ -80,7 +92,7 @@ def edit_distance(word1, word2):
                 #convert characters to numbers
                 #char_word1 = ord(word1[j-1]) - 97
                 #char_word2 = ord(word2[i-1]) - 97
-                add_fact = cost_swap.get(word1[j-1]+word2[i-1], 2)
+                add_fact = cost_swap.get(word1[j-1]+word2[i-1], 1)
             array_dist[i, j] = min(array_dist[i-1, j] + 1,
                                    array_dist[i, j-1] + 1,
                                    array_dist[i-1, j-1] + add_fact)
@@ -124,13 +136,21 @@ def combine_corrections(corrections_dict, word_list):
     """Combine suggested corrections with words from list that
        appear in the spelling dictionary."""
     combinations = []
-    num_corrections = min(config.TOP_N_SPELLING, len(corrections_dict))
-    for i in range(num_corrections):
-        combination = word_list.copy()
-        replaced = [corrections_dict[word][i] \
-        if word in corrections_dict else word for word in combination]
-        combinations.append(replaced)
-    return combinations
+
+    for i in range(config.TOP_N_SPELLING):
+        combination = []
+        for word in word_list:
+            if word in corrections_dict:
+                index = min(i, len(corrections_dict[word]) - 1)
+                replaced = corrections_dict[word][index]
+            else:
+                replaced = word
+            combination.append(replaced)
+        combinations.append(combination)
+    #remove dups code from https://stackoverflow.com/a/2213935
+    dedup = [combinations[i] for i in range(len(combinations)) \
+            if i == 0 or combinations[i] != combinations[i-1]]
+    return dedup
 
 def create_cost_dict():
     """Transform common 1-letter replacements into a cost dictionary"""
