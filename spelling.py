@@ -140,8 +140,8 @@ def combine_corrections(corrections_dict, word_list):
     for i in range(config.TOP_N_SPELLING):
         combination = []
         for word in word_list:
-            if word in corrections_dict:
-                index = min(i, len(corrections_dict[word]) - 1)
+            if word in corrections_dict and corrections_dict[word]:
+                index = min(i, max(len(corrections_dict[word]) - 1, 0))
                 replaced = corrections_dict[word][index]
             else:
                 replaced = word

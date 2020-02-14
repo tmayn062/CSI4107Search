@@ -181,7 +181,7 @@ class SearchEngineGUI:
                                            score_str + doc.title,
                                            hyperlink.add
                                            (self.click_link, doc.doc_id, corpus))
-                self.search_results.insert("insert", doc.doctext[:80] + '\n')
+                self.search_results.insert("insert", doc.doctext[:100] + '\n')
 
     def click_link(self, click_id, corpus):
         """Click link function."""
