@@ -40,9 +40,14 @@ To install a missing package using pip, from a terminal type pip install xxxx, f
 
 <strong>pip install pandas</strong>
 
-<h2> Instructions</h2>
+<h2> Instructions to Install and Run</h2>
+To install, simply clone this repository and install any required external modules.
 
 To run, open a terminal and navigate to folder where the code is saved and type
 
-python main.py
+<strong>python main.py</strong>
+
+<h2> Configurations </h2>
+The config.py files allows for the modification of the number of search results paramaters without requiring a user to go into the code. 
+Speficially a user retrived (K_RETRIEVAL), the number of spelling correction recomendations (TOP_N_SPELLING), and which linguistic pre-processing parameters are to be applied to the corpus and queries (LINGUISTIC_PARAMS) 
 
