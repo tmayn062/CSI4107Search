@@ -9,40 +9,24 @@ Jonathan Boerger 300098639</strong>
 
 <h2> Packages</h2>
 <h3>Standard Packages Used</h3>
-
-xml.etree.ElementTree
-
-os
-
-datetime
-
-ast
-
-csv
-
-collections
-
-re
-
-tkinter
-
-string
-
-unicodedata
-
-heapq
-
+xml.etree.ElementTree <br>
+os<br>
+datetime<br>
+ast<br>
+csv<br>
+collections<br>
+re<br>
+tkinter<br>
+string<br>
+unicodedata<br>
+heapq<br>
 math
 
 
 <h3>Non-Standard Packages Used</h3>
-
-numpy
-
-nltk
-
-bs4
-
+numpy<br>
+nltk<br>
+bs4<br>
 pandas
 <h2> Package Instilation </h2>
 
