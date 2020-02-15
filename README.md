@@ -1,14 +1,10 @@
-# CSI4107Search
-
-<h1>Jindalee </h1>
-CSI4107 Search Engine Project<br>
-Vanilla System
+# Jindalee - CSI 4107 Search Engine Project (Vanila System)
 
 Winter 2020<br>
 Group SE 13
 
-Tiffany Maynard 300047456<br>
-Jonathan Boerger 300098639
+<strong>Tiffany Maynard 300047456<br>
+Jonathan Boerger 300098639</strong>
 
 
 <h2> Packages</h2>
