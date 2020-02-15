@@ -7,27 +7,7 @@ Group SE 13
 Jonathan Boerger 300098639</strong>
 
 
-<h2> Packages</h2>
-<h3>Standard Packages Used</h3>
-xml.etree.ElementTree <br>
-os<br>
-datetime<br>
-ast<br>
-csv<br>
-collections<br>
-re<br>
-tkinter<br>
-string<br>
-unicodedata<br>
-heapq<br>
-math
 
-
-<h3>Non-Standard Packages Used</h3>
-numpy<br>
-nltk<br>
-bs4<br>
-pandas
 <h2> Package Instilation </h2>
 
 To install a missing package using pip, from a terminal type pip install xxxx, for example:
@@ -51,3 +31,25 @@ To run, open a terminal and navigate to folder where the code is saved and type
 The config.py files allows for the modification of the number of search results paramaters without requiring a user to go into the code. 
 Speficially a user retrived (K_RETRIEVAL), the number of spelling correction recomendations (TOP_N_SPELLING), and which linguistic pre-processing parameters are to be applied to the corpus and queries (LINGUISTIC_PARAMS) 
 
+
+<h2> Packages</h2>
+<h3>Standard Packages Used</h3>
+xml.etree.ElementTree <br>
+os<br>
+datetime<br>
+ast<br>
+csv<br>
+collections<br>
+re<br>
+tkinter<br>
+string<br>
+unicodedata<br>
+heapq<br>
+math
+
+
+<h3>Non-Standard Packages Used</h3>
+numpy<br>
+nltk<br>
+bs4<br>
+pandas
