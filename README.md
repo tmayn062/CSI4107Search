@@ -28,8 +28,8 @@ To run, open a terminal and navigate to folder where the code is saved and type
 <strong>python main.py</strong>
 
 <h2> Configurations </h2>
-The config.py files allows for the modification of the number of search results paramaters without requiring a user to go into the code. 
-Speficially a user retrived (K_RETRIEVAL), the number of spelling correction recomendations (TOP_N_SPELLING), and which linguistic pre-processing parameters are to be applied to the corpus and queries (LINGUISTIC_PARAMS) 
+The <strong>config.py</strong> file allows for the modification of the number of search results paramaters without requiring a user to go into the code. <br>
+Speficially a user can modify the number of document retrived in a search (K_RETRIEVAL), the number of spelling correction recomendations (TOP_N_SPELLING), and which linguistic pre-processing parameters are to be applied to the corpus and queries (LINGUISTIC_PARAMS) 
 
 
 <h2> Packages</h2>
