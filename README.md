@@ -1,4 +1,4 @@
-# Jindalee - CSI 4107 Search Engine Project (Vanila System)
+# Jindalee - CSI 4107 Search Engine Project (Vanilla System)
 
 Winter 2020<br>
 Group SE 13
@@ -23,12 +23,12 @@ To install a missing package using pip, from a terminal type pip install xxxx, f
 <h2> Instructions to Install and Run</h2>
 To install, simply clone this repository and install any required external modules.
 
-To run, open a terminal, navigate to folder where the code is saved, and type
+To run, open a terminal, navigate to the folder where the code is saved, and type
 
 <strong>python main.py</strong>
 
-<h2> Configurations </h2>
-The <strong>config.py</strong> file allows for the modification of the number of the search parameters without requiring a user to go into the code. <br>
+<h2> Configuration </h2>
+The <strong>config.py</strong> file allows for the modification of a number of the search parameters without requiring a user to go into the code. <br>
 Specifically, a user can modify the number of documents retrieved in a VSM search (K_RETRIEVAL), the number of spelling correction recommendations (TOP_N_SPELLING), and which linguistic pre-processing parameters are to be applied to the corpus and queries (LINGUISTIC_PARAMS) 
 
 
