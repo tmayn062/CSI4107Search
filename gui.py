@@ -17,6 +17,7 @@ Description: Allow a user to access search engine capabilities
 import tkinter
 from tkinter import messagebox
 import tkinter.scrolledtext as tkscrolled
+from tkinter import PhotoImage
 import config
 import corpus_access
 import vsm_retrieval
@@ -33,9 +34,10 @@ class SearchEngineGUI:
         # https://codinginfinite.com/gui-application-in-python-tkinter-tutorial/
         # Create a root window
         self.root = tkinter.Tk()
-        self.root.title("Jindalee")
+        self.root.title("Jindalee - a search engine")
         self.root.geometry("1200x1200")
         # Create frames
+        title_frame = tkinter.Frame(self.root)
         top_frame = tkinter.Frame(self.root)
         self.spelling_frame = tkinter.Frame(self.root)
         self.spelling_list = list()
@@ -45,32 +47,36 @@ class SearchEngineGUI:
         bottom_frame = tkinter.Frame(self.root)
         results_frame = tkinter.Frame(bottom_frame)
         # Create labels
-        tkinter.Label(top_frame, font=(self.font_to_use, 18),
-                      text='Enter search string: ').pack(side='left')
+        tkinter.Label(top_frame, font=(self.font_to_use, 24),
+                      fg='#44c8d4', text='Jindalee  ').pack(side='left')
 
-        self.search_entry = tkinter.Entry(top_frame, width=40, textvariable="Type here",
+
+        self.search_entry = tkinter.Entry(top_frame, width=50, textvariable="Type here",
                                           font=(self.font_to_use, 18))
+
         self.search_entry.pack(side='left')
         self.spelling_label = tkinter.Label(
             self.spelling_frame,
             text=" ", font=(self.font_to_use, 18))
         self.spelling_label.pack(side='left')
-
+        mag_glass = PhotoImage(file='magglass2.png')
+        mag_glass = mag_glass.subsample(8)
         # Create the button widgets
+        #height=25, width=25,
         self.search_button = tkinter.Button(
-            button_frame,
-            text='Search',
+            top_frame,
+            image=mag_glass,
             command=self.run_search,
             font=(self.font_to_use, 18))
         # root.destroy exits/destroys the main window
-        self.quit_button = tkinter.Button(
-            button_frame,
-            text='Quit',
-            command=self.root.destroy,
-            font=(self.font_to_use, 18))
-        # Pack the buttons
+        # self.quit_button = tkinter.Button(
+        #     top_frame,
+        #     text='Quit',
+        #     command=self.root.destroy,
+        #     font=(self.font_to_use, 18))
+        # # Pack the buttons
+        # self.quit_button.pack(side='right')
         self.search_button.pack(side='left')
-        self.quit_button.pack(side='left')
         tkinter.Label(bottom_frame, font=(self.font_to_use, 18),
                       text='Search results').pack()
         self.search_model = tkinter.IntVar()
@@ -114,7 +120,8 @@ class SearchEngineGUI:
                                                       font=(self.font_to_use, 12))
         self.search_results.pack(side='bottom')
         # Now pack the frames also
-        top_frame.pack()
+
+        top_frame.pack(padx=50, pady=50, side='top', fill='both')
         self.spelling_frame.pack()
         search_frame.pack()
         collection_frame.pack()
