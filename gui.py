@@ -37,7 +37,7 @@ class SearchEngineGUI:
         self.root.title("Jindalee - a search engine")
         self.root.geometry("1200x1200")
         # Create frames
-        title_frame = tkinter.Frame(self.root)
+
         top_frame = tkinter.Frame(self.root)
         self.spelling_frame = tkinter.Frame(self.root)
         self.spelling_list = list()
@@ -48,7 +48,7 @@ class SearchEngineGUI:
         results_frame = tkinter.Frame(bottom_frame)
         # Create labels
         tkinter.Label(top_frame, font=(self.font_to_use, 24),
-                      fg='#44c8d4', text='Jindalee  ').pack(side='left')
+                      fg='#5016b5', text='Jindalee  ').pack(side='left')
 
 
         self.search_entry = tkinter.Entry(top_frame, width=50, textvariable="Type here",

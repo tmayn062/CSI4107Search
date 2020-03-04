@@ -21,7 +21,9 @@ import numpy
 import config
 from linguistic_processor import punctuation_remover
 
-
+#Empty globals to store spelling dictionary so it is only read once form csv
+SPELLING_DICT = {}
+SPELLING_CORPUS = ""
 
 def suggest_words(given_words, corpus):
     """Returns list of suggested words based on a given word
@@ -99,6 +101,17 @@ def edit_distance(word1, word2):
     return array_dist[len_word2, len_word1]
 
 def get_spelling_dictionary(corpus):
+    """Wrapper to avoid multiple dictionary reads from csv."""
+    global SPELLING_CORPUS
+    global SPELLING_DICT
+    if SPELLING_DICT and corpus == SPELLING_CORPUS:
+        return SPELLING_DICT
+    SPELLING_CORPUS = corpus
+    SPELLING_DICT = read_spelling_from_csv(corpus)
+    return SPELLING_DICT
+
+
+def read_spelling_from_csv(corpus):
     """Read in words and their frequencies from csv."""
     #spelling suggestions after lemmatizing or stemming will confuse the user
     filename = config.CORPUS[corpus]['spelling_file']

@@ -24,6 +24,9 @@ from linguistic_processor import linguistic_module
 import config
 import vsm_retrieval
 
+BIGRAPH_DICT = {}
+BIGRAPH_DICT_CORPUS = ""
+
 def boolean_search_module(query, corpus):
 
     """
@@ -43,7 +46,7 @@ def boolean_search_module(query, corpus):
     linguistic_processing_parameters = config.LINGUISTIC_PARAMS
 
     #read in csv once per query instead of repeated
-    bigraph_index = read_bigraph_file_from_csv(corpus)
+    bigraph_index = get_bigraph_dict(corpus)
     infix_query = boolean_query_preprocessing(query, linguistic_processing_parameters,
                                               bigraph_index)
     postfix_query = postfix_translation(infix_query)
@@ -238,7 +241,7 @@ def inverted_index_dictionary(corpus):
     :return: Inverted index as a dictionary
 
     """
-    word_dict = vsm_retrieval.read_inverted_index_from_csv(corpus)
+    word_dict = vsm_retrieval.get_inverted_index(corpus)
 
     if word_dict:
         return word_dict
@@ -339,12 +342,23 @@ def check_for_operators(input_string):
             return True
     return False
 
+def get_bigraph_dict(corpus):
+    """Wrapper to allow only reading bigraph file from csv once"""
+    global BIGRAPH_DICT
+    global BIGRAPH_DICT_CORPUS
+    if BIGRAPH_DICT and corpus == BIGRAPH_DICT_CORPUS:
+        return BIGRAPH_DICT
+    BIGRAPH_DICT_CORPUS = corpus
+    BIGRAPH_DICT = read_bigraph_file_from_csv(corpus)
+    return BIGRAPH_DICT
+
 def read_bigraph_file_from_csv(corpus):
     """Read in the bigraph index file from disk."""
     csv_filename = config.CORPUS[corpus]['bigraph_file']
 
     new_data_dict = {}
     with open(csv_filename, 'r') as data_file:
+        print('reading bigraph file')
         reader = csv.reader(data_file, delimiter=',')
         next(data_file, None)
         for row in reader:

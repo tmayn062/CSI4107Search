@@ -22,6 +22,9 @@ import linguistic_processor
 
 #import vsm_weight
 
+INVERTED_INDEX = {}
+INVERTED_INDEX_CORPUS = ""
+
 def convert_query(query):
     """Convert the query string to a vector."""
     return linguistic_processor.linguistic_module(query, config.LINGUISTIC_PARAMS)
@@ -53,7 +56,7 @@ def retrieve(query, corpus):
 def shortlist(query, corpus):
     """Create shortlist of docs from inv_index based only on those that have at
      least one search term from the query."""
-    inv_index = read_inverted_index_from_csv(corpus)
+    inv_index = get_inverted_index(corpus)
     doc_shortlist = dict()
     query_word_list = convert_query(query)
     weight_list_len = len(query_word_list)
@@ -74,12 +77,22 @@ def shortlist(query, corpus):
 
     return doc_shortlist
 
+def get_inverted_index(corpus):
+    """Wrapper to allow only reading once from csv file"""
+    global INVERTED_INDEX
+    global INVERTED_INDEX_CORPUS
+    if INVERTED_INDEX and corpus == INVERTED_INDEX_CORPUS:
+        return INVERTED_INDEX
+    INVERTED_INDEX_CORPUS = corpus
+    INVERTED_INDEX = read_inverted_index_from_csv(corpus)
+    return INVERTED_INDEX
+
 def read_inverted_index_from_csv(corpus):
     """Read in the inverted index file from disk."""
     csv_filename = config.CORPUS[corpus]['inverted_index_file']
 
     new_data_dict = {}
-    with open(csv_filename, 'r') as data_file:
+    with open(csv_filename, 'r') as data_file:        
         for row in data_file:
             row = row.strip().split(",", 1)
             new_data_dict[row[0]] = ast.literal_eval(row[1])
