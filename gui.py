@@ -68,6 +68,8 @@ class SearchEngineGUI:
             image=mag_glass,
             command=self.run_search,
             font=(self.font_to_use, 18))
+        #bind Return key to search
+        self.root.bind('<Return>', lambda event=None: self.run_search())
         # root.destroy exits/destroys the main window
         # self.quit_button = tkinter.Button(
         #     top_frame,

@@ -78,7 +78,7 @@ def shortlist(query, corpus):
     return doc_shortlist
 
 def get_inverted_index(corpus):
-    """Wrapper to allow only reading once from csv file"""
+    """Wrapper to allow reading only once from csv file"""
     global INVERTED_INDEX
     global INVERTED_INDEX_CORPUS
     if INVERTED_INDEX and corpus == INVERTED_INDEX_CORPUS:
@@ -92,7 +92,7 @@ def read_inverted_index_from_csv(corpus):
     csv_filename = config.CORPUS[corpus]['inverted_index_file']
 
     new_data_dict = {}
-    with open(csv_filename, 'r') as data_file:        
+    with open(csv_filename, 'r') as data_file:
         for row in data_file:
             row = row.strip().split(",", 1)
             new_data_dict[row[0]] = ast.literal_eval(row[1])

@@ -358,7 +358,6 @@ def read_bigraph_file_from_csv(corpus):
 
     new_data_dict = {}
     with open(csv_filename, 'r') as data_file:
-        print('reading bigraph file')
         reader = csv.reader(data_file, delimiter=',')
         next(data_file, None)
         for row in reader:
