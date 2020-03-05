@@ -18,11 +18,13 @@ import tkinter
 from tkinter import messagebox
 import tkinter.scrolledtext as tkscrolled
 from tkinter import PhotoImage
+import re
 import config
 import corpus_access
 import vsm_retrieval
 import boolean_search
 import spelling
+from tkinter_autocomplete_listbox import AutocompleteEntry
 
 class SearchEngineGUI:
     """Start the search engine GUI."""
@@ -51,9 +53,19 @@ class SearchEngineGUI:
                       fg='#5016b5', text='Jindalee  ').pack(side='left')
 
 
-        self.search_entry = tkinter.Entry(top_frame, width=50, textvariable="Type here",
-                                          font=(self.font_to_use, 18))
+        #self.search_entry = tkinter.Entry(top_frame, width=50, textvariable="Type here",
+#                                          font=(self.font_to_use, 18))
 
+        #self.search_entry.pack(side='left')
+        auto_complete_list = ['dog', 'cat', 'car', 'cab', 'cabin', 'caboose', 'zoo', 'zorn']
+
+        def matches(field_value, ac_list_entry):
+            pattern = re.compile(re.escape(field_value) + '.*', re.IGNORECASE)
+            return re.match(pattern, ac_list_entry)
+
+        self.search_entry = AutocompleteEntry(
+            auto_complete_list, top_frame, width=50, font=(self.font_to_use, 18),
+            matchesFunction=matches)
         self.search_entry.pack(side='left')
         self.spelling_label = tkinter.Label(
             self.spelling_frame,
@@ -70,14 +82,7 @@ class SearchEngineGUI:
             font=(self.font_to_use, 18))
         #bind Return key to search
         self.root.bind('<Return>', lambda event=None: self.run_search())
-        # root.destroy exits/destroys the main window
-        # self.quit_button = tkinter.Button(
-        #     top_frame,
-        #     text='Quit',
-        #     command=self.root.destroy,
-        #     font=(self.font_to_use, 18))
-        # # Pack the buttons
-        # self.quit_button.pack(side='right')
+
         self.search_button.pack(side='left')
         tkinter.Label(bottom_frame, font=(self.font_to_use, 18),
                       text='Search results').pack()
