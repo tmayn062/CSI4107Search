@@ -57,7 +57,8 @@ class SearchEngineGUI:
 #                                          font=(self.font_to_use, 18))
 
         #self.search_entry.pack(side='left')
-        auto_complete_list = ['dog', 'cat', 'car', 'cab', 'cabin', 'caboose', 'zoo', 'zorn']
+        auto_complete_list = ['dog', 'cat', 'car', 'cab', 'cabin', 'course', 'cost',
+                              'caboose', 'zoo', 'zorn', 'carbon']
 
         def matches(field_value, ac_list_entry):
             pattern = re.compile(re.escape(field_value) + '.*', re.IGNORECASE)

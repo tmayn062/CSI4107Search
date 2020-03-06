@@ -1,3 +1,4 @@
+"""Create an autocomplete listbox based on a given matching function and list"""
 #adapted code from https://gist.github.com/ricardj/ec64dd3171caba3e3818a269f6b57ab2
 
 import tkinter as tk
@@ -6,35 +7,35 @@ import re
 
 class AutocompleteEntry(tk.Entry):
     """Creates an autocomplete tkinter Entry box"""
-    def __init__(self, autocompleteList, *args, **kwargs):
+    def __init__(self, autocomplete_list, *args, **kwargs):
 
-        self.listboxLength = 0
+        self.listbox_length = 0
 
         # Custom matches function
         if 'matchesFunction' in kwargs:
-            self.matchesFunction = kwargs['matchesFunction']
+            self.matches_function = kwargs['matchesFunction']
             del kwargs['matchesFunction']
         else:
-            def matches(fieldValue, acListEntry):
+            def matches(field_value, ac_list_entry):
                 pattern = re.compile(
-                    '.*' + re.escape(fieldValue) + '.*', re.IGNORECASE)
-                return re.match(pattern, acListEntry)
+                    '.*' + re.escape(field_value) + '.*', re.IGNORECASE)
+                return re.match(pattern, ac_list_entry)
 
-            self.matchesFunction = matches
+            self.matches_function = matches
 
         # Custom return function
         if 'returnFunction' in kwargs:
-            self.returnFunction = kwargs['returnFunction']
+            self.return_function = kwargs['returnFunction']
             del kwargs['returnFunction']
         else:
-            def selectedValue(value):
+            def selected_value(value):
                 print(value)
-            self.returnFunction = selectedValue
+            self.return_function = selected_value
 
         tk.Entry.__init__(self, *args, **kwargs)
         self.focus()
 
-        self.autocompleteList = autocompleteList
+        self.autocomplete_list = autocomplete_list
 
         self.var = self["textvariable"]
         if self.var == '':
@@ -42,62 +43,72 @@ class AutocompleteEntry(tk.Entry):
 
         self.var.trace('w', self.changed)
         self.bind("<Right>", self.selection)
-        self.bind("<Up>", self.moveUp)
-        self.bind("<Down>", self.moveDown)
-        self.bind("<Return>", self.select)
-        self.bind("<Escape>", self.deleteListbox)
+        self.bind("<Up>", self.move_up)
+        self.bind("<Down>", self.move_down)
+        #self.bind("<Return>", self.select)
+        self.bind("<Return>", self.selection)
+        self.bind("<Button-1>", self.selectclick)
+        self.bind("<Escape>", self.delete_listbox)
 
-        self.listboxUp = False
+        self.listbox_up = False
 
-    def deleteListbox(self, event=None):
-        if self.listboxUp:
+    def delete_listbox(self, event=None):
+        """Deletes the listbox is it exists"""
+        if self.listbox_up:
             self.listbox.destroy()
-            self.listboxUp = False
+            self.listbox_up = False
 
-    def select(self, event=None):
-        if self.listboxUp:
-            index = self.listbox.curselection()[0]
-            value = self.listbox.get(tk.ACTIVE)
-            self.listbox.destroy()
-            self.listboxUp = False
-            self.delete(0, tk.END)
-            self.returnFunction(value)
+    def selectclick(self, event):
+        """Called when item in listbox is clicked with mouse button"""
+        if self.listbox_up:
+            if self.listbox.curselection() != ():
+                index = self.listbox.curselection()
+                value = self.listbox.get(index)
+                self.var.set(self.listbox.get(index))
+                self.listbox.destroy()
+                self.listbox_up = False
+                self.return_function(value)
+                self.icursor(tk.END)
 
     def changed(self, name, index, mode):
+        """Keeps track of cursor change position"""
         if self.var.get() == '':
-            self.deleteListbox()
+            self.delete_listbox()
         else:
             words = self.comparison()
             if words:
-                if not self.listboxUp:
-                    self.listboxLength = len(words)
+                if not self.listbox_up:
+                    self.listbox_length = len(words)
                     self.listbox = tk.Listbox(
                         width=self["width"], font=self["font"],
-                        height=self.listboxLength)
-                    self.listbox.bind("<Button-1>", self.selection)
+                        height=self.listbox_length)
+                    self.listbox.bind("<Button-1>", self.selectclick)
                     self.listbox.bind("<Right>", self.selection)
+                    self.listbox.bind("<Return>", self.selection)
                     self.listbox.place(
                         x=self.winfo_x(), y=self.winfo_y() + self.winfo_height())
-                    self.listboxUp = True
+                    self.listbox_up = True
                 else:
-                    self.listboxLength = len(words)
-                    self.listbox.config(height=self.listboxLength)
+                    self.listbox_length = len(words)
+                    self.listbox.config(height=self.listbox_length)
 
                 self.listbox.delete(0, tk.END)
-                for w in words:
-                    self.listbox.insert(tk.END, w)
+                for word in words:
+                    self.listbox.insert(tk.END, word)
             else:
-                self.deleteListbox()
+                self.delete_listbox()
 
     def selection(self, event):
-        if self.listboxUp:
+        """Called when right arrow or Return key selected"""
+        if self.listbox_up:
             self.var.set(self.listbox.get(tk.ACTIVE))
             self.listbox.destroy()
-            self.listboxUp = False
+            self.listbox_up = False
             self.icursor(tk.END)
 
-    def moveUp(self, event):
-        if self.listboxUp:
+    def move_up(self, event):
+        """Moves cursor up in listbox"""
+        if self.listbox_up:
             if self.listbox.curselection() == ():
                 index = '0'
             else:
@@ -106,14 +117,15 @@ class AutocompleteEntry(tk.Entry):
             self.listbox.selection_clear(first=index)
             index = str(int(index) - 1)
             if int(index) == -1:
-                index = str(self.listboxLength-1)
+                index = str(self.listbox_length-1)
 
             self.listbox.see(index)  # Scroll!
             self.listbox.selection_set(first=index)
             self.listbox.activate(index)
 
-    def moveDown(self, event):
-        if self.listboxUp:
+    def move_down(self, event):
+        """Moves the cursor in listbox down"""
+        if self.listbox_up:
             if self.listbox.curselection() == ():
                 index = '-1'
             else:
@@ -121,7 +133,7 @@ class AutocompleteEntry(tk.Entry):
 
             if index != tk.END:
                 self.listbox.selection_clear(first=index)
-                if int(index) == self.listboxLength-1:
+                if int(index) == self.listbox_length-1:
                     index = "0"
                 else:
                     index = str(int(index)+1)
@@ -131,25 +143,5 @@ class AutocompleteEntry(tk.Entry):
                 self.listbox.activate(index)
 
     def comparison(self):
-        return [w for w in self.autocompleteList if self.matchesFunction(self.var.get(), w)]
-
-
-if __name__ == '__main__':
-    autocompleteList = ['Dora Lyons (7714)', 'Hannah Golden (6010)', 'Walker Burns (9390)', 'Dieter Pearson (6347)', 'Allen Sullivan (9781)', 'Warren Sullivan (3094)', 'Genevieve Mayo (8427)', 'Igor Conner (4740)', 'Ulysses Shepherd (8116)', 'Imogene Bullock (6736)', 'Dominique Sanchez (949)', 'Sean Robinson (3784)', 'Diana Greer (2385)', 'Arsenio Conrad (2891)', 'Sophia Rowland (5713)', 'Garrett Lindsay (5760)', 'Lacy Henry (4350)', 'Tanek Conley (9054)', 'Octavia Michael (5040)', 'Kimberly Chan (1989)', 'Melodie Wooten (7753)', 'Winter Beard (3896)', 'Callum Schultz (7762)', 'Prescott Silva (3736)', 'Adena Crane (6684)', 'Ocean Schroeder (2354)', 'Aspen Blevins (8588)', 'Allegra Gould (7323)', 'Penelope Aguirre (7639)', 'Deanna Norman (1963)', 'Herman Mcintosh (1776)', 'August Hansen (547)', 'Oscar Sanford (2333)', 'Guy Vincent (1656)', 'Indigo Frye (3236)', 'Angelica Vargas (1697)', 'Bevis Blair (4354)', 'Trevor Wilkinson (7067)', 'Kameko Lloyd (2660)', 'Giselle Gaines (9103)', 'Phyllis Bowers (6661)', 'Patrick Rowe (2615)', 'Cheyenne Manning (1743)', 'Jolie Carney (6741)', 'Joel Faulkner (6224)', 'Anika Bennett (9298)', 'Clayton Cherry (3687)', 'Shellie Stevenson (6100)', 'Marah Odonnell (3115)',
-                        'Quintessa Wallace (5241)', 'Jayme Ramsey (8337)', 'Kyle Collier (8284)', 'Jameson Doyle (9258)', 'Rigel Blake (2124)', 'Joan Smith (3633)', 'Autumn Osborne (5180)', 'Renee Randolph (3100)', 'Fallon England (6976)', 'Fallon Jefferson (6807)', 'Kevyn Koch (9429)', 'Paki Mckay (504)', 'Connor Pitts (1966)', 'Rebecca Coffey (4975)', 'Jordan Morrow (1772)', 'Teegan Snider (5808)', 'Tatyana Cunningham (7691)', 'Owen Holloway (6814)', 'Desiree Delaney (272)', 'Armand Snider (8511)', 'Wallace Molina (4302)', 'Amela Walker (1637)', 'Denton Tillman (201)', 'Bruno Acevedo (7684)', 'Slade Hebert (5945)', 'Elmo Watkins (9282)', 'Oleg Copeland (8013)', 'Vladimir Taylor (3846)', 'Sierra Coffey (7052)', 'Holmes Scott (8907)', 'Evelyn Charles (8528)', 'Steel Cooke (5173)', 'Roth Barrett (7977)', 'Justina Slater (3865)', 'Mara Andrews (3113)', 'Ulla Skinner (9342)', 'Reece Lawrence (6074)', 'Violet Clay (6516)', 'Ainsley Mcintyre (6610)', 'Chanda Pugh (9853)', 'Brody Rosales (2662)', 'Serena Rivas (7156)', 'Henry Lang (4439)', 'Clark Olson (636)', 'Tashya Cotton (5795)', 'Kim Matthews (2774)', 'Leilani Good (5360)', 'Deirdre Lindsey (5829)', 'Macy Fields (268)', 'Daniel Parrish (1166)', 'Talon Winters (8469)']
-
-    def matches(fieldValue, acListEntry):
-        pattern = re.compile(re.escape(fieldValue) + '.*', re.IGNORECASE)
-        return re.match(pattern, acListEntry)
-
-    root = tk.Tk()
-    entry = AutocompleteEntry(
-        autocompleteList, root, width=32, matchesFunction=matches)
-    entry.grid(row=0, column=0)
-    tk.Button(text='Python').grid(column=0)
-    tk.Button(text='Tkinter').grid(column=0)
-    tk.Button(text='Regular Expressions').grid(column=0)
-    tk.Button(text='Fixed bugs').grid(column=0)
-    tk.Button(text='New features').grid(column=0)
-    tk.Button(text='Check code comments').grid(column=0)
-    root.mainloop()
+        """Uses given regex to find matching list for autocomplete box"""
+        return [w for w in self.autocomplete_list if self.matches_function(self.var.get(), w)]
