@@ -17,6 +17,7 @@ import gui
 import corpus_preprocessing
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
 import boolean_search
+from global_query_expansion import create_global_expanded_query
 
 
 def main():
@@ -53,7 +54,8 @@ def main():
     # for query in vsm_queries[:1]:
     #     print(query)
     #     print(vsm_retrieval.retrieve(query, corpus))
-
+    #print(create_global_expanded_query('(hungry AND_NOT green) OR eager', 'Boolean'))
+    print(create_global_expanded_query('ship', 'VSM'))
     gui.SearchEngineGUI()
 
 
