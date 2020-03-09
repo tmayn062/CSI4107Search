@@ -54,8 +54,10 @@ def main():
     # for query in vsm_queries[:1]:
     #     print(query)
     #     print(vsm_retrieval.retrieve(query, corpus))
-    #print(create_global_expanded_query('(hungry AND_NOT green) OR eager', 'Boolean'))
-    print(create_global_expanded_query('ship', 'VSM'))
+    print(create_global_expanded_query('(hungry AND_NOT green) OR eager', 'Boolean').expanded_query)
+    print(create_global_expanded_query('(good AND ready)', 'Boolean').suggestions)
+    print(create_global_expanded_query('good ready', 'VSM').suggestions)
+    print(create_global_expanded_query('model', 'VSM').expanded_query)
     gui.SearchEngineGUI()
 
 

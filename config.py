@@ -18,6 +18,7 @@ CORPUS[REUTERS] = {"source" : "UofO_Courses.html",
 
 K_RETRIEVAL = 20
 TOP_N_SPELLING = 3
+EXPANSION_SYNONYMS = 5
 LINGUISTIC_PARAMS = {"do_contractions": True,
                      "do_normalize_hyphens": True,
                      "do_normalize_periods": True,

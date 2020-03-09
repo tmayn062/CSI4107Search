@@ -25,6 +25,7 @@ import vsm_retrieval
 import boolean_search
 import spelling
 from tkinter_autocomplete_listbox import AutocompleteEntry
+import global_query_expansion as gqe
 
 class SearchEngineGUI:
     """Start the search engine GUI."""
@@ -41,6 +42,10 @@ class SearchEngineGUI:
         # Create frames
 
         top_frame = tkinter.Frame(self.root)
+        self.expanded_frame = tkinter.Frame(self.root)
+        self.expanded_list = list()
+        self.tailor_frame = tkinter.Frame(self.root)
+        self.tailor_list = list()
         self.spelling_frame = tkinter.Frame(self.root)
         self.spelling_list = list()
         search_frame = tkinter.Frame(self.root)
@@ -68,6 +73,15 @@ class SearchEngineGUI:
             auto_complete_list, top_frame, width=50, font=(self.font_to_use, 18),
             matchesFunction=matches)
         self.search_entry.pack(side='left')
+        self.expanded_label = tkinter.Label(
+            self.expanded_frame,
+            text=" ", font=(self.font_to_use, 14))
+        self.expanded_label.pack(side='left')
+        self.tailor_label = tkinter.Label(
+            self.tailor_frame,
+            text=" ", font=(self.font_to_use, 14))
+        self.tailor_label.pack(side='left')
+
         self.spelling_label = tkinter.Label(
             self.spelling_frame,
             text=" ", font=(self.font_to_use, 18))
@@ -129,7 +143,9 @@ class SearchEngineGUI:
         self.search_results.pack(side='bottom')
         # Now pack the frames also
 
-        top_frame.pack(padx=50, pady=50, side='top', fill='both')
+        top_frame.pack(padx=50, pady=40, side='top', fill='both')
+        self.expanded_frame.pack()
+        self.tailor_frame.pack()
         self.spelling_frame.pack()
         search_frame.pack()
         collection_frame.pack()
@@ -171,8 +187,14 @@ class SearchEngineGUI:
         # Clear previous search results
         self.search_results.delete('1.0', "end")
         # Clear previous suggestions
+        self.expanded_label.config(text="")
+        self.tailor_label.config(text="")
         self.spelling_label.config(text="")
+        for lab in self.tailor_list:
+            lab.destroy()
         for lab in self.spelling_list:
+            lab.destroy()
+        for lab in self.expanded_list:
             lab.destroy()
         #account for times a word is returned instead of a doc_id
         if docs_retrieved and isinstance(docs_retrieved, str):
@@ -182,6 +204,18 @@ class SearchEngineGUI:
 
         suggestions = spelling.suggest_words(self.search_entry.get().strip(), corpus)
 
+        exp_obj = gqe.create_global_expanded_query(self.search_entry.get().strip(), search)
+        expanded = exp_obj.expanded_query
+        tailored_items = exp_obj.suggestions
+
+        if expanded:
+            self.show_suggested_items(1, [expanded], self.expanded_list,
+                                      self.expanded_label, self.expanded_frame)
+            self.expanded_label.config(text="Expanded query: ")
+        if tailored_items:
+            self.show_suggested_items(config.EXPANSION_SYNONYMS, tailored_items, self.tailor_list,
+                                      self.tailor_label, self.tailor_frame)
+            self.tailor_label.config(text="Refine search: ")
         if suggestions:
             self.show_spelling_options(config.TOP_N_SPELLING, suggestions)
             self.spelling_label.config(text="Did you mean? ")
@@ -220,7 +254,20 @@ class SearchEngineGUI:
                     self.run_search()
                 self.spelling_list[-1].bind("<Button-1>", update_search_term)
                 self.spelling_list[-1].pack(side='left', padx=10, pady=10)
-
+    def show_suggested_items(self, max_count, suggestions, displaylist, displaylabel, displayframe):
+        """Show suggested items in list"""
+        for i in range(min(max_count, len(suggestions))):
+            if suggestions[i]:
+                displaylist.append(tkinter.Label(displayframe, fg="blue",
+                                                 font=(self.font_to_use, 14),
+                                                 text=suggestions[i]))
+                def update_search_term(event, word=suggestions[i]):
+                #    displaylabel.config(text="Did you mean? ")
+                    self.search_entry.delete(0, tkinter.END)
+                    self.search_entry.insert(0, word)
+                    self.run_search()
+                displaylist[-1].bind("<Button-1>", update_search_term)
+                displaylist[-1].pack(side='left', padx=10, pady=10)
 # Code for hyperlink manager modified from
 # http://effbot.org/zone/tkinter-text-hyperlink.htm
 class HyperlinkManager:
