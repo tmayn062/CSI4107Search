@@ -12,7 +12,9 @@ Author: Tiffany Maynard
 Status: In Progress
 
 Description: Use an external thesaurus (WordNet) to perform Query Expansion.
-Only using synsets in expansion, not hypernyms
+Only using synsets in expansion, not hypernyms and only expand when query is
+MAX_EXPAND_QUERY_LEN or less (since user is already being very specific if providing
+many words in initial query)
 """
 
 from nltk.corpus import wordnet as wn
@@ -31,9 +33,13 @@ class ExpandedQuery:
 
 def create_global_expanded_query(input_query, search_type):
     """Return an expanded VSM or boolean query given a starting query"""
-    if search_type == 'VSM':
+    if search_type == 'VSM' and (len(input_query.split()) <= config.MAX_EXPAND_QUERY_LEN):
         return expand_vsm_query(input_query)
-    return expand_boolean_query(input_query)
+    if search_type == 'Boolean' and (len(input_query.split()) <= (2*config.MAX_EXPAND_QUERY_LEN-1)):
+        #allow for boolean terms AND, OR, AND_NOT between query words
+        return expand_boolean_query(input_query)
+    #input query too long, return input as expanded
+    return ExpandedQuery(input_query, input_query, [])
 
 def expand_vsm_query(input_query):
     """Expands a VSM query using WordNet"""
@@ -48,9 +54,9 @@ def expand_vsm_query(input_query):
         random_synset = random.choice(wn.synsets(word), synset_cap)
         for synset in random_synset:
             for lemma in synset.lemmas():
-                if lemma.name() not in word_or_syns:
-                    word_or_syns.append(lemma.name())
-                    suggestions.append(word + ' ' + lemma.name().replace('_', ' '))
+                if lemma.name().lower() not in word_or_syns:
+                    word_or_syns.append(lemma.name().lower())
+                    suggestions.append(word + ' ' + lemma.name().lower().replace('_', ' '))
                     # break once we add a lemma from each synset that is not the initial word
                     break
         output.append(' '.join(word_or_syns))
@@ -76,9 +82,9 @@ def expand_boolean_query(input_query):
             random_synset = random.choice(wn.synsets(word), synset_cap)
             for synset in random_synset:
                 for lemma in synset.lemmas():
-                    if lemma.name() not in word_or_syns:
-                        word_or_syns.append(lemma.name())
-                        suggestions.append('('+word + ' OR ' + lemma.name().replace('_', ' ')+')')
+                    if lemma.name().lower() not in word_or_syns:
+                        word_or_syns.append(lemma.name().lower())
+                        suggestions.append('('+word + ' OR ' + lemma.name().lower().replace('_', ' ')+')')
                         # break once we add a lemma from each synset that is not the initial word
                         break
             output.append('('+' OR '.join(word_or_syns).replace('_', ' ')+')')

@@ -208,7 +208,7 @@ class SearchEngineGUI:
         expanded = exp_obj.expanded_query
         tailored_items = exp_obj.suggestions
 
-        if expanded:
+        if expanded and (exp_obj.initial_query != expanded):
             self.show_suggested_items(1, [expanded], self.expanded_list,
                                       self.expanded_label, self.expanded_frame)
             self.expanded_label.config(text="Expanded query: ")
@@ -262,7 +262,7 @@ class SearchEngineGUI:
                                                  font=(self.font_to_use, 14),
                                                  text=suggestions[i]))
                 def update_search_term(event, word=suggestions[i]):
-                #    displaylabel.config(text="Did you mean? ")
+
                     self.search_entry.delete(0, tkinter.END)
                     self.search_entry.insert(0, word)
                     self.run_search()
