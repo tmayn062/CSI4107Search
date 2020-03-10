@@ -7,13 +7,15 @@ CORPUS[UOTTAWA] = {"source" : "UofO_Courses.html",
                    "inverted_index_file" : "uottawa_inverted_index.csv",
                    "lpp_file" : "uottawa_lpp.csv",
                    "bigraph_file" : "uottawa_bigraph_index.csv",
-                   "spelling_file" : "uottawa_spelling.csv"}
+                   "spelling_file" : "uottawa_spelling.csv",
+                   "relevance_file" : "uottawa_relevance.csv"}
 CORPUS[REUTERS] = {"source" : "UofO_Courses.html",
                    "corpusxml" : "reuters_corpus.xml",
                    "inverted_index_file" : "reuters_inverted_index.csv",
                    "lpp_file" : "reuters_lpp.csv",
                    "bigraph_file" : "reuters_bigraph_index.csv",
-                   "spelling_file" : "reuters_spelling.csv"}
+                   "spelling_file" : "reuters_spelling.csv",
+                   "relevance_file" : "reuters_relevance.csv"}
 
 
 K_RETRIEVAL = 20

@@ -2,14 +2,14 @@
 Title: GUI for Search Engine
 
 Project: CSI4107 Project
-Version: Vanilla System
-Component: Module 1
+Version: Vanilla System + Final System
+Component: Module 1 + Module 7
 
 Created: 23 Jan 2020
-Last modified: 13 Feb 2020
+Last modified: 10 Mar 2020
 
 Author: Tiffany Maynard
-Status: Complete
+Status: In Progress
 
 Description: Allow a user to access search engine capabilities
 
@@ -26,6 +26,7 @@ import boolean_search
 import spelling
 from tkinter_autocomplete_listbox import AutocompleteEntry
 import global_query_expansion as gqe
+import relevance as rel
 
 class SearchEngineGUI:
     """Start the search engine GUI."""
@@ -100,7 +101,7 @@ class SearchEngineGUI:
 
         self.search_button.pack(side='left')
         tkinter.Label(bottom_frame, font=(self.font_to_use, 18),
-                      text='Search results').pack()
+                      text='Search results (right-click a result to toggle relevance)').pack()
         self.search_model = tkinter.IntVar()
         # Initialize search model to 1 - Boolean
         self.search_model.set(1)
@@ -212,7 +213,7 @@ class SearchEngineGUI:
             self.show_suggested_items(1, [expanded], self.expanded_list,
                                       self.expanded_label, self.expanded_frame)
             self.expanded_label.config(text="Expanded query: ")
-        if tailored_items:
+        if tailored_items and len(tailored_items) > 1:
             self.show_suggested_items(config.EXPANSION_SYNONYMS, tailored_items, self.tailor_list,
                                       self.tailor_label, self.tailor_frame)
             self.tailor_label.config(text="Refine search: ")
@@ -224,21 +225,27 @@ class SearchEngineGUI:
         else:
             for doc in docs:
                 score_str = ''
+                #placeholder to add relevant indicator
+                relevant_str = ' relevant'
                 if search == 'VSM':
                     score_str = '{:0.3f}'.format(doc.score) + ' '
                 self.search_results.insert("insert",
-                                           score_str + doc.title,
+                                           score_str + doc.title + relevant_str,
                                            hyperlink.add
                                            (self.click_link, doc.doc_id, corpus))
                 self.search_results.insert("insert", doc.doctext[:100] + '\n')
 
-    def click_link(self, click_id, corpus):
+    def click_link(self, click_id, corpus, btn):
         """Click link function."""
         # add score of 1.0 for consistency of arguments
-        doc = corpus_access.get_documents(corpus, [(click_id, 1.0)])[0]
-        messagebox.showinfo(
-            doc.title,
-            doc.doctext)
+        if btn == 'left':
+            doc = corpus_access.get_documents(corpus, [(click_id, 1.0)])[0]
+            messagebox.showinfo(
+                doc.title,
+                doc.doctext)
+        input_query = self.search_entry.get().strip().replace('( ', '(').replace(' )', ')')
+        if btn == 'right':
+            rel.update_relevant(input_query, click_id, corpus)
 
     def show_spelling_options(self, max_count, suggestions):
         """Show spelling suggestions."""
@@ -280,6 +287,8 @@ class HyperlinkManager:
         self.text.tag_bind("hyper", "<Enter>", self._enter)
         self.text.tag_bind("hyper", "<Leave>", self._leave)
         self.text.tag_bind("hyper", "<Button-1>", self._click)
+        self.text.tag_bind("hyper", "<Button-3>", self._clickright)
+        #self.text.tag_bind("hyper", "<Button-2>", self._clickmid)
 
         self.reset()
 
@@ -303,5 +312,17 @@ class HyperlinkManager:
     def _click(self, event):
         for tag in self.text.tag_names("current"):
             if tag[:6] == "hyper-":
-                self.links[tag][0](self.links[tag][1], self.links[tag][2])
+                self.links[tag][0](self.links[tag][1], self.links[tag][2], 'left')
+                return
+
+    def _clickright(self, event):
+        for tag in self.text.tag_names("current"):
+            if tag[:6] == "hyper-":
+                self.links[tag][0](self.links[tag][1], self.links[tag][2], 'right')
+                return
+
+    def _clickmid(self, event):
+        for tag in self.text.tag_names("current"):
+            if tag[:6] == "hyper-":
+                self.links[tag][0](self.links[tag][1], self.links[tag][2], 'mid')
                 return

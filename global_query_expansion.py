@@ -6,7 +6,7 @@ Version: Final System
 Component: Module 3
 
 Created: 06 Mar 2020
-Last modified: 06 Mar 2020
+Last modified: 10 Mar 2020
 
 Author: Tiffany Maynard
 Status: In Progress
@@ -84,7 +84,8 @@ def expand_boolean_query(input_query):
                 for lemma in synset.lemmas():
                     if lemma.name().lower() not in word_or_syns:
                         word_or_syns.append(lemma.name().lower())
-                        suggestions.append('('+word + ' OR ' + lemma.name().lower().replace('_', ' ')+')')
+                        suggestions.append(
+                            '('+word + ' OR ' + lemma.name().lower().replace('_', ' ')+')')
                         # break once we add a lemma from each synset that is not the initial word
                         break
             output.append('('+' OR '.join(word_or_syns).replace('_', ' ')+')')
