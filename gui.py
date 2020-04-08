@@ -6,7 +6,7 @@ Version: Vanilla System + Final System
 Component: Module 1 + Module 7
 
 Created: 23 Jan 2020
-Last modified: 10 Mar 2020
+Last modified: 08 Apr 2020
 
 Author: Tiffany Maynard
 Status: In Progress
@@ -223,10 +223,11 @@ class SearchEngineGUI:
         if docs is None or docs == []:
             self.search_results.insert("insert", 'No documents found')
         else:
+            input_query = self.search_entry.get().strip().replace('( ', '(').replace(' )', ')')
             for doc in docs:
                 score_str = ''
                 #placeholder to add relevant indicator
-                relevant_str = ' relevant'
+                relevant_str = ' '
                 if search == 'VSM':
                     score_str = '{:0.3f}'.format(doc.score) + ' '
                 self.search_results.insert("insert",
@@ -238,12 +239,12 @@ class SearchEngineGUI:
     def click_link(self, click_id, corpus, btn):
         """Click link function."""
         # add score of 1.0 for consistency of arguments
+        input_query = self.search_entry.get().strip().replace('( ', '(').replace(' )', ')')
         if btn == 'left':
             doc = corpus_access.get_documents(corpus, [(click_id, 1.0)])[0]
             messagebox.showinfo(
                 doc.title,
-                doc.doctext)
-        input_query = self.search_entry.get().strip().replace('( ', '(').replace(' )', ')')
+                rel.relevant_indicator(input_query, doc.doc_id, corpus) + '\n' + doc.doctext)
         if btn == 'right':
             rel.update_relevant(input_query, click_id, corpus)
 
