@@ -18,7 +18,7 @@ import corpus_preprocessing
 from build_dictionary_and_index import dictionary_and_inverted_index_wrapper
 import boolean_search
 from global_query_expansion import create_global_expanded_query
-
+import rocchio
 
 def main():
     """Run search engine and related functions."""
@@ -58,6 +58,7 @@ def main():
     print(create_global_expanded_query('(good AND ready)', 'Boolean').suggestions)
     print(create_global_expanded_query('good ready', 'VSM').suggestions)
     print(create_global_expanded_query('model', 'VSM').expanded_query)
+    print(rocchio.rocchiotest())
     gui.SearchEngineGUI()
 
 

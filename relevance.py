@@ -6,7 +6,7 @@ Version: Final System
 Component: Module 4
 
 Created: 10 Mar 2020
-Last modified: 08 Apr 2020
+Last modified: 09 Apr 2020
 
 Author: Tiffany Maynard
 Status: Completed
@@ -70,6 +70,12 @@ def relevant_indicator(query_string, doc_id, corpus):
         if doc_id in relevance_dict[query_string][1]:
             return "NOT RELEVANT"
     return "NEUTRAL"
+
+def get_relevance_lists(query_string, corpus):
+    """returns the relevant and non-relevant doc id lists for a given query string and corpus"""
+    relevance_dict = get_relevance_dict(corpus)
+    return relevance_dict.get(query_string)
+
 def get_relevance_dict(corpus):
     """Wrapper to avoid multiple dictionary reads from csv."""
     global RELEVANCE_CORPUS

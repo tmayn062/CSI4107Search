@@ -30,3 +30,7 @@ LINGUISTIC_PARAMS = {"do_contractions": True,
                      "do_stop_word_removal": True,
                      "do_stemming": True,
                      "do_lemming": False}
+ROCCHIO_ALPHA = 1
+ROCCHIO_BETA = 0.75
+ROCCHIO_GAMMA = 0.15
+ROCCHIO_MIN = 0.4
