@@ -58,7 +58,6 @@ def main():
     print(create_global_expanded_query('(good AND ready)', 'Boolean').suggestions)
     print(create_global_expanded_query('good ready', 'VSM').suggestions)
     print(create_global_expanded_query('model', 'VSM').expanded_query)
-    print(rocchio.rocchiotest())
     gui.SearchEngineGUI()
 
 

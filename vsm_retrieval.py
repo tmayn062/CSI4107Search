@@ -19,6 +19,8 @@ import ast
 import numpy as np
 import config
 import linguistic_processor
+import relevance
+import rocchio
 
 #import vsm_weight
 
@@ -39,6 +41,13 @@ def similarity(doc_list, query_list):
     return np.dot(doc_norm, query_norm)
 
 def retrieve(query, corpus):
+    """choose to use rocchio retrieval if relevance info available or
+    shortlist method if no relevance info available"""
+    if relevance.get_relevance_lists(query, corpus):
+        return retrieve_rocchio(query, corpus)
+    return retrieve_norelevance(query, corpus)
+
+def retrieve_norelevance(query, corpus):
     """Retrieve ranked list of documents"""
     #create list of 1's for each word in query, assumes equal weighting for each term
     query_ones = [1 for x in range(len(convert_query(query)))]
@@ -52,6 +61,18 @@ def retrieve(query, corpus):
     #Adapted from https://stackoverflow.com/a/38218662
     return [(x, score[x]) for x in klargest]
 
+def retrieve_rocchio(query, corpus):
+    """retrieval when relevance information is available"""
+    query_vector = rocchio.rocchio_expansion(query, corpus)
+    #Adapted from https://www.geeksforgeeks.org/python-n-largest-values-in-dictionary/
+    score = dict()
+    docs = rocchio.rocchio_doc_list(query_vector, corpus)
+    for doc_id in docs:
+        score[doc_id] = similarity(docs[doc_id], query_vector)
+#Adapted from https://www.geeksforgeeks.org/python-n-largest-values-in-dictionary/
+    klargest = nlargest(config.K_RETRIEVAL, score, key=score.get)
+    #Adapted from https://stackoverflow.com/a/38218662
+    return [(x, score[x]) for x in klargest]
 
 def shortlist(query, corpus):
     """Create shortlist of docs from inv_index based only on those that have at

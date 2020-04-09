@@ -28,16 +28,18 @@ def calc_rocchio(original, relevant_vectors, nonrelevant_vectors):
     rv_count = len(relevant_vectors)
     nr_count = len(nonrelevant_vectors)
     rv_sum = np.add.reduce(relevant_vectors)
+    print('rv_sum' + str(rv_sum))
     nr_sum = np.add.reduce(nonrelevant_vectors)
+    print('nr_sum' + str(nr_sum))
     updated_relevance = cg.ROCCHIO_ALPHA * original \
                         + cg.ROCCHIO_BETA * (1/rv_count if rv_count else 1) * rv_sum \
                         - cg.ROCCHIO_GAMMA * (1/nr_count if nr_count else 1) * nr_sum
     #only keep terms above minimum threshold (also serves to exclude negative values)
     print('before')
-    print(updated_relevance)
+    print(updated_relevance[:40])
     updated_relevance = [0 if wgt < cg.ROCCHIO_MIN else wgt for wgt in updated_relevance]
     print('after')
-    print(updated_relevance)
+    print(updated_relevance[:40])
     return updated_relevance
 
 def doc_list_to_array(rel_list, corpus):
@@ -51,10 +53,8 @@ def get_word_vector(doc_id, corpus):
     """create vector with every word in inverted index and populate for doc_id"""
     inv_index = vsm_retrieval.get_inverted_index(corpus)
     word_vec = np.zeros(len(inv_index))
-    count_vec = 0
-    for word in inv_index:
+    for count_vec, word in enumerate(inv_index):
         word_vec[count_vec] = inv_index[word].get(doc_id, {'frequency': 0})['frequency']
-        count_vec += 1
     return word_vec
 
 def query_to_word_vector(query_string, corpus):
@@ -62,20 +62,40 @@ def query_to_word_vector(query_string, corpus):
     inv_index = vsm_retrieval.get_inverted_index(corpus)
     word_vec = np.zeros(len(inv_index))
     query_word_list = vsm_retrieval.convert_query(query_string)
-    count_vec = 0
-    for word in query_word_list:
-        if inv_index[word]:
+    for count_vec, word in enumerate(inv_index):
+        print(word + str(count_vec))
+        if word in query_word_list:
             word_vec[count_vec] = 1
-        count_vec += 1
     return word_vec
 
-def rocchiotest():
-    """test rocchio calcs"""
-    corpus = cg.UOTTAWA
-    q_string = 'women math'
-    orig = query_to_word_vector(q_string, corpus)
-    rel_list, nonrel_list = relevance.get_relevance_lists(q_string, corpus)
+def rocchio_expansion(query_string, corpus):
+    """get rocchio expansion for query """
+    orig = query_to_word_vector(query_string, corpus)
+    print('original')
+    print(orig[:40])
+    rel_list, nonrel_list = relevance.get_relevance_lists(query_string, corpus)
     rel = doc_list_to_array(rel_list, corpus)
     nonrel = doc_list_to_array(nonrel_list, corpus)
-    a_test = calc_rocchio(orig, rel, nonrel)
-    print(a_test)
+    return calc_rocchio(orig, rel, nonrel)
+
+def rocchio_doc_list(query_vector, corpus):
+    """get doc_id vectors for a query vector"""
+    #TODO fix to create dict of vectors for each docid that contains
+    #at least one non-zero term in query_vector
+    inv_index = vsm_retrieval.get_inverted_index(corpus)
+    doc_shortlist = dict()
+    word = 'test'
+    for index in query_vector:
+        for doc_id in inv_index[word]:
+            if doc_id in doc_shortlist:
+                #doc already added, just update weight entry for this word
+                doc_shortlist[doc_id][index] = inv_index[word][doc_id]['weight']
+            else:
+                #doc not added yet add doc_id to shortlist,
+                #initialize list to 0s for all words in query
+                #update weight entry for current word
+                entry = np.zeros(5)
+                entry[index] = inv_index[word][doc_id]['weight']
+                doc_shortlist[doc_id] = entry
+
+    return doc_shortlist
