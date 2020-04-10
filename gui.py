@@ -49,6 +49,7 @@ class SearchEngineGUI:
         self.tailor_list = list()
         self.spelling_frame = tkinter.Frame(self.root)
         self.spelling_list = list()
+        topic_frame = tkinter.Frame(self.root)
         search_frame = tkinter.Frame(self.root)
         collection_frame = tkinter.Frame(self.root)
         button_frame = tkinter.Frame(self.root)
@@ -102,6 +103,18 @@ class SearchEngineGUI:
         self.search_button.pack(side='left')
         tkinter.Label(bottom_frame, font=(self.font_to_use, 18),
                       text='Search results (right-click a result to toggle relevance)').pack()
+        self.search_topic = tkinter.StringVar()
+        topics = ["Sports", "News", "Stuff"]
+        self.search_topic.set(topics[0])
+        tkinter.Label(topic_frame,
+                      text="Choose a topic:",
+                      justify=tkinter.LEFT,
+                      font=(self.font_to_use, 18)).pack(side='left')
+        dropdown = tkinter.OptionMenu(topic_frame, self.search_topic, *topics)
+        menu = dropdown.nametowidget(dropdown.menuname)
+        dropdown.pack()
+        menu.configure(font=(self.font_to_use, 18))
+        dropdown.configure(width=25, font=(self.font_to_use, 18))
         self.search_model = tkinter.IntVar()
         # Initialize search model to 1 - Boolean
         self.search_model.set(1)
@@ -109,6 +122,7 @@ class SearchEngineGUI:
                       text="Choose a search model:",
                       justify=tkinter.LEFT,
                       font=(self.font_to_use, 18)).pack(side='left')
+
         tkinter.Radiobutton(search_frame,
                             text="Boolean",
                             font=(self.font_to_use, 18),
@@ -148,6 +162,7 @@ class SearchEngineGUI:
         self.expanded_frame.pack()
         self.tailor_frame.pack()
         self.spelling_frame.pack()
+        topic_frame.pack()
         search_frame.pack()
         collection_frame.pack()
         button_frame.pack()
