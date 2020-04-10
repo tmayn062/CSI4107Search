@@ -26,6 +26,7 @@ def main():
     corpus = config.UOTTAWA
 
     corpus_preprocessing.parse(corpus)
+    reuters_preprocessing.create_reuters_corpus()
 #   TODO create pre-processing parser for Reuters
 #   corpus_preprocessing.parse("Reuters")
     dictionary_and_inverted_index_wrapper(config.LINGUISTIC_PARAMS, corpus)
@@ -57,7 +58,7 @@ def main():
     print(create_global_expanded_query('(good AND ready)', 'Boolean').suggestions)
     print(create_global_expanded_query('good ready', 'VSM').suggestions)
     print(create_global_expanded_query('model', 'VSM').expanded_query)
-    reuters_preprocessing.print_info()
+
     gui.SearchEngineGUI()
 
 

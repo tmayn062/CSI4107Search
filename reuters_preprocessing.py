@@ -23,17 +23,16 @@ from nltk.corpus import reuters
 import config
 
 def print_info():
-    #documents = reuters.fileids()
-    #print(str(len(documents)) + " documents")
-    #print(reuters.categories())
-    #category_docs = reuters.fileids("rubber")
-    #document_id = category_docs[0]
-    #document_words = reuters.words(category_docs[0])
+    documents = reuters.fileids()
+    print(str(len(documents)) + " documents")
+    print(reuters.categories())
+    category_docs = reuters.fileids("rubber")
+    document_id = category_docs[0]
+    document_words = reuters.words(category_docs[0])
 
 
     # Raw document
-    #print(reuters.raw(document_id))
-    create_reuters_corpus()
+    print(reuters.raw(document_id))
 
 
 
@@ -74,8 +73,8 @@ def create_reuters_corpus():
             print("Reuters corpus already exists")
             return
     path = '/home/tjm/Documents/Winter2020/CSI4107/reuters21578'
-    for filename in glob.glob(os.path.join(path, '*05.sgm')):
-        with open(filename, 'r') as f:
+    for filename in glob.glob(os.path.join(path, '*.sgm')):
+        with open(filename, 'rb') as f:
             data = f.read()
             soup = bs4.BeautifulSoup(data, 'html.parser')
             docs = soup.findAll("reuters")
@@ -98,5 +97,4 @@ def create_reuters_corpus():
 #            for content in contents:
 #               documents.append(content.text)
 
-    print(documents[35:40])
-    xml_writer(documents[:40], corpus_filename)
+    xml_writer(documents, corpus_filename)
