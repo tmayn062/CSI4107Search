@@ -244,7 +244,8 @@ class SearchEngineGUI:
             doc = corpus_access.get_documents(corpus, [(click_id, 1.0)])[0]
             messagebox.showinfo(
                 doc.title,
-                rel.relevant_indicator(input_query, doc.doc_id, corpus) + '\n' + doc.doctext)
+                rel.relevant_indicator(input_query, doc.doc_id, corpus) \
+                + ' ' + str(doc.doc_id) + ' \n' + doc.doctext)
         if btn == 'right':
             rel.update_relevant(input_query, click_id, corpus)
 

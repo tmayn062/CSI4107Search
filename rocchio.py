@@ -63,7 +63,6 @@ def query_to_word_vector(query_string, corpus):
     word_vec = np.zeros(len(inv_index))
     query_word_list = vsm_retrieval.convert_query(query_string)
     for count_vec, word in enumerate(inv_index):
-        print(word + str(count_vec))
         if word in query_word_list:
             word_vec[count_vec] = 1
     return word_vec
@@ -80,12 +79,14 @@ def rocchio_expansion(query_string, corpus):
 
 def rocchio_doc_list(query_vector, corpus):
     """get doc_id vectors for a query vector"""
-    #TODO fix to create dict of vectors for each docid that contains
+    #create dict of vectors for each docid that contains
     #at least one non-zero term in query_vector
     inv_index = vsm_retrieval.get_inverted_index(corpus)
     doc_shortlist = dict()
-    word = 'test'
-    for index in query_vector:
+    vector_len = len(query_vector)
+    word_list = list(inv_index.keys())
+    for index, weight in enumerate(query_vector):
+        word = word_list[index]
         for doc_id in inv_index[word]:
             if doc_id in doc_shortlist:
                 #doc already added, just update weight entry for this word
@@ -94,7 +95,7 @@ def rocchio_doc_list(query_vector, corpus):
                 #doc not added yet add doc_id to shortlist,
                 #initialize list to 0s for all words in query
                 #update weight entry for current word
-                entry = np.zeros(5)
+                entry = np.zeros(vector_len)
                 entry[index] = inv_index[word][doc_id]['weight']
                 doc_shortlist[doc_id] = entry
 
