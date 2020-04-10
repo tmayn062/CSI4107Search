@@ -25,13 +25,15 @@ class Document:
     score: float
     title: str
     doctext: str
+    topics: list
 
-    def __init__(self, doc_id, score, title, doctext):
+    def __init__(self, doc_id, score, title, doctext, topics):
         """Initialize document."""
         self.doc_id = doc_id
         self.score = score
         self.title = title
         self.doctext = doctext
+        self.topics = topics
 
 
 def get_documents(corpus, list_doc_ids):
@@ -49,8 +51,13 @@ def get_documents(corpus, list_doc_ids):
     #list_doc_ids is a list of (doc_id, score) pairs
     for doc in list_doc_ids:
         doc_id = doc[0]
-        doc_to_add = Document(doc_id, doc[1],
-                              root[doc_id][0].text+' '+root[doc_id][1].text,
-                              root[doc_id][2].text)
+        if len(root[doc_id]) > 3:
+            doc_to_add = Document(doc_id, doc[1],
+                                  root[doc_id][0].text+' '+root[doc_id][1].text,
+                                  root[doc_id][2].text, root[doc_id][3].text)
+        else:
+            doc_to_add = Document(doc_id, doc[1],
+                                  root[doc_id][0].text+' '+root[doc_id][1].text,
+                                  root[doc_id][2].text, [])
         doc_list.append(doc_to_add)
     return doc_list

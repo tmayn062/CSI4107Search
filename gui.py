@@ -18,6 +18,7 @@ import tkinter
 from tkinter import messagebox
 import tkinter.scrolledtext as tkscrolled
 from tkinter import PhotoImage
+import tkinter.ttk
 import re
 import config
 import corpus_access
@@ -104,16 +105,17 @@ class SearchEngineGUI:
         tkinter.Label(bottom_frame, font=(self.font_to_use, 18),
                       text='Search results (right-click a result to toggle relevance)').pack()
         self.search_topic = tkinter.StringVar()
-        topics = ["Sports", "News", "Stuff"]
+        topics = config.TOPICS
         self.search_topic.set(topics[0])
         tkinter.Label(topic_frame,
                       text="Choose a topic:",
                       justify=tkinter.LEFT,
                       font=(self.font_to_use, 18)).pack(side='left')
-        dropdown = tkinter.OptionMenu(topic_frame, self.search_topic, *topics)
-        menu = dropdown.nametowidget(dropdown.menuname)
+        #dropdown = tkinter.OptionMenu(topic_frame, self.search_topic, *topics)
+        dropdown = tkinter.ttk.Combobox(topic_frame, textvariable=self.search_topic, values=topics)
+        #menu = dropdown.nametowidget(dropdown.menuname)
         dropdown.pack()
-        menu.configure(font=(self.font_to_use, 18))
+        #menu.configure(font=(self.font_to_use, 18))
         dropdown.configure(width=25, font=(self.font_to_use, 18))
         self.search_model = tkinter.IntVar()
         # Initialize search model to 1 - Boolean
