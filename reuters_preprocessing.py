@@ -9,7 +9,7 @@ Created: 10 Apr 2020
 Last modified: 10 Apr 2020
 
 Author: Tiffany Maynard
-Status: In Progress
+Status: Completed
 
 Description: This module takes Reuters corpus and extracts information to create
 an XML document corpus.
@@ -86,7 +86,7 @@ def create_reuters_corpus():
                 topics = ""
                 if doc.find("body"):
                     body = doc.find("body").text.replace('\n', ' ').replace('\r', '')
-                    body = body.replace('\x03', '')
+                    body = body.replace('\x03', '').replace('[B', '').replace('','')
                 if doc.find("title"):
                     title = doc.find("title").text
                 if doc.find("topics"):

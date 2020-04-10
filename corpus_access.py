@@ -31,9 +31,18 @@ class Document:
         """Initialize document."""
         self.doc_id = doc_id
         self.score = score
-        self.title = title
-        self.doctext = doctext
-        self.topics = topics
+        if title:
+            self.title = title
+        else:
+            self.title = ''
+        if doctext:
+            self.doctext = doctext
+        else:
+            self.doctext = ''
+        if topics:
+            self.topics = topics
+        else:
+            self.topics = ''
 
 
 def get_documents(corpus, list_doc_ids):
@@ -52,8 +61,12 @@ def get_documents(corpus, list_doc_ids):
     for doc in list_doc_ids:
         doc_id = doc[0]
         if len(root[doc_id]) > 3:
+            if root[doc_id][0]:
+                title = root[doc_id][0].text+' '+root[doc_id][1].text
+            else:
+                title = root[doc_id][1].text
             doc_to_add = Document(doc_id, doc[1],
-                                  root[doc_id][0].text+' '+root[doc_id][1].text,
+                                  title,
                                   root[doc_id][2].text, root[doc_id][3].text)
         else:
             doc_to_add = Document(doc_id, doc[1],

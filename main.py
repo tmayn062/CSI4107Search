@@ -27,8 +27,8 @@ def main():
 
     corpus_preprocessing.parse(corpus)
     reuters_preprocessing.create_reuters_corpus()
-#   TODO create pre-processing parser for Reuters
-#   corpus_preprocessing.parse("Reuters")
+    dictionary_and_inverted_index_wrapper(config.LINGUISTIC_PARAMS, corpus)
+    corpus = config.REUTERS
     dictionary_and_inverted_index_wrapper(config.LINGUISTIC_PARAMS, corpus)
     end_time = datetime.now()
     total_time = end_time-start_time

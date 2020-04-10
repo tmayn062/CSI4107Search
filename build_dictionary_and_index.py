@@ -40,7 +40,8 @@ def __build_dictionary(corpus_filename, linguistic_processing_parameters):
             respective document
     """
     dictionary = []
-    tree = xml.parse(corpus_filename)
+    parser = xml.XMLParser(encoding="utf-8")
+    tree = xml.parse(corpus_filename, parser=parser)
     root = tree.getroot()
     for course in root:
         doc_id = int(course.get('doc_id'))

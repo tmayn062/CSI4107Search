@@ -153,7 +153,7 @@ class SearchEngineGUI:
                                                  variable=self.search_collection,
                                                  value=2)
         self.reuters_radio.pack(side='left')
-        self.reuters_radio.configure(state=tkinter.DISABLED)
+        #self.reuters_radio.configure(state=tkinter.DISABLED)
         self.search_results = tkscrolled.ScrolledText(results_frame,
                                                       state="normal", wrap='word',
                                                       font=(self.font_to_use, 12))

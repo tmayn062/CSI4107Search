@@ -217,7 +217,10 @@ def linguistic_module(raw_text, control_dic):
 
     :return: A list which contains fully processed tokens
     """
-
+    if raw_text:
+        pass
+    else:
+        raw_text =''
     clean_text = raw_text.replace('/', ' ')
     if control_dic.get("do_contractions"):
         clean_text = contractions_expander(clean_text)
