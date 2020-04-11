@@ -35,7 +35,7 @@ ROCCHIO_ALPHA = 1
 ROCCHIO_BETA = 0.75
 ROCCHIO_GAMMA = 0.15
 ROCCHIO_MIN = 0.4
-TOPICS = ['acq', 'alum', 'austdlr', 'barley', 'bfr', 'bop', 'can', 'carcass',
+TOPICS = ['all-topics', 'acq', 'alum', 'austdlr', 'barley', 'bfr', 'bop', 'can', 'carcass',
           'castor-oil', 'castorseed', 'citruspulp', 'cocoa', 'coconut',
           'coconut-oil', 'coffee', 'copper', 'copra-cake', 'corn', 'corn-oil',
           'cornglutenfeed', 'cotton', 'cotton-oil', 'cottonseed', 'cpi', 'cpu',

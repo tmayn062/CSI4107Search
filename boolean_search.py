@@ -23,11 +23,12 @@ from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
 import config
 import vsm_retrieval
+import text_categorization
 
 BIGRAPH_DICT = {}
 BIGRAPH_DICT_CORPUS = ""
 
-def boolean_search_module(query, corpus):
+def boolean_search_module(query, corpus, topic='all-topics'):
 
     """
     This is the wrapper method for the entire boolean search module. It ties together all
@@ -52,13 +53,13 @@ def boolean_search_module(query, corpus):
     postfix_query = postfix_translation(infix_query)
     #read in inverted_index dictionary from csv just once per search
     inverted_index_dict = inverted_index_dictionary(corpus)
-    doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_dict)
+    doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_dict, topic)
     #add dummy scores to doc_id_list
     ones = [1] * len(doc_id_list)
     return zip(doc_id_list, ones)
 
 
-def boolean_postfix_query_processor(postfix_query, inverted_index):
+def boolean_postfix_query_processor(postfix_query, inverted_index, topic='all-topics'):
     """
     This methods takes a postfix query and actually executes the query to return
     a list of relevant docIDs.
@@ -78,7 +79,7 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     # if the query is empty or a single word, return the docID list for the word
     if len(postfix_query) == 1:
         if postfix_query[0] in inverted_index:
-            return get_doc_id(postfix_query[0], inverted_index)
+            return get_doc_id(postfix_query[0], inverted_index, topic)
         return []
 
     for token in postfix_query:
@@ -94,7 +95,7 @@ def boolean_postfix_query_processor(postfix_query, inverted_index):
     return []
 
 
-def intersect_wrapper(word1, word2, operator, inverted_index):
+def intersect_wrapper(word1, word2, operator, inverted_index, topic='all-topics'):
     """
     The following method applies the required interest method for the query
 
@@ -108,11 +109,11 @@ def intersect_wrapper(word1, word2, operator, inverted_index):
 
     """
     if isinstance(word1, str):
-        word1 = get_doc_id(word1, inverted_index)
+        word1 = get_doc_id(word1, inverted_index, topic)
         if word1 == -1:
             word1 = []
     if isinstance(word2, str):
-        word2 = get_doc_id(word2, inverted_index)
+        word2 = get_doc_id(word2, inverted_index, topic)
         if word2 == -1:
             word2 = []
     if operator == 'AND':
@@ -213,7 +214,7 @@ def intersect_or(doc_id_list_1, doc_id_list_2):
     return result
 
 
-def get_doc_id(word_query, inverted_index):
+def get_doc_id(word_query, inverted_index, topic='all-topics'):
     """
     This methods returns the list of documentIDs which contain the word query.
 
@@ -226,8 +227,10 @@ def get_doc_id(word_query, inverted_index):
     doc_id_list = []
     if word_query in inverted_index:
         for doc_id in inverted_index[word_query]:
-            doc_id_list.append(doc_id)
-
+            if topic != 'all-topics' and doc_id in text_categorization.get_topic_dict()[topic]:
+                doc_id_list.append(doc_id)
+            elif topic == 'all-topics':
+                doc_id_list.append(doc_id)
         return doc_id_list
 # handling the situation where the dictionary retrieval returns no documents
     return -1

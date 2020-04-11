@@ -21,6 +21,7 @@ import config
 import linguistic_processor
 import relevance
 import rocchio
+import text_categorization
 
 #import vsm_weight
 
@@ -40,19 +41,20 @@ def similarity(doc_list, query_list):
     query_norm = query_vector / np.linalg.norm(query_vector, axis=0)
     return np.dot(doc_norm, query_norm)
 
-def retrieve(query, corpus):
+def retrieve(query, corpus, topic='all-topics'):
     """choose to use rocchio retrieval if relevance info available or
     shortlist method if no relevance info available"""
+    print(topic)
     if relevance.get_relevance_lists(query, corpus):
-        return retrieve_rocchio(query, corpus)
-    return retrieve_norelevance(query, corpus)
+        return retrieve_rocchio(query, corpus, topic)
+    return retrieve_norelevance(query, corpus, topic)
 
-def retrieve_norelevance(query, corpus):
+def retrieve_norelevance(query, corpus, topic='all-topics'):
     """Retrieve ranked list of documents"""
     #create list of 1's for each word in query, assumes equal weighting for each term
     query_ones = [1 for x in range(len(convert_query(query)))]
     score = dict()
-    docs = shortlist(query, corpus)
+    docs = shortlist(query, corpus, topic)
     for doc_id in docs:
         score[doc_id] = similarity(docs[doc_id], query_ones)
     #Adapted from https://www.geeksforgeeks.org/python-n-largest-values-in-dictionary/
@@ -61,12 +63,12 @@ def retrieve_norelevance(query, corpus):
     #Adapted from https://stackoverflow.com/a/38218662
     return [(x, score[x]) for x in klargest]
 
-def retrieve_rocchio(query, corpus):
+def retrieve_rocchio(query, corpus, topic='all-topics'):
     """retrieval when relevance information is available"""
     query_vector = rocchio.rocchio_expansion(query, corpus)
     #Adapted from https://www.geeksforgeeks.org/python-n-largest-values-in-dictionary/
     score = dict()
-    docs = rocchio.rocchio_doc_list(query_vector, corpus)
+    docs = rocchio.rocchio_doc_list(query_vector, corpus, topic)
     for doc_id in docs:
         score[doc_id] = similarity(docs[doc_id], query_vector)
 #Adapted from https://www.geeksforgeeks.org/python-n-largest-values-in-dictionary/
@@ -74,27 +76,43 @@ def retrieve_rocchio(query, corpus):
     #Adapted from https://stackoverflow.com/a/38218662
     return [(x, score[x]) for x in klargest]
 
-def shortlist(query, corpus):
+def shortlist(query, corpus, topic='all-topics'):
     """Create shortlist of docs from inv_index based only on those that have at
      least one search term from the query."""
     inv_index = get_inverted_index(corpus)
     doc_shortlist = dict()
     query_word_list = convert_query(query)
     weight_list_len = len(query_word_list)
+    topic_docs = []
+    if topic != 'all-topics':
+        topic_docs = text_categorization.get_topic_dict()[topic]
     for index, word in enumerate(query_word_list):
         if word in inv_index:
             #allow for queries that contain words not in the corpus
             for doc_id in inv_index[word]:
-                if doc_id in doc_shortlist:
-                    #doc already added, just update weight entry for this word
-                    doc_shortlist[doc_id][index] = inv_index[word][doc_id]['weight']
-                else:
-                    #doc not added yet add doc_id to shortlist,
-                    #initialize list to 0s for all words in query
-                    #update weight entry for current word
-                    entry = [0 for x in range(weight_list_len)]
-                    entry[index] = inv_index[word][doc_id]['weight']
-                    doc_shortlist[doc_id] = entry
+                if topic != 'all-topics' and doc_id in topic_docs:
+                    if doc_id in doc_shortlist:
+                        #doc already added, just update weight entry for this word
+                        doc_shortlist[doc_id][index] = inv_index[word][doc_id]['weight']
+                    else:
+                        #doc not added yet add doc_id to shortlist,
+                        #initialize list to 0s for all words in query
+                        #update weight entry for current word
+                        entry = [0 for x in range(weight_list_len)]
+                        entry[index] = inv_index[word][doc_id]['weight']
+                        doc_shortlist[doc_id] = entry
+                elif topic == 'all-topics':
+                    if doc_id in doc_shortlist:
+                        #doc already added, just update weight entry for this word
+                        doc_shortlist[doc_id][index] = inv_index[word][doc_id]['weight']
+                    else:
+                        #doc not added yet add doc_id to shortlist,
+                        #initialize list to 0s for all words in query
+                        #update weight entry for current word
+                        entry = [0 for x in range(weight_list_len)]
+                        entry[index] = inv_index[word][doc_id]['weight']
+                        doc_shortlist[doc_id] = entry
+
 
     return doc_shortlist
 

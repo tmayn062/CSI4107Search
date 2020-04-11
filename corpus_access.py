@@ -75,7 +75,8 @@ def get_documents(corpus, list_doc_ids):
             doc_in_corpus = bs_corpus.find("article", {"doc_id":str(doc_id)})
             doc_to_add = Document(doc_id, doc[1],
                                   doc_in_corpus.find("title").text,
-                                  doc_in_corpus.find("body").text,
+                                  doc_in_corpus.find("topics").text+ '\n'
+                                  + doc_in_corpus.find("body").text,
                                   doc_in_corpus.find("topics").text)
             doc_list.append(doc_to_add)
     return doc_list

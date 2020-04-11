@@ -175,7 +175,9 @@ class SearchEngineGUI:
     def run_search(self):
         """Start search (callback function for search button)."""
         # Set corpus to be used for search
+        # Clear previous search results
 
+        self.search_results.insert("insert", 'Searching, please wait...')
         if self.search_collection.get() == 1:
             corpus = config.UOTTAWA
         else:
@@ -197,12 +199,11 @@ class SearchEngineGUI:
         if search == 'VSM':
         #do VSM search
             docs_retrieved = vsm_retrieval.retrieve(self.search_entry.get().strip(),
-                                                    corpus)
+                                                    corpus, self.search_topic.get())
         else:
         #do boolean search
             docs_retrieved = boolean_search.boolean_search_module(
-                self.search_entry.get().strip(), corpus)
-        # Clear previous search results
+                self.search_entry.get().strip(), corpus, self.search_topic.get())
         self.search_results.delete('1.0', "end")
         # Clear previous suggestions
         self.expanded_label.config(text="")
