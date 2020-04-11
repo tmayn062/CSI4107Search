@@ -15,7 +15,8 @@ CORPUS[REUTERS] = {"source" : "/home/tjm/Documents/Winter2020/CSI4107/reuters215
                    "lpp_file" : "reuters_lpp.csv",
                    "bigraph_file" : "reuters_bigraph_index.csv",
                    "spelling_file" : "reuters_spelling.csv",
-                   "relevance_file" : "reuters_relevance.csv"}
+                   "relevance_file" : "reuters_relevance.csv",
+                   "doc_by_topic" : "reuters_doc_by_topic.csv"}
 
 
 K_RETRIEVAL = 20
@@ -33,15 +34,23 @@ LINGUISTIC_PARAMS = {"do_contractions": True,
 ROCCHIO_ALPHA = 1
 ROCCHIO_BETA = 0.75
 ROCCHIO_GAMMA = 0.15
-ROCCHIO_MIN = 0.1
-TOPICS = ['acq', 'alum', 'barley', 'bop', 'carcass', 'castor-oil', 'cocoa', 'coconut',
-          'coconut-oil', 'coffee', 'copper', 'copra-cake', 'corn', 'cotton', 'cotton-oil', 'cpi',
-          'cpu', 'crude', 'dfl', 'dlr', 'dmk', 'earn', 'fuel', 'gas', 'gnp', 'gold', 'grain',
-          'groundnut', 'groundnut-oil', 'heat', 'hog', 'housing', 'income', 'instal-debt',
-          'interest', 'ipi', 'iron-steel', 'jet', 'jobs', 'l-cattle', 'lead', 'lei', 'lin-oil',
-          'livestock', 'lumber', 'meal-feed', 'money-fx', 'money-supply', 'naphtha', 'nat-gas',
-          'nickel', 'nkr', 'nzdlr', 'oat', 'oilseed', 'orange', 'palladium', 'palm-oil',
-          'palmkernel', 'pet-chem', 'platinum', 'potato', 'propane', 'rand', 'rape-oil',
-          'rapeseed', 'reserves', 'retail', 'rice', 'rubber', 'rye', 'ship', 'silver',
-          'sorghum', 'soy-meal', 'soy-oil', 'soybean', 'strategic-metal', 'sugar', 'sun-meal',
-          'sun-oil', 'sunseed', 'tea', 'tin', 'trade', 'veg-oil', 'wheat', 'wpi', 'yen', 'zinc']
+ROCCHIO_MIN = 0.4
+TOPICS = ['acq', 'alum', 'austdlr', 'barley', 'bfr', 'bop', 'can', 'carcass',
+          'castor-oil', 'castorseed', 'citruspulp', 'cocoa', 'coconut',
+          'coconut-oil', 'coffee', 'copper', 'copra-cake', 'corn', 'corn-oil',
+          'cornglutenfeed', 'cotton', 'cotton-oil', 'cottonseed', 'cpi', 'cpu',
+          'crude', 'cruzado', 'dfl', 'dkr', 'dlr', 'dmk', 'earn', 'f-cattle',
+          'fishmeal', 'fuel', 'gas', 'gnp', 'gold', 'grain', 'groundnut',
+          'groundnut-oil', 'heat', 'hk', 'hog', 'housing', 'income', 'instal-debt',
+          'interest', 'inventories', 'ipi', 'iron-steel', 'jet', 'jobs',
+          'l-cattle', 'lead', 'lei', 'lin-meal', 'lin-oil', 'linseed', 'lit',
+          'livestock', 'lumber', 'meal-feed', 'money-fx', 'money-supply', 'naphtha',
+          'nat-gas', 'nickel', 'nkr', 'notopic', 'nzdlr', 'oat', 'oilseed',
+          'orange', 'palladium', 'palm-oil', 'palmkernel', 'peseta', 'pet-chem',
+          'platinum', 'plywood', 'pork-belly', 'potato', 'propane', 'rand',
+          'rape-meal', 'rape-oil', 'rapeseed', 'red-bean', 'reserves', 'retail',
+          'rice', 'ringgit', 'rubber', 'rupiah', 'rye', 'saudriyal', 'sfr',
+          'ship', 'silver', 'skr', 'sorghum', 'soy-meal', 'soy-oil', 'soybean',
+          'stg', 'strategic-metal', 'sugar', 'sun-meal', 'sun-oil', 'sunseed',
+          'tapioca', 'tea', 'tin', 'trade', 'veg-oil', 'wheat', 'wool', 'wpi',
+          'yen', 'zinc']

@@ -6,7 +6,7 @@ Version: Vanilla System
 Component: Module 3 & 4 + supporting methods for module 7
 
 Created: 30 Jan 2020
-Last modified: 13 Feb 2020
+Last modified: 10 Apr 2020
 
 Author: Jonathan Boerger
 Modified by: Tiffany Maynard
@@ -27,6 +27,7 @@ import pandas as pd
 from linguistic_processor import linguistic_module, bigraph_splitter
 import vsm_weight
 import config
+import text_categorization
 
 def __build_dictionary(corpus_filename, linguistic_processing_parameters):
     """
@@ -320,6 +321,8 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, corpus)
         __bigraph_index_csv(bigraph_filename, bigraph_index)
         __linguistic_processing_parameters_csv(linguistic_control_dictionary, lp_parameter_filename)
 
+    if corpus == config.REUTERS and not os.path.exists(config.CORPUS[corpus]['doc_by_topic']):
+        text_categorization.doc_id_by_topic()
     # The required files dont exits -> create them
     if not os.path.exists(inverted_index_filename)  \
             or not os.path.exists(lp_parameter_filename) \
@@ -329,16 +332,18 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, corpus)
         create_index()
         return
 
+
+
     check_val = __linguistic_processor_parameters_validator(lp_parameter_filename,
                                                             linguistic_control_dictionary)
 
     if check_val == -1:
         # the required files exist BUT changes to the LPP -> create a new inverted index
-        print("Inverted index already exits, however there has been a change in LP settings, thus "
+        print("Inverted index already exists, however there has been a change in LP settings, thus "
               "recalculating it")
         create_index()
     else:
         # the required files exist & no changes to the LPP -> carry on
-        print("Inverted index for these LP setting already exists.")
+        print(corpus + "inverted index for these LP setting already exists.")
 
     return

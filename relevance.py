@@ -22,7 +22,7 @@ import os
 import csv
 import ast
 import config
-#Empty globals to store relevance dictionary so it is only read once form csv
+#Empty globals to store relevance dictionary so it is only read once from csv
 RELEVANCE_DICT = {}
 RELEVANCE_CORPUS = ""
 
@@ -95,7 +95,6 @@ def read_relevance_from_csv(corpus):
         with open(filename, 'r') as data_file:
             reader = csv.reader(data_file)
             for row in reader:
-                print(row)
                 relevance_dict[row[0]] = (ast.literal_eval(row[1]), ast.literal_eval(row[2]))
         return relevance_dict
 

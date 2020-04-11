@@ -15,6 +15,7 @@ Description: Access documents from the corpus
 
 """
 import xml.etree.ElementTree as xml
+from bs4 import BeautifulSoup as bs
 import os.path
 import config
 
@@ -54,23 +55,39 @@ def get_documents(corpus, list_doc_ids):
     if not os.path.isfile(corpus_filename):
         print(corpus_filename + ' does not exist')
         return []
-    tree = xml.parse(corpus_filename)
-    root = tree.getroot()
     doc_list = []
-    #list_doc_ids is a list of (doc_id, score) pairs
-    for doc in list_doc_ids:
-        doc_id = doc[0]
-        if len(root[doc_id]) > 3:
-            if root[doc_id][0]:
-                title = root[doc_id][0].text+' '+root[doc_id][1].text
-            else:
-                title = root[doc_id][1].text
-            doc_to_add = Document(doc_id, doc[1],
-                                  title,
-                                  root[doc_id][2].text, root[doc_id][3].text)
-        else:
+    if corpus == config.UOTTAWA:
+        tree = xml.parse(corpus_filename)
+        root = tree.getroot()
+        #list_doc_ids is a list of (doc_id, score) pairs
+        for doc in list_doc_ids:
+            doc_id = doc[0]
+            #uOttawa index and doc_id are equal
             doc_to_add = Document(doc_id, doc[1],
                                   root[doc_id][0].text+' '+root[doc_id][1].text,
                                   root[doc_id][2].text, [])
-        doc_list.append(doc_to_add)
+            doc_list.append(doc_to_add)
+    else:
+        bs_corpus = get_reuters_corpus_as_bs(corpus_filename)
+        #reuters index and doc_id are different
+        for doc in list_doc_ids:
+            doc_id = doc[0]
+            doc_in_corpus = bs_corpus.find("article", {"doc_id":str(doc_id)})
+            doc_to_add = Document(doc_id, doc[1],
+                                  doc_in_corpus.find("title").text,
+                                  doc_in_corpus.find("body").text,
+                                  doc_in_corpus.find("topics").text)
+            doc_list.append(doc_to_add)
     return doc_list
+
+def get_reuters_corpus_as_bs(filename):
+    """to get reuters corpus as beautiful soup format"""
+    content = []
+    # Read the XML file
+    with open(filename, "r") as file:
+        # Read each line in the file, readlines() returns a list of lines
+        content = file.readlines()
+        # Combine the lines in the list into a string
+        content = "".join(content)
+        bs_content = bs(content, 'html.parser')
+        return bs_content

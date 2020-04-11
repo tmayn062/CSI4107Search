@@ -25,12 +25,15 @@ import relevance
 def calc_rocchio(original, relevant_vectors, nonrelevant_vectors):
     """calculate new relevance using rocchio algorithm
     original, relevant, nonrelevant must be vectors for same words"""
+    print('orig' + str(len(original)))
+    if len(relevant_vectors) > 0: print('rv 1st len' + str(len(relevant_vectors[0])))
+    if len(nonrelevant_vectors) > 0: print('nr 1st len' + str(len(nonrelevant_vectors[0])))
     rv_count = len(relevant_vectors)
     nr_count = len(nonrelevant_vectors)
     rv_sum = np.add.reduce(relevant_vectors)
-    print('rv_sum' + str(rv_sum))
+    print('rv_sum' + str(rv_sum) + 'rv_count' + str(rv_count))
     nr_sum = np.add.reduce(nonrelevant_vectors)
-    print('nr_sum' + str(nr_sum))
+    print('nr_sum' + str(nr_sum) + 'nr_count' + str(nr_count))
     updated_relevance = cg.ROCCHIO_ALPHA * original \
                         + cg.ROCCHIO_BETA * (1/rv_count if rv_count else 1) * rv_sum \
                         - cg.ROCCHIO_GAMMA * (1/nr_count if nr_count else 1) * nr_sum
@@ -75,6 +78,12 @@ def rocchio_expansion(query_string, corpus):
     rel_list, nonrel_list = relevance.get_relevance_lists(query_string, corpus)
     rel = doc_list_to_array(rel_list, corpus)
     nonrel = doc_list_to_array(nonrel_list, corpus)
+    print('relevant')
+    for item in rel:
+        print(item)
+    print('nonrelevant')
+    for item in nonrel:
+        print(item)
     return calc_rocchio(orig, rel, nonrel)
 
 def rocchio_doc_list(query_vector, corpus):

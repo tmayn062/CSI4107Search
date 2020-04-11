@@ -86,7 +86,7 @@ def create_reuters_corpus():
                 topics = ""
                 if doc.find("body"):
                     body = doc.find("body").text.replace('\n', ' ').replace('\r', '')
-                    body = body.replace('\x03', '').replace('[B', '').replace('','')
+                    body = body.replace('\x03', '').replace('[B', '').replace('', '')
                 if doc.find("title"):
                     title = doc.find("title").text
                 if doc.find("topics"):
