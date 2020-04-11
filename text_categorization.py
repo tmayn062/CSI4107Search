@@ -27,12 +27,14 @@ def doc_id_by_topic():
 
     corpus_filename = config.CORPUS[config.REUTERS]['corpusxml']
     topic_dict = dict()
+    all_doc_ids = []
     with open(corpus_filename, 'rb') as f:
         data = f.read()
         soup = bs4.BeautifulSoup(data, 'html.parser')
         articles = soup.findAll("article")
         for article in articles:
             doc_id = article.find("doc_id").text
+            all_doc_ids.append(doc_id)
             topics = article.find("topics").text.strip().split(' ')
             #some articles have multiple topics
             for topic in topics:
@@ -42,12 +44,12 @@ def doc_id_by_topic():
                     topic_dict[topic] = doc_list
                 else:
                     topic_dict[topic] = [doc_id]
-
+    topic_dict['all-topics'] = list(set(all_doc_ids))
     topic_dict['notopic'] = topic_dict.pop('')
     write_topics_tocsv(topic_dict)
 
 def write_topics_tocsv(topics):
-    """write the relevance file to csv"""
+    """write the topic file to csv"""
     csv_filename = config.CORPUS[config.REUTERS]['doc_by_topic']
     with open(csv_filename, 'w') as file:
         writer = csv.writer(file)
@@ -55,7 +57,7 @@ def write_topics_tocsv(topics):
             writer.writerow([key, value])
 
 def read_topics_from_csv():
-    """Read in the csv file that stores the relevance info for a corpus"""
+    """Read in the csv file that stores the topic info for a corpus"""
     filename = config.CORPUS[config.REUTERS]['doc_by_topic']
     topic_dict = dict()
     if os.path.exists(filename):

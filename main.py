@@ -12,6 +12,7 @@ Status: Complete
 Description: Main module - combines all parts of project
 """
 from datetime import datetime
+import csv
 import config
 import gui
 import corpus_preprocessing
@@ -22,6 +23,7 @@ import text_categorization
 
 def main():
     """Run search engine and related functions."""
+    csv.field_size_limit(1000000)
     start_time = datetime.now()
     print(datetime.now())
     corpus = config.UOTTAWA

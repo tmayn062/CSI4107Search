@@ -23,6 +23,7 @@ import vsm_retrieval
 import relevance
 import text_categorization
 
+
 def calc_rocchio(original, relevant_vectors, nonrelevant_vectors):
     """calculate new relevance using rocchio algorithm
     original, relevant, nonrelevant must be vectors for same words"""
@@ -87,7 +88,7 @@ def rocchio_expansion(query_string, corpus):
         print(item)
     return calc_rocchio(orig, rel, nonrel)
 
-def rocchio_doc_list(query_vector, corpus, topic='all-topics'):
+def rocchio_doc_list(query_vector, corpus, topic):
     """get doc_id vectors for a query vector"""
     #create dict of vectors for each docid that contains
     #at least one non-zero term in query_vector
@@ -95,33 +96,22 @@ def rocchio_doc_list(query_vector, corpus, topic='all-topics'):
     doc_shortlist = dict()
     vector_len = len(query_vector)
     word_list = list(inv_index.keys())
-    topic_docs = []
-    if topic != 'all-topics':
-        topic_docs = text_categorization.get_topic_dict()[topic]
+    if corpus == cg.REUTERS:
+        topic_docs = list(map(int, text_categorization.get_topic_dict()[topic]))
+    else:
+        topic_docs = list(range(0, 663))
     for index, weight in enumerate(query_vector):
         word = word_list[index]
-        for doc_id in inv_index[word]:
-            if topic != 'all-topics' and doc_id in topic_docs:
-                if doc_id in doc_shortlist:
-                    #doc already added, just update weight entry for this word
-                    doc_shortlist[doc_id][index] = inv_index[word][doc_id]['weight']
-                else:
-                    #doc not added yet add doc_id to shortlist,
-                    #initialize list to 0s for all words in query
-                    #update weight entry for current word
-                    entry = np.zeros(vector_len)
-                    entry[index] = inv_index[word][doc_id]['weight']
-                    doc_shortlist[doc_id] = entry
-            elif topic == 'all-topics':
-                if doc_id in doc_shortlist:
-                    #doc already added, just update weight entry for this word
-                    doc_shortlist[doc_id][index] = inv_index[word][doc_id]['weight']
-                else:
-                    #doc not added yet add doc_id to shortlist,
-                    #initialize list to 0s for all words in query
-                    #update weight entry for current word
-                    entry = np.zeros(vector_len)
-                    entry[index] = inv_index[word][doc_id]['weight']
-                    doc_shortlist[doc_id] = entry
+        for doc_id in set(inv_index[word]).intersection(set(topic_docs)):
+            if doc_id in doc_shortlist:
+                #doc already added, just update weight entry for this word
+                doc_shortlist[doc_id][index] = inv_index[word][doc_id]['weight']
+            else:
+                #doc not added yet add doc_id to shortlist,
+                #initialize list to 0s for all words in query
+                #update weight entry for current word
+                entry = np.zeros(vector_len)
+                entry[index] = inv_index[word][doc_id]['weight']
+                doc_shortlist[doc_id] = entry
 
     return doc_shortlist
