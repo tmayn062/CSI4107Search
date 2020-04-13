@@ -24,7 +24,7 @@ import bigram_model
 
 def main():
     """Run search engine and related functions."""
-    csv.field_size_limit(1000000)
+    csv.field_size_limit(10000000)
     start_time = datetime.now()
     print(datetime.now())
     corpus = config.UOTTAWA
@@ -58,10 +58,6 @@ def main():
     # for query in vsm_queries[:1]:
     #     print(query)
     #     print(vsm_retrieval.retrieve(query, corpus))
-    print(create_global_expanded_query('(hungry AND_NOT green) OR eager', 'Boolean').expanded_query)
-    print(create_global_expanded_query('(good AND ready)', 'Boolean').suggestions)
-    print(create_global_expanded_query('good ready', 'VSM').suggestions)
-    print(create_global_expanded_query('model', 'VSM').expanded_query)
 
 
     #corpus = config.UOTTAWA

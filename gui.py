@@ -174,11 +174,22 @@ class SearchEngineGUI:
 
     def run_search(self):
         """Start search (callback function for search button)."""
-        # Set corpus to be used for search
+
         # Clear previous search results
+        # Clear previous suggestions
+        self.expanded_label.config(text="")
+        self.tailor_label.config(text="")
+        self.spelling_label.config(text="")
+        for lab in self.tailor_list:
+            lab.destroy()
+        for lab in self.spelling_list:
+            lab.destroy()
+        for lab in self.expanded_list:
+            lab.destroy()
         self.search_results.delete('1.0', "end")
         self.search_results.insert("insert", 'Searching, please wait...')
         self.root.update()
+        # Set corpus to be used for search
         if self.search_collection.get() == 1:
             corpus = config.UOTTAWA
         else:
