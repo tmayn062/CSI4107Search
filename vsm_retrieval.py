@@ -86,8 +86,7 @@ def shortlist(query, corpus, topic):
     if corpus == config.REUTERS:
         topic_docs = list(map(int, text_categorization.get_topic_dict()[topic]))
     else:
-        topic_docs = list(range(0, 663))
-    print(topic_docs)
+        topic_docs = list(range(0, 663))    
     for index, word in enumerate(query_word_list):
         if word in inv_index:
             #allow for queries that contain words not in the corpus

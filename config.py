@@ -8,7 +8,8 @@ CORPUS[UOTTAWA] = {"source" : "UofO_Courses.html",
                    "lpp_file" : "uottawa_lpp.csv",
                    "bigraph_file" : "uottawa_bigraph_index.csv",
                    "spelling_file" : "uottawa_spelling.csv",
-                   "relevance_file" : "uottawa_relevance.csv"}
+                   "relevance_file" : "uottawa_relevance.csv",
+                   "bigram_file" : "uottawa_bigram.csv"}
 CORPUS[REUTERS] = {"source" : "/home/tjm/Documents/Winter2020/CSI4107/reuters21578",
                    "corpusxml" : "reuters_corpus.xml",
                    "inverted_index_file" : "reuters_inverted_index.csv",
@@ -16,7 +17,8 @@ CORPUS[REUTERS] = {"source" : "/home/tjm/Documents/Winter2020/CSI4107/reuters215
                    "bigraph_file" : "reuters_bigraph_index.csv",
                    "spelling_file" : "reuters_spelling.csv",
                    "relevance_file" : "reuters_relevance.csv",
-                   "doc_by_topic" : "reuters_doc_by_topic.csv"}
+                   "doc_by_topic" : "reuters_doc_by_topic.csv",
+                   "bigram_file" : "reuters_bigram.csv"}
 
 
 K_RETRIEVAL = 20
@@ -54,3 +56,4 @@ TOPICS = ['all-topics', 'acq', 'alum', 'austdlr', 'barley', 'bfr', 'bop', 'can',
           'stg', 'strategic-metal', 'sugar', 'sun-meal', 'sun-oil', 'sunseed',
           'tapioca', 'tea', 'tin', 'trade', 'veg-oil', 'wheat', 'wool', 'wpi',
           'yen', 'zinc']
+MAX_QCM_SUGGESTIONS = 5

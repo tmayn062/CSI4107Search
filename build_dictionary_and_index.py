@@ -6,7 +6,7 @@ Version: Vanilla System
 Component: Module 3 & 4 + supporting methods for module 7
 
 Created: 30 Jan 2020
-Last modified: 10 Apr 2020
+Last modified: 13 Apr 2020
 
 Author: Jonathan Boerger
 Modified by: Tiffany Maynard
@@ -24,10 +24,13 @@ from collections import Counter
 from collections import OrderedDict
 from collections import defaultdict
 import pandas as pd
+from nltk.corpus import reuters
+from nltk import FreqDist
 from linguistic_processor import linguistic_module, bigraph_splitter
 import vsm_weight
 import config
 import text_categorization
+import bigram_model
 
 def __build_dictionary(corpus_filename, linguistic_processing_parameters):
     """
@@ -44,14 +47,17 @@ def __build_dictionary(corpus_filename, linguistic_processing_parameters):
     parser = xml.XMLParser(encoding="utf-8")
     tree = xml.parse(corpus_filename, parser=parser)
     root = tree.getroot()
+    fdist = FreqDist(w.lower() for w in reuters.words())
     for course in root:
         doc_id = int(course.get('doc_id'))
         course_id = course[0].text
         processed_text = linguistic_module(course[2].text, linguistic_processing_parameters)
 
         for words in processed_text:
-            tag = {"course_id": course_id, "doc_id": doc_id, "word": words}
-            dictionary.append(tag)
+            if corpus_filename == "reuters_corpus.xml" and fdist[words] > 1:
+                #remove hapax for reuters collection
+                tag = {"course_id": course_id, "doc_id": doc_id, "word": words}
+                dictionary.append(tag)
     return dictionary
 
 def __build_spelling_dictionary(corpus_filename, linguistic_processing_parameters):
@@ -323,6 +329,8 @@ def dictionary_and_inverted_index_wrapper(linguistic_control_dictionary, corpus)
 
     if corpus == config.REUTERS and not os.path.exists(config.CORPUS[corpus]['doc_by_topic']):
         text_categorization.doc_id_by_topic()
+    if not os.path.exists(config.CORPUS[corpus]['bigram_file']):
+        bigram_model.create_bigram_model(corpus)
     # The required files dont exits -> create them
     if not os.path.exists(inverted_index_filename)  \
             or not os.path.exists(lp_parameter_filename) \

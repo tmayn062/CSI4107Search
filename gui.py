@@ -28,6 +28,7 @@ import spelling
 from tkinter_autocomplete_listbox import AutocompleteEntry
 import global_query_expansion as gqe
 import relevance as rel
+import bigram_model
 
 class SearchEngineGUI:
     """Start the search engine GUI."""
@@ -65,8 +66,7 @@ class SearchEngineGUI:
 #                                          font=(self.font_to_use, 18))
 
         #self.search_entry.pack(side='left')
-        auto_complete_list = ['dog', 'cat', 'car', 'cab', 'cabin', 'course', 'cost',
-                              'caboose', 'zoo', 'zorn', 'carbon']
+        auto_complete_list = bigram_model.get_suggestion_list()
 
         def matches(field_value, ac_list_entry):
             pattern = re.compile(re.escape(field_value) + '.*', re.IGNORECASE)
@@ -176,8 +176,9 @@ class SearchEngineGUI:
         """Start search (callback function for search button)."""
         # Set corpus to be used for search
         # Clear previous search results
-
+        self.search_results.delete('1.0', "end")
         self.search_results.insert("insert", 'Searching, please wait...')
+        self.root.update()
         if self.search_collection.get() == 1:
             corpus = config.UOTTAWA
         else:
