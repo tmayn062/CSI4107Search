@@ -9,7 +9,7 @@ Created: 11 Apr 2020
 Last modified: 13 Apr 2020
 
 Author: Tiffany Maynard
-Status: In Progress
+Status: Completed
 
 Description: Build a Bigram Language Model for each corpus
 """
@@ -27,6 +27,7 @@ import config
 
 BIGRAM_CORPUS = ""
 BIGRAM_DICT = {}
+SUGGESTION_LIST = []
 
 def create_bigram_model(corpus):
     """create the bigram model for a corpus"""
@@ -131,8 +132,17 @@ def create_suggestion_list():
 
 
 def get_suggestion_list():
-    """get suggestion list based on both corpuses"""
-    return read_suggestion_from_csv()
+    """get suggestion list based on both corpuses wrapper to avoid multiple reads from csv."""
+    print("in get suggestion list")
+    global SUGGESTION_LIST
+    if SUGGESTION_LIST:
+        return SUGGESTION_LIST
+
+    SUGGESTION_LIST = read_suggestion_from_csv()
+    #SUGGESTION_LIST = ["orange co", "orange calif",
+    #                   "orange counties", "orange crop", "orange production"]
+    return SUGGESTION_LIST
+
 
 def write_suggestion_tocsv(suggestion):
 
@@ -148,17 +158,16 @@ def read_suggestion_from_csv():
     suggestion_list = []
     if os.path.exists(filename):
         print('reading from suggestion csv')
-        with open(filename, 'r') as data_file:
+        with open(filename, newline='') as data_file:
             reader = csv.reader(data_file)
-            for row in reader:
-                suggestion_list = row
-        return suggestion_list
+            suggestion_list = list(reader)
+        return suggestion_list[0]
 
     return []
 
-def main():
-    csv.field_size_limit(100000000)
-    create_suggestion_list()
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     csv.field_size_limit(100000000)
+#     create_suggestion_list()
+#
+# if __name__ == '__main__':
+#     main()

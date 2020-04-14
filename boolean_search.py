@@ -1,21 +1,15 @@
 """
 Title: Boolean Search Module
-
 Project: CSI4107 Project
 Version: Vanilla System
 Component: Module 6
-
 Created: 06 Feb 2020
 Last modified: 12 Feb 2020
-
 Author: Jonathan Boerger
 Modified by: Tiffany Maynard
 Status: Completed
-
 Description:
-
 The boolean search module implements the boolean search method for information retrieval.
-
 """
 import ast
 import csv
@@ -23,25 +17,21 @@ from wildcard_management import wildcard_word_finder
 from linguistic_processor import linguistic_module
 import config
 import vsm_retrieval
-import text_categorization
 
 BIGRAPH_DICT = {}
 BIGRAPH_DICT_CORPUS = ""
 
-def boolean_search_module(query, corpus, topic):
+def boolean_search_module(query, corpus):
 
     """
     This is the wrapper method for the entire boolean search module. It ties together all
     supporting modules.
     The method returns a list of relevant docIDs for a given query.
-
     Of note: as part of the project we assume only informed user are user the system, and are
     only imputing well formatted queries (proper use of brackets and operators). Therefore,
     input validation is not required in this specific use-case.
-
     :param query: The raw query as entered by the user
     :param corpus: used to lookup bigraph and inverted index files in config
-
     :return: A list of docIDs
     """
     linguistic_processing_parameters = config.LINGUISTIC_PARAMS
@@ -53,23 +43,24 @@ def boolean_search_module(query, corpus, topic):
     postfix_query = postfix_translation(infix_query)
     #read in inverted_index dictionary from csv just once per search
     inverted_index_dict = inverted_index_dictionary(corpus)
-    doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_dict, corpus, topic)
+    doc_id_list = boolean_postfix_query_processor(postfix_query, inverted_index_dict)
     #add dummy scores to doc_id_list
+    print('returning boolean search' + str(len(doc_id_list)))
+    doc_id_list = doc_id_list[:config.MAX_BOOLEAN_DOCS]
     ones = [1] * len(doc_id_list)
+    print('returning boolean search' + str(len(doc_id_list)))
     return zip(doc_id_list, ones)
 
 
-def boolean_postfix_query_processor(postfix_query, inverted_index, corpus, topic):
+def boolean_postfix_query_processor(postfix_query, inverted_index):
     """
     This methods takes a postfix query and actually executes the query to return
     a list of relevant docIDs.
-
     This method was developed based on the information provided at:
     https://runestone.academy/runestone/books/published/pythonds/BasicDS/
         InfixPrefixandPostfixExpressions.html#fig-evalpost2
     Specifically, it was adapted from the code provided in the 'Active Code 2' section
     Also referenced https://www.geeksforgeeks.org/stack-set-2-infix-to-postfix/
-
     :param postfix_query: A list containing the postfix query
     :param inverted_index: The filename of the inverted index csv
     :return: A list of docIDs
@@ -79,7 +70,7 @@ def boolean_postfix_query_processor(postfix_query, inverted_index, corpus, topic
     # if the query is empty or a single word, return the docID list for the word
     if len(postfix_query) == 1:
         if postfix_query[0] in inverted_index:
-            return get_doc_id(postfix_query[0], inverted_index, corpus, topic)
+            return get_doc_id(postfix_query[0], inverted_index)
         return []
 
     for token in postfix_query:
@@ -88,32 +79,29 @@ def boolean_postfix_query_processor(postfix_query, inverted_index, corpus, topic
         else:
             word1 = operand_stack.pop()
             word2 = operand_stack.pop()
-            result = intersect_wrapper(word1, word2, token, inverted_index, corpus, topic)
+            result = intersect_wrapper(word1, word2, token, inverted_index)
             operand_stack.append(result)
     if operand_stack:
         return operand_stack.pop()
     return []
 
 
-def intersect_wrapper(word1, word2, operator, inverted_index, corpus, topic):
+def intersect_wrapper(word1, word2, operator, inverted_index):
     """
     The following method applies the required interest method for the query
-
     Additionally, the method resolves the words into their respective docID list.
-
     :param word1: The string or list containing the information to be merged
     :param word2: The string or list containing the information to be merged
     :param operator: The logical operator specifying the type of merge operation
     :param inverted_index: The inverted index as dictionary
     :return: A list of merged docIDs
-
     """
     if isinstance(word1, str):
-        word1 = get_doc_id(word1, inverted_index, corpus, topic)
+        word1 = get_doc_id(word1, inverted_index)
         if word1 == -1:
             word1 = []
     if isinstance(word2, str):
-        word2 = get_doc_id(word2, inverted_index, corpus, topic)
+        word2 = get_doc_id(word2, inverted_index)
         if word2 == -1:
             word2 = []
     if operator == 'AND':
@@ -128,11 +116,9 @@ def intersect_wrapper(word1, word2, operator, inverted_index, corpus, topic):
 def intersect_and_not(doc_id_list_2, doc_id_list_1):
     """
     This methods implements the boolean intersect algorithm for AND NOT operations.
-
     :param doc_id_list_1: List of docIDs associated with word 1
     :param doc_id_list_2: List of docIDs associated with word 2
     :return: List of merged docIDs
-
     """
     result = []
     pointer1 = 0
@@ -158,7 +144,6 @@ def intersect_and_not(doc_id_list_2, doc_id_list_1):
 def intersect_and(doc_id_list_1, doc_id_list_2):
     """
         This methods implements the boolean intersect algorithm for AND operations.
-
         :param doc_id_list_1: List of docIDs associated with word 1
         :param doc_id_list_2: List of docIDs associated with word 2
         :return: List of merged docIDs
@@ -182,7 +167,6 @@ def intersect_and(doc_id_list_1, doc_id_list_2):
 def intersect_or(doc_id_list_1, doc_id_list_2):
     """
     This methods implements the boolean intersect algorithm for OR operations.
-
     :param doc_id_list_1: List of docIDs associated with word 1
     :param doc_id_list_2: List of docIDs associated with word 2
     :return: List of merged docIDs
@@ -214,23 +198,20 @@ def intersect_or(doc_id_list_1, doc_id_list_2):
     return result
 
 
-def get_doc_id(word_query, inverted_index, corpus, topic):
+def get_doc_id(word_query, inverted_index):
     """
     This methods returns the list of documentIDs which contain the word query.
-
     :param word_query: The word for which docIDs are to be returned
     :param inverted_index: The inverted index as dictionary
     :return: A list of the documentIDs containing the word
             A -1 if there are no documents which contain the word
     """
-    if corpus == config.REUTERS:
-        topic_docs = list(map(int, text_categorization.get_topic_dict()[topic]))
-    else:
-        topic_docs = list(range(0, 663))
+
     doc_id_list = []
     if word_query in inverted_index:
-        for doc_id in set(inverted_index[word_query]).intersection(set(topic_docs)):
+        for doc_id in inverted_index[word_query]:
             doc_id_list.append(doc_id)
+
         return doc_id_list
 # handling the situation where the dictionary retrieval returns no documents
     return -1
@@ -239,10 +220,8 @@ def get_doc_id(word_query, inverted_index, corpus, topic):
 def inverted_index_dictionary(corpus):
     """
     The following method returns inverted index as a dictionary.
-
     :param corpus: The corpus that produced the inverted index
     :return: Inverted index as a dictionary
-
     """
     word_dict = vsm_retrieval.get_inverted_index(corpus)
 
@@ -255,9 +234,7 @@ def boolean_query_preprocessing(raw_query, linguistic_processing_parameters, big
     """
     The following method takes a boolean query and applies linguistic pre-processing to the query,
     to match the LPP done to the inverted index, as well as resolves all wildcards in the query.
-
     Of note, linguistic pre-processing is performed prior to wildcard resolution.
-
     :param raw_query: The search query as provided by the user
     :param linguistic_processing_parameters: The dictionary of LPP used to specify which
     linguistic pre-processing parameters to be applied to the query. (For formatting information
@@ -290,7 +267,6 @@ def boolean_query_preprocessing(raw_query, linguistic_processing_parameters, big
 def postfix_translation(boolean_infix_query):
     """
     This methods converts a boolean query from infix notation to postfix notation.
-
     This method was developed based on the information provided at:
     https://runestone.academy/runestone/books/published/pythonds/BasicDS/
         InfixPrefixandPostfixExpressions.html#fig-evalpost2

@@ -57,3 +57,4 @@ TOPICS = ['all-topics', 'acq', 'alum', 'austdlr', 'barley', 'bfr', 'bop', 'can',
           'tapioca', 'tea', 'tin', 'trade', 'veg-oil', 'wheat', 'wool', 'wpi',
           'yen', 'zinc']
 MAX_QCM_SUGGESTIONS = 5
+MAX_BOOLEAN_DOCS = 50

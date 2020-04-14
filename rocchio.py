@@ -9,7 +9,7 @@ Created: 08 Apr 2020
 Last modified: 09 Apr 2020
 
 Author: Tiffany Maynard
-Status: In Progress
+Status: Completed
 
 Description: Perform implicit query expansion using the relevance provided, within the VSM,
 using the Rocchio Algorithm.

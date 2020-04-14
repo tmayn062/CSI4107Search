@@ -9,7 +9,7 @@ Created: 06 Mar 2020
 Last modified: 10 Mar 2020
 
 Author: Tiffany Maynard
-Status: In Progress
+Status: Completed
 
 Description: Use an external thesaurus (WordNet) to perform Query Expansion.
 Only using synsets in expansion, not hypernyms and only expand when query is

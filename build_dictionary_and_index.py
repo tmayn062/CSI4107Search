@@ -54,10 +54,10 @@ def __build_dictionary(corpus_filename, linguistic_processing_parameters):
         processed_text = linguistic_module(course[2].text, linguistic_processing_parameters)
 
         for words in processed_text:
-            if corpus_filename == "reuters_corpus.xml" and fdist[words] > 1:
+            #if corpus_filename == "reuters_corpus.xml" and fdist[words] > 1:
                 #remove hapax for reuters collection
-                tag = {"course_id": course_id, "doc_id": doc_id, "word": words}
-                dictionary.append(tag)
+            tag = {"course_id": course_id, "doc_id": doc_id, "word": words}
+            dictionary.append(tag)
     return dictionary
 
 def __build_spelling_dictionary(corpus_filename, linguistic_processing_parameters):

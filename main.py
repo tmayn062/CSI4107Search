@@ -4,7 +4,7 @@ Version: Vanilla System
 Component: Main
 
 Created: 30 Jan 2020
-Last modified: 13 Feb 2020
+Last modified: 13 Apr 2020
 
 Author: Jonathan Boerger & Tiffany Maynard
 Status: Complete
@@ -13,6 +13,9 @@ Description: Main module - combines all parts of project
 """
 from datetime import datetime
 import csv
+import bs4
+from nltk.corpus import reuters
+from nltk import FreqDist
 import config
 import gui
 import corpus_preprocessing
@@ -21,10 +24,11 @@ from global_query_expansion import create_global_expanded_query
 import reuters_preprocessing
 import text_categorization
 import bigram_model
+import corpus_access
 
 def main():
     """Run search engine and related functions."""
-    csv.field_size_limit(10000000)
+    csv.field_size_limit(1000000)
     start_time = datetime.now()
     print(datetime.now())
     corpus = config.UOTTAWA
@@ -39,28 +43,7 @@ def main():
     print(total_time)
     print(datetime.now())
 
-    boolean_queries = ['(*ge AND_NOT (man* OR health*))',
-                       '(man* OR health*)',
-                       '(statistical OR su*ort)',
-                       '(operating AND (system OR platform))',
-                       '(query AND processing)',
-                       'ps*logy',
-                       'leadership']
-#    for query in boolean_queries:
-#        print(query)
-#        print(boolean_search.boolean_search_module(query, corpus))
-    vsm_queries = ['operoting system',
-                   'computers graphical',
-                   'lienar',
-                   'business administration',
-                   'child psychology',
-                   'bayesian network classification']
-    # for query in vsm_queries[:1]:
-    #     print(query)
-    #     print(vsm_retrieval.retrieve(query, corpus))
 
-
-    #corpus = config.UOTTAWA
 
     gui.SearchEngineGUI()
 

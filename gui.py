@@ -6,10 +6,10 @@ Version: Vanilla System + Final System
 Component: Module 1 + Module 7
 
 Created: 23 Jan 2020
-Last modified: 08 Apr 2020
+Last modified: 13 Apr 2020
 
 Author: Tiffany Maynard
-Status: In Progress
+Status: Completed
 
 Description: Allow a user to access search engine capabilities
 
@@ -67,7 +67,7 @@ class SearchEngineGUI:
 
         #self.search_entry.pack(side='left')
         auto_complete_list = bigram_model.get_suggestion_list()
-
+        #auto_complete_list = ["stock broker", "wine box", "wine maker", "stocks life"]
         def matches(field_value, ac_list_entry):
             pattern = re.compile(re.escape(field_value) + '.*', re.IGNORECASE)
             return re.match(pattern, ac_list_entry)
@@ -174,7 +174,8 @@ class SearchEngineGUI:
 
     def run_search(self):
         """Start search (callback function for search button)."""
-
+        if not self.search_entry.get().strip():
+            return
         # Clear previous search results
         # Clear previous suggestions
         self.expanded_label.config(text="")
@@ -215,7 +216,7 @@ class SearchEngineGUI:
         else:
         #do boolean search
             docs_retrieved = boolean_search.boolean_search_module(
-                self.search_entry.get().strip(), corpus, self.search_topic.get())
+                self.search_entry.get().strip(), corpus)
         self.search_results.delete('1.0', "end")
         # Clear previous suggestions
         self.expanded_label.config(text="")
